@@ -1,0 +1,33 @@
+﻿SELECT
+  CASE
+    WHEN D.age < 18 THEN 'Under 18'
+    WHEN D.age BETWEEN 18 AND 35 THEN '18–35'
+    WHEN D.age BETWEEN 36 AND 60 THEN '36–60'
+    ELSE 'Over 60'
+  END AS [ ],
+  COUNT(CASE WHEN D.gender = 'MALE' THEN 1 END) AS [Male],
+  COUNT(CASE WHEN D.gender = 'FEMALE' THEN 1 END) AS [Female],
+  COUNT(CASE WHEN D.gender = 'NULL' THEN 1 END) AS [Not Specified],
+  COUNT(*) AS [Total]
+FROM
+  users.tblUserDetails D
+GROUP BY
+  CASE
+    WHEN age < 18 THEN 'Under 18'
+    WHEN age BETWEEN 18 AND 35 THEN '18–35'
+    WHEN age BETWEEN 36 AND 60 THEN '36–60'
+    ELSE 'Over 60'
+  END,
+  CASE
+    WHEN D.age < 18 THEN 1
+    WHEN D.age BETWEEN 18 AND 35 THEN 2
+    WHEN D.age BETWEEN 36 AND 60 THEN 3
+    ELSE 4
+  END
+ORDER BY
+    CASE
+    WHEN age < 18 THEN 1
+    WHEN age BETWEEN 18 AND 35 THEN 2
+    WHEN age BETWEEN 36 AND 60 THEN 3
+    ELSE 4
+  END;
