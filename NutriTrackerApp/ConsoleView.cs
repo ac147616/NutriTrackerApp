@@ -6,14 +6,38 @@ public class ConsoleView
 	public string LogIn()
 	{
 		Console.WriteLine("Hey! How would you like to use this interface?");
-		Console.WriteLine("\n[1] I am a user");
-        Console.WriteLine("[2] I am an admin");
+		Console.WriteLine("\n[1] New user");
+        Console.WriteLine("[2] Existing user");
+        Console.WriteLine("[3] Admin");
 		Console.Write("\nEnter your option: ");
 
         return Console.ReadLine();
 	}
 
-	public string DisplayMenu()
+    public string NewUser()
+    {
+        Console.WriteLine("Hello user! Enter Name: ");
+        string name = Console.ReadLine();
+        Console.WriteLine("Hello user! Enter Name: ");
+
+        return name;
+    }
+
+    public string ExistingUserLogIn()
+    {
+        Console.WriteLine("Hello user! Please choose one of the options:");
+
+        return Console.ReadLine();
+    }
+
+    public string AdminLogIn()
+    {
+        Console.WriteLine("Hello user! Please choose one of the options:");
+
+        return Console.ReadLine();
+    }
+
+    public string DisplayMenu()
 	{
 		Console.WriteLine("Welcome to my Health & Nutrion Tracker");
 		Console.WriteLine("Menu: ");

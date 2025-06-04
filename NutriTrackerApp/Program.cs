@@ -27,6 +27,10 @@ namespace NutriTrackerApp
                     {
                         //Code for admin interface
                     }break;
+                case "3":
+                    {
+
+                    }break;
             }
 
             //string choice = view.DisplayMenu();
