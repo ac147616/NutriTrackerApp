@@ -10,11 +10,23 @@ namespace NutriTrackerApp
     {
         public int FoodID { get; set; }
         public string FoodName { get; set; }
-
-        public Food(int foodId, string foodName)
+        public string Category { get; set; }
+        public double Calories { get; set; }
+        public double Carbohydrates { get; set; }
+        public double Proteins { get; set; }
+        public double Fats { get; set; }
+        public double ServingSize { get; set; }
+        public Food(int foodID, string foodName, string category, double calories, double carbohydrates, double proteins, double fats, double servingSize)
         {
-            FoodID = foodId;
+            FoodID = foodID;
             FoodName = foodName;
+            Category = category;
+            Calories = calories;
+            Carbohydrates = carbohydrates;
+            Proteins = proteins;
+            Fats = fats;
+            ServingSize = servingSize;
+
         }
     }
 }

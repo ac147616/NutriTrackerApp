@@ -8,12 +8,14 @@ namespace NutriTrackerApp
         private static ConsoleView view;
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
             string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=nutriTracker2;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
 
             storageManager = new StorageManager(connectionString);
+            System.Threading.Thread.Sleep(2500);
+            Console.Clear();
             view = new ConsoleView();
             string choice = view.DisplayMenu();
+
 
             switch(choice)
             {
@@ -54,18 +56,24 @@ namespace NutriTrackerApp
         private static void UpdateFoodName()
         {
             view.DisplayMessage("Enter the food_id to update: ");
-            int foodId = view.GetIntInput();
+            int foodID = view.GetIntInput();
             view.DisplayMessage("Enter the new food name: ");
             string foodName = view.GetInput();
-            int rowsAffected = storageManager.UpdateFoodName(foodId, foodName);
+            int rowsAffected = storageManager.UpdateFoodName(foodID, foodName);
             view.DisplayMessage($"Rows affected: {rowsAffected}");
         }
         private static void InsertNewFood()
         {
             view.DisplayMessage("Enter the new food name: ");
             string foodName = view.GetInput();
-            int foodId = 0;
-            Food food1 = new Food(foodId, foodName);
+            string category = view.GetInput();
+            double calories = Convert.ToDouble(view.GetInput());
+            double carbohydrates = Convert.ToDouble(view.GetInput());
+            double proteins = Convert.ToDouble(view.GetInput());
+            double fats = Convert.ToDouble(view.GetInput());
+            double servingSize = Convert.ToDouble(view.GetInput());
+            int foodID = 0;
+            Food food1 = new Food(foodID, foodName, category, calories, carbohydrates, proteins, fats, servingSize);
             int generatedId = storageManager.InsertFood(food1);
             view.DisplayMessage($"New food inserted with ID: {generatedId}");
 

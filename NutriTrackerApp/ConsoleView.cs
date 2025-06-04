@@ -3,6 +3,7 @@ using System;
 
 public class ConsoleView
 {
+	
 	public string DisplayMenu()
 	{
 		Console.WriteLine("Welcome to my Health & Nutrion Tracker");
@@ -16,7 +17,7 @@ public class ConsoleView
 	{
 		foreach(Food food in foods)
 		{
-			Console.WriteLine($"{food.FoodID}, {food.FoodName}");
+			Console.WriteLine($"{food.FoodID}, {food.FoodName}, {food.Category}, {food.Calories}, {food.Carbohydrates}, {food.Proteins}, {food.Fats}, {food.ServingSize}");
 		}
 	}
 
