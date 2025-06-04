@@ -3,7 +3,16 @@ using System;
 
 public class ConsoleView
 {
-	
+	public string LogIn()
+	{
+		Console.WriteLine("Hey! How would you like to use this interface?");
+		Console.WriteLine("\n[1] I am a user");
+        Console.WriteLine("[2] I am an admin");
+		Console.Write("\nEnter your option: ");
+
+        return Console.ReadLine();
+	}
+
 	public string DisplayMenu()
 	{
 		Console.WriteLine("Welcome to my Health & Nutrion Tracker");

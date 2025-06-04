@@ -14,41 +14,55 @@ namespace NutriTrackerApp
             System.Threading.Thread.Sleep(2500);
             Console.Clear();
             view = new ConsoleView();
-            string choice = view.DisplayMenu();
+            string usertype = view.LogIn();
 
-
-            switch(choice)
+            switch (usertype)
             {
                 case "1":
                     {
-                        List<Food> foods = storageManager.GetAllFoods();
-                        view.DisplayFoods(foods);
+                        
                     }
                     break;
                 case "2":
                     {
-                        UpdateFoodName();
-                        break;
-                    }
-                case "3":
-                    {
-                        InsertNewFood();
-                        break;
-                    }
-                case "4":
-                    {
-                        DeleteFoodByName();
-                        break;
-                    }
-                case "5":
-                    {
-                        //End Loop
-                        break;
-                    }
-                default:
-                    Console.WriteLine("Invalid option. Please try again.");
-                    break;
+                        //Code for admin interface
+                    }break;
             }
+
+            //string choice = view.DisplayMenu();
+
+            //switch (choice)
+            //{
+            //    case "1":
+            //        {
+            //            List<Food> foods = storageManager.GetAllFoods();
+            //            view.DisplayFoods(foods);
+            //        }
+            //        break;
+            //    case "2":
+            //        {
+            //            UpdateFoodName();
+            //            break;
+            //        }
+            //    case "3":
+            //        {
+            //            InsertNewFood();
+            //            break;
+            //        }
+            //    case "4":
+            //        {
+            //            DeleteFoodByName();
+            //            break;
+            //        }
+            //    case "5":
+            //        {
+            //            //End Loop
+            //            break;
+            //        }
+            //    default:
+            //        Console.WriteLine("Invalid option. Please try again.");
+            //        break;
+            //}
 
             storageManager.CloseConnection();
         }
