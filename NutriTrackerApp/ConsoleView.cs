@@ -14,20 +14,42 @@ public class ConsoleView
         return Console.ReadLine();
 	}
 
-    public string NewUser()
+    public (string, string, string, string, int, string, double, double, DateOnly) NewUser()
     {
-        Console.WriteLine("Hello user! Enter Name: ");
-        string name = Console.ReadLine();
-        Console.WriteLine("Hello user! Enter Name: ");
+        Console.WriteLine("Hello user!\n\nEnter first name: ");
+        string firstName = Console.ReadLine();
+        Console.WriteLine("Enter last name: ");
+        string lastName = Console.ReadLine();
+        Console.WriteLine("Enter email address: ");
+        string emailID = Console.ReadLine();
+        Console.WriteLine("Enter password: ");
+        string passwordkey = Console.ReadLine();
+        Console.WriteLine("Enter age (or skip by pressing enter): ");
+        int age = Convert.ToInt32(Console.ReadLine());
+        Console.WriteLine("Enter gender (or skip by pressing enter): ");
+        string gender = Console.ReadLine();
+        Console.WriteLine("Enter your weight (or skip by pressing enter): ");
+        double userWeight = Convert.ToDouble(Console.ReadLine());
+        Console.WriteLine("Enter your height (or skip by pressing enter): ");
+        double userHeight = Convert.ToDouble(Console.ReadLine());
+        Console.WriteLine("Enter today's date (YYYY/MM/DD): ");
+        string[] template = Console.ReadLine().Split();
+        DateOnly signUpDate = new DateOnly(Convert.ToInt32(template[0]), Convert.ToInt32(template[1]), Convert.ToInt32(template[2]));
 
-        return name;
+        return firstName, lastName, emailID, passwordkey, age, gender, userWeight, userHeight, signUpDate;
     }
 
-    public string ExistingUserLogIn()
+    public string, string, string, int? ExistingUserLogIn()
     {
-        Console.WriteLine("Hello user! Please choose one of the options:");
+        //Console.WriteLine("Hello user! Please choose one of the options:");
+        //string firstName;
+        //string lastName;
+        //string passwordkey;
 
-        return Console.ReadLine();
+
+        ////additional enter ID if there are more than 1 maybe?
+        
+        //return  Console.ReadLine();
     }
 
     public string AdminLogIn()

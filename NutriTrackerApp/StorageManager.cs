@@ -64,7 +64,17 @@ public class StorageManager
 
     }
 
-	public int DeleteFoodByName(string foodName)
+    public int InsertUserDetails(UserDetails userDetailstemp)
+    {
+        using (SqlCommand cmd = new SqlCommand("INSERT INTO users.UserDetails (FOOD_NAME) VALUES (@FoodName); SELECT SCOPE_IDENTITY();", conn))
+        {
+            cmd.Parameters.AddWithValue("@FoodName", userDetailstemp.FirstName);
+            return Convert.ToInt32(cmd.ExecuteScalar());
+        }
+
+    }
+
+    public int DeleteFoodByName(string foodName)
 	{
 		using (SqlCommand cmd = new SqlCommand("DELETE FROM admin.Foods WHERE FOOD_NAME = @FoodName", conn))
 		{
