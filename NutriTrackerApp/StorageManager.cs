@@ -66,7 +66,7 @@ public class StorageManager
 
     public int InsertUserDetails(UserDetails userDetailstemp)
     {
-        using (SqlCommand cmd = new SqlCommand("INSERT INTO users.UserDetails (FOOD_NAME) VALUES (@FoodName); SELECT SCOPE_IDENTITY();", conn))
+        using (SqlCommand cmd = new SqlCommand("INSERT INTO users.UserDetails (firstName) VALUES (@FoodName); SELECT SCOPE_IDENTITY();", conn))
         {
             cmd.Parameters.AddWithValue("@FoodName", userDetailstemp.FirstName);
             return Convert.ToInt32(cmd.ExecuteScalar());
@@ -100,4 +100,6 @@ public class StorageManager
 			Console.WriteLine("Connection closed");
 		}
 	}
+
+
 }

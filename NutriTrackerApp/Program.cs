@@ -20,17 +20,19 @@ namespace NutriTrackerApp
             {
                 case "1":
                     {
-                        
+                        NewUser();
+                        break;
                     }
-                    break;
                 case "2":
                     {
-                        //Code for admin interface
-                    }break;
+                        ExistingUser();
+                        break;
+                    }
                 case "3":
                     {
-
-                    }break;
+                        AdminLogIn();
+                        break;
+                    }
             }
 
             //string choice = view.DisplayMenu();
@@ -69,6 +71,53 @@ namespace NutriTrackerApp
             //}
 
             storageManager.CloseConnection();
+        }
+
+        public static void NewUser()
+        { 
+            view.DisplayMessage("Hello new user!\n\nEnter first name: ");
+            string firstName = view.GetInput();
+            view.DisplayMessage("Enter last name: ");
+            string lastName = view.GetInput();
+            view.DisplayMessage("Enter email address: ");
+            string emailID = view.GetInput();
+            view.DisplayMessage("Enter password: ");
+            string passwordkey = view.GetInput();
+            view.DisplayMessage("Enter age (or skip by pressing enter): ");
+            int age = view.GetIntInput();
+            view.DisplayMessage("Enter gender (or skip by pressing enter): ");
+            string gender = view.GetInput();
+            view.DisplayMessage("Enter your weight (or skip by pressing enter): ");
+            double userWeight = Convert.ToDouble(view.GetInput());
+            view.DisplayMessage("Enter your height (or skip by pressing enter): ");
+            double userHeight = Convert.ToDouble(view.GetInput());
+            view.DisplayMessage("Enter today's date (YYYY/MM/DD): ");
+            string[] template = view.GetInput().Split('/');
+            DateOnly signUpDate = new DateOnly(Convert.ToInt32(template[0]), Convert.ToInt32(template[1]), Convert.ToInt32(template[2]));
+            int userID = 0;
+            UserDetails user1 = new UserDetails(userID, firstName, lastName, emailID, passwordkey, age, gender, userWeight, userHeight, signUpDate);
+            int generatedId = storageManager.InsertUserDetails(user1);
+            view.DisplayMessage($"New user created with ID: {generatedId}");
+
+        }
+        public (int, string) ExistingUserLogIn()
+        {
+            Console.WriteLine("Hello user!\n\nEnter ID: ");
+            int userID = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Enter password: ");
+            string passwordkey = Console.ReadLine();
+
+            return (userID, passwordkey);
+        }
+
+        public (int, string) AdminLogIn()
+        {
+            Console.WriteLine("Hello admin!\n\nEnter ID: ");
+            int adminID = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Enter password: ");
+            string passwordkey = Console.ReadLine();
+
+            return (adminID, passwordkey);
         }
 
         private static void UpdateFoodName()
