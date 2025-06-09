@@ -78,16 +78,6 @@ public class ConsoleView
         return SelectedIndex;
     }
 
-    public string LogIn()
-	{
-		Console.WriteLine("Hey! How would you like to use this interface?");
-		Console.WriteLine("\n[1] New user");
-        Console.WriteLine("[2] Existing user");
-        Console.WriteLine("[3] Admin");
-		Console.Write("\nEnter your option: ");
-
-        return Console.ReadLine();
-	}
 
     public string DisplayMenu()
 	{

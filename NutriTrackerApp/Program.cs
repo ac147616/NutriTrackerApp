@@ -14,23 +14,23 @@ namespace NutriTrackerApp
             System.Threading.Thread.Sleep(2500);
             Console.Clear();
             view = new ConsoleView();
-            string usertype = view.LogIn();
+            //string usertype = view.LogIn();
 
             switch (usertype)
             {
                 case "1":
                     {
-                        NewUser();
+                        //NewUser();
                         break;
                     }
                 case "2":
                     {
-                        ExistingUser();
+                        //ExistingUser();
                         break;
                     }
                 case "3":
                     {
-                        AdminLogIn();
+                        //AdminLogIn();
                         break;
                     }
             }
