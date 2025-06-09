@@ -33,12 +33,13 @@ public class ConsoleView
         Console.WriteLine("Enter your height (or skip by pressing enter): ");
         double userHeight = Convert.ToDouble(Console.ReadLine());
         Console.WriteLine("Enter today's date (YYYY/MM/DD): ");
-        string[] template = Console.ReadLine().Split();
+        string[] template = Console.ReadLine().Split('/');
         DateOnly signUpDate = new DateOnly(Convert.ToInt32(template[0]), Convert.ToInt32(template[1]), Convert.ToInt32(template[2]));
 
-        return firstName, lastName, emailID, passwordkey, age, gender, userWeight, userHeight, signUpDate;
-    }
 
+        return (firstName, lastName, emailID, passwordkey, age, gender, userWeight, userHeight, signUpDate);
+    }
+    
     public string, string, string, int? ExistingUserLogIn()
     {
         //Console.WriteLine("Hello user! Please choose one of the options:");
@@ -61,7 +62,8 @@ public class ConsoleView
 
     public string DisplayMenu()
 	{
-		Console.WriteLine("Welcome to my Health & Nutrion Tracker");
+	    //some sort of heading like health and nutrition etc and options for pressing x and home at all times so will need to include in all functions
+        Console.WriteLine("Welcome PUT USER's NAME HERE");
 		Console.WriteLine("Menu: ");
 		Console.WriteLine("1. View All records in foods");
 
