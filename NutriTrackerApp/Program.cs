@@ -14,110 +14,75 @@ namespace NutriTrackerApp
             System.Threading.Thread.Sleep(2500);
             Console.Clear();
             view = new ConsoleView();
-            //string usertype = view.LogIn();
 
-            switch (usertype)
-            {
-                case "1":
-                    {
-                        //NewUser();
-                        break;
-                    }
-                case "2":
-                    {
-                        //ExistingUser();
-                        break;
-                    }
-                case "3":
-                    {
-                        //AdminLogIn();
-                        break;
-                    }
-            }
+            RunMainMenu(); //This menu shows the options for the type of user
 
-            //string choice = view.DisplayMenu();
-
-            //switch (choice)
-            //{
-            //    case "1":
-            //        {
-            //            List<Food> foods = storageManager.GetAllFoods();
-            //            view.DisplayFoods(foods);
-            //        }
-            //        break;
-            //    case "2":
-            //        {
-            //            UpdateFoodName();
-            //            break;
-            //        }
-            //    case "3":
-            //        {
-            //            InsertNewFood();
-            //            break;
-            //        }
-            //    case "4":
-            //        {
-            //            DeleteFoodByName();
-            //            break;
-            //        }
-            //    case "5":
-            //        {
-            //            //End Loop
-            //            break;
-            //        }
-            //    default:
-            //        Console.WriteLine("Invalid option. Please try again.");
-            //        break;
-            //}
 
             storageManager.CloseConnection();
         }
 
-        public static void NewUser()
+        public static void RunMainMenu()
+        {
+            string prompt = @"
+███╗   ██╗██╗   ██╗████████╗██████╗ ██╗████████╗██╗ ██████╗ ███╗   ██╗    ████████╗██████╗  █████╗  ██████╗██╗  ██╗███████╗██████╗ 
+████╗  ██║██║   ██║╚══██╔══╝██╔══██╗██║╚══██╔══╝██║██╔═══██╗████╗  ██║    ╚══██╔══╝██╔══██╗██╔══██╗██╔════╝██║ ██╔╝██╔════╝██╔══██╗
+██╔██╗ ██║██║   ██║   ██║   ██████╔╝██║   ██║   ██║██║   ██║██╔██╗ ██║       ██║   ██████╔╝███████║██║     █████╔╝ █████╗  ██████╔╝
+██║╚██╗██║██║   ██║   ██║   ██╔══██╗██║   ██║   ██║██║   ██║██║╚██╗██║       ██║   ██╔══██╗██╔══██║██║     ██╔═██╗ ██╔══╝  ██╔══██╗
+██║ ╚████║╚██████╔╝   ██║   ██║  ██║██║   ██║   ██║╚██████╔╝██║ ╚████║       ██║   ██║  ██║██║  ██║╚██████╗██║  ██╗███████╗██║  ██║
+╚═╝  ╚═══╝ ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝       ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
+                                                                                                                                   
+
+
+Welcome to the NutriTracker App, Please choose your role using the arrow keys and pressing enter to select";
+            string[] options = { "New User", "Existing User", "Admin", "Help", "Exit" };
+            Menu mainMenu = new Menu(prompt, options);
+            int SelectedIndex = mainMenu.Run();
+
+            switch (SelectedIndex)
+            {
+                case 0:
+                    InsertNewUser();
+                    break;
+                case 1:
+                    ExistingUserLogIn();
+                    break;
+                case 2:
+                    AdminLogIn();
+                    break;
+                case 3:
+                    GetHelp();
+                    break;
+                case 4:
+                    Exit();
+                    break;
+            }
+
+        }
+
+        public static void InsertNewUser()
         { 
-            view.DisplayMessage("Hello new user!\n\nEnter first name: ");
-            string firstName = view.GetInput();
-            view.DisplayMessage("Enter last name: ");
-            string lastName = view.GetInput();
-            view.DisplayMessage("Enter email address: ");
-            string emailID = view.GetInput();
-            view.DisplayMessage("Enter password: ");
-            string passwordkey = view.GetInput();
-            view.DisplayMessage("Enter age (or skip by pressing enter): ");
-            int age = view.GetIntInput();
-            view.DisplayMessage("Enter gender (or skip by pressing enter): ");
-            string gender = view.GetInput();
-            view.DisplayMessage("Enter your weight (or skip by pressing enter): ");
-            double userWeight = Convert.ToDouble(view.GetInput());
-            view.DisplayMessage("Enter your height (or skip by pressing enter): ");
-            double userHeight = Convert.ToDouble(view.GetInput());
-            view.DisplayMessage("Enter today's date (YYYY/MM/DD): ");
-            string[] template = view.GetInput().Split('/');
-            DateOnly signUpDate = new DateOnly(Convert.ToInt32(template[0]), Convert.ToInt32(template[1]), Convert.ToInt32(template[2]));
-            int userID = 0;
-            UserDetails user1 = new UserDetails(userID, firstName, lastName, emailID, passwordkey, age, gender, userWeight, userHeight, signUpDate);
-            int generatedId = storageManager.InsertUserDetails(user1);
-            view.DisplayMessage($"New user created with ID: {generatedId}");
-
+            Console.Clear();
+            Console.WriteLine("new user");
         }
-        public (int, string) ExistingUserLogIn()
+        public static void ExistingUserLogIn()
         {
-            Console.WriteLine("Hello user!\n\nEnter ID: ");
-            int userID = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("Enter password: ");
-            string passwordkey = Console.ReadLine();
-
-            return (userID, passwordkey);
+            Console.Clear();
+            Console.WriteLine("user");
         }
 
-        public (int, string) AdminLogIn()
+        public static void AdminLogIn()
         {
-            Console.WriteLine("Hello admin!\n\nEnter ID: ");
-            int adminID = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("Enter password: ");
-            string passwordkey = Console.ReadLine();
-
-            return (adminID, passwordkey);
+            Console.Clear();
+            Console.WriteLine("admin");
+        }
+        
+        public static void GetHelp()
+        {
+            ConsoleView.Help();
+        }
+        public static void Exit()
+        {
+            Console.Clear();
         }
 
         private static void UpdateFoodName()

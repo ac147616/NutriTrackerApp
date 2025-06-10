@@ -39,4 +39,9 @@ public class ConsoleView
     {
 		return Convert.ToInt32(Console.ReadLine());
     }
+
+	public static void Help()
+	{
+		Console.WriteLine("blah blah");
+	}
 }
