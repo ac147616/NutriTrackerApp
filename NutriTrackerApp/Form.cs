@@ -80,5 +80,10 @@ namespace NutriTrackerApp
                 }
             }
         }
+
+        public string[] ReturnAllInformation()
+        {
+            return Info;
+        }
     }
 }
