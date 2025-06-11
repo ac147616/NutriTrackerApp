@@ -7,10 +7,10 @@ using System;
 
 public class ConsoleView
 {
-    public string DisplayMenu()
+	public string DisplayMenu()
 	{
-	    //some sort of heading like health and nutrition etc and options for pressing x and home at all times so will need to include in all functions
-        Console.WriteLine("Welcome PUT USER's NAME HERE");
+		//some sort of heading like health and nutrition etc and options for pressing x and home at all times so will need to include in all functions
+		Console.WriteLine("Welcome PUT USER's NAME HERE");
 		Console.WriteLine("Menu: ");
 		Console.WriteLine("1. View All records in foods");
 
@@ -19,29 +19,32 @@ public class ConsoleView
 
 	public void DisplayFoods(List<Food> foods)
 	{
-		foreach(Food food in foods)
+		foreach (Food food in foods)
 		{
 			Console.WriteLine($"{food.FoodID}, {food.FoodName}, {food.Category}, {food.Calories}, {food.Carbohydrates}, {food.Proteins}, {food.Fats}, {food.ServingSize}");
 		}
 	}
 
-    public void DisplayMessage(string message)
-    {
-        Console.WriteLine(message);
-    }
+	public void DisplayMessage(string message)
+	{
+		Console.WriteLine(message);
+	}
 
-    public string GetInput()
-    {
+	public string GetInput()
+	{
 		return Console.ReadLine();
-    }
+	}
 
-    public int GetIntInput()
-    {
+	public int GetIntInput()
+	{
 		return Convert.ToInt32(Console.ReadLine());
-    }
+	}
 
 	public static void Help()
 	{
 		Console.WriteLine("blah blah");
 	}
+
+
 }
+

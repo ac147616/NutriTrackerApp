@@ -62,8 +62,32 @@ Welcome to the NutriTracker App, Please choose your role using the arrow keys an
         public static void InsertNewUser()
         { 
             Console.Clear();
-            Console.WriteLine("new user");
+            string prompt = @"Welcome to the NutriTracker App, Please choose your role using the arrow keys and pressing enter to select";
+            string[] options = { "New User", "Existing User", "Admin", "Help", "Exit" };
+            Menu mainMenu = new Menu(prompt, options);
+            int SelectedIndex = mainMenu.Run();
+
+            switch (SelectedIndex)
+            {
+                case 0:
+                    InsertNewUser();
+                    break;
+                case 1:
+                    ExistingUserLogIn();
+                    break;
+                case 2:
+                    AdminLogIn();
+                    break;
+                case 3:
+                    GetHelp();
+                    break;
+                case 4:
+                    Exit();
+                    break;
+            }
+
         }
+        
         public static void ExistingUserLogIn()
         {
             Console.Clear();
@@ -79,6 +103,9 @@ Welcome to the NutriTracker App, Please choose your role using the arrow keys an
         public static void GetHelp()
         {
             ConsoleView.Help();
+            //if they are logged in show the option to return to the home page
+            //if they aren't show the option to go to usertype page
+            //always show option to exit
         }
         public static void Exit()
         {
