@@ -16,7 +16,7 @@ public class StorageManager
 			Console.WriteLine("Your connection was successful!");
             System.Threading.Thread.Sleep(1000);
             Console.WriteLine("\nLoading interface...");
-		}
+        }
 		catch (SqlException e)
 		{
 			Console.WriteLine("Your connection was unsuccessful...\n");

@@ -23,6 +23,7 @@ namespace NutriTrackerApp
 
         public static void RunMainMenu()
         {
+            Console.SetWindowSize(Math.Min(150, Console.LargestWindowWidth), Math.Min(30, Console.LargestWindowHeight));
             string prompt = @"
 ███╗   ██╗██╗   ██╗████████╗██████╗ ██╗████████╗██╗ ██████╗ ███╗   ██╗    ████████╗██████╗  █████╗  ██████╗██╗  ██╗███████╗██████╗ 
 ████╗  ██║██║   ██║╚══██╔══╝██╔══██╗██║╚══██╔══╝██║██╔═══██╗████╗  ██║    ╚══██╔══╝██╔══██╗██╔══██╗██╔════╝██║ ██╔╝██╔════╝██╔══██╗
@@ -44,7 +45,9 @@ Welcome to the NutriTracker App, Please choose your role using the arrow keys an
                     InsertNewUser();
                     break;
                 case 1:
+                    //need to put a loop here that keeps going back to last page or this page if they fail so..
                     ExistingUserLogIn();
+                    //if this works...useing try catch...call the next menu page here. store the chosen variable
                     break;
                 case 2:
                     AdminLogIn();
@@ -62,36 +65,97 @@ Welcome to the NutriTracker App, Please choose your role using the arrow keys an
         public static void InsertNewUser()
         { 
             Console.Clear();
-            string prompt = @"Welcome to the NutriTracker App, Please choose your role using the arrow keys and pressing enter to select";
-            string[] options = { "New User", "Existing User", "Admin", "Help", "Exit" };
-            Menu mainMenu = new Menu(prompt, options);
-            int SelectedIndex = mainMenu.Run();
+            string userID = "";
+            string password = "";
+            int currentField = 0; // 0 for username, 1 for password
 
-            switch (SelectedIndex)
+            Console.WriteLine("ID: ");
+            Console.WriteLine("Password: ");
+            // Store positions
+            int userIDLine = Console.CursorTop - 2;
+            int userIDCol = "Username: ".Length;
+            int passwordLine = Console.CursorTop - 1;
+            int passwordCol = "Password: ".Length;
+
+            while (true)
             {
-                case 0:
-                    InsertNewUser();
-                    break;
-                case 1:
-                    ExistingUserLogIn();
-                    break;
-                case 2:
-                    AdminLogIn();
-                    break;
-                case 3:
-                    GetHelp();
-                    break;
-                case 4:
-                    Exit();
-                    break;
+                if (currentField == 0)
+                {
+                    Console.SetCursorPosition(userIDCol, userIDLine);
+                    Console.Write(userID);
+                    Console.SetCursorPosition(userIDCol + userID.Length, userIDCol);
+
+                    var keyInfo = Console.ReadKey(true);
+                    if (keyInfo.Key == ConsoleKey.Enter || keyInfo.Key == ConsoleKey.DownArrow)
+                    {
+                        currentField = 1; // move to password
+                    }
+                    else if (keyInfo.Key == ConsoleKey.UpArrow)
+                    {
+                        currentField = 1; // or stay at same if needed
+                    }
+                    else if (keyInfo.Key == ConsoleKey.Backspace && userID.Length > 0)
+                    {
+                        userID = userID.Substring(0, userID.Length - 1);
+                    }
+                    else if (keyInfo.KeyChar != 0)
+                    {
+                        userID += keyInfo.KeyChar;
+                    }
+                }
+                else if (currentField == 1)
+                {
+                    Console.SetCursorPosition(passwordCol, passwordLine);
+                    Console.Write(new string(' ', password.Length));
+                    Console.SetCursorPosition(passwordCol, passwordLine);
+                    Console.Write(password);
+                    Console.SetCursorPosition(passwordCol + password.Length, passwordLine);
+
+                    var keyInfo = Console.ReadKey(true);
+                    if (keyInfo.Key == ConsoleKey.Enter)
+                    {
+                        // Submit
+                        break;
+                    }
+                    else if (keyInfo.Key == ConsoleKey.UpArrow)
+                    {
+                        currentField = 0; // back to username
+                    }
+                    else if (keyInfo.Key == ConsoleKey.Backspace && password.Length > 0)
+                    {
+                        password = password.Substring(0, password.Length - 1);
+                    }
+                    else if (keyInfo.KeyChar != 0)
+                    {
+                        password += keyInfo.KeyChar;
+                    }
+                }
             }
 
+            Console.WriteLine("\nSubmitted:");
+            Console.WriteLine($"Username: {userID}");
+            Console.WriteLine($"Password: {password}");
         }
         
         public static void ExistingUserLogIn()
         {
             Console.Clear();
-            Console.WriteLine("user");
+            List<string> collectedResponses = InputManager.GetInput(new string[]
+            {
+                "Username",
+                "Password",
+            });
+
+            // Clear screen and show summary
+            Console.Clear();
+            Console.WriteLine("You entered:");
+            for (int i = 0; i < collectedResponses.Count; i++)
+            {
+                Console.WriteLine($"{i + 1}. {collectedResponses[i]}");
+            }
+
+            Console.WriteLine("\nPress any key to exit...");
+            Console.ReadKey();
         }
 
         public static void AdminLogIn()

@@ -25,9 +25,9 @@ namespace NutriTrackerApp
         }
         public void DisplayForm()
         {
-            int startLine = Console.CursorTop; //So it starts on the first field
+            int startLine = Console.CursorTop;
 
-            while (true) //So this runs forever until the responses are collected
+            while (true)
             {
                 for (int i = 0; i < Fields.Length; i++)
                 {
@@ -78,7 +78,7 @@ namespace NutriTrackerApp
                         }
                         break;
                 }
-            }
+            }//Um So i already have seperate admina dn suer tables as part of my database so i didnt have to make a new like users tale. But because i used first name and last name as fields and my unique ID was just like numbers instead of username or emailID im having to use
         }
 
         public string[] ReturnAllInformation()
