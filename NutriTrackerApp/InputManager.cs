@@ -43,7 +43,15 @@ namespace NutriTrackerApp //This class manages how to make the input look like a
 
                 // Write the current value again after clearing the field
                 Console.SetCursorPosition(inputLeftPadding, inputTopPadding);
-                Console.Write(collectedResponses[currentField]);
+
+                if (labels[currentField].ToLower().Contains("password"))
+                {
+                    Console.Write(new string('*', collectedResponses[currentField].Length));
+                }
+                else
+                {
+                    Console.Write(collectedResponses[currentField]);
+                }
 
                 Console.SetCursorPosition(inputLeftPadding + collectedResponses[currentField].Length, inputTopPadding); //Move cursor to end of the line
 
