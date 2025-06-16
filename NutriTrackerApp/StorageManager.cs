@@ -101,5 +101,11 @@ public class StorageManager
 		}
 	}
 
+	//validates if a user exists..the question mark means that it can also be null
+	/*public int? CheckUser(int userID, string password)
+	{	
 
-}
+		return;
+	} */
+
+	}

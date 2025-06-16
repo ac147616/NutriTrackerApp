@@ -6,6 +6,7 @@ namespace NutriTrackerApp
     {
         private static StorageManager storageManager;
         private static ConsoleView view;
+        public string userType = "";
         static void Main(string[] args)
         {
             string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=nutriTracker2;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
@@ -25,9 +26,10 @@ namespace NutriTrackerApp
         public static void RunUserTypeMenu()
         {
             Console.SetWindowSize(Math.Min(150, Console.LargestWindowWidth), Math.Min(30, Console.LargestWindowHeight));
-            string prompt = "Welcome to the NutriTracker App, Please choose your role using the arrow keys and pressing enter to select";
+            string prompt = "\nWelcome to the NutriTracker App, Please choose your role using the arrow keys and pressing enter to select\n";
             string[] options = { "New User", "Existing User", "Admin", "Help", "Exit" };
             Menu mainMenu = new Menu(prompt, options);
+            Program myProgram = new Program();
             int SelectedIndex = mainMenu.Run();
 
             switch (SelectedIndex)
@@ -36,15 +38,13 @@ namespace NutriTrackerApp
                     InsertNewUser();
                     break;
                 case 1:
-                    //need to put a loop here that keeps going back to last page or this page if they fail so..
                     ExistingUserLogIn();
-                    //if this works...useing try catch...call the next menu page here. store the chosen variable
                     break;
                 case 2:
                     AdminLogIn();
                     break;
                 case 3:
-                    GetHelp();
+                    myProgram.GetHelp();
                     break;
                 case 4:
                     Exit();
@@ -53,6 +53,14 @@ namespace NutriTrackerApp
 
         }
 
+        public void UserHomePage()
+        {
+
+        }
+        public void AdminHomePage()
+        {
+
+        }
         public static void InsertNewUser()
         { 
             view.Clear();
@@ -67,8 +75,16 @@ namespace NutriTrackerApp
                 "Password",
             });
 
-            
-            //check if it exists
+            try
+            {
+                int UserID = Convert.ToInt32(collectedResponses[0]);
+                string password = collectedResponses[1];
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("The User Id is not in correct format. Must be a number.");
+            }
+           
         }
 
         public static void AdminLogIn()
@@ -76,14 +92,7 @@ namespace NutriTrackerApp
             view.Clear();
             Console.WriteLine("admin");
         }
-        
-        public static void GetHelp()
-        {
-            ConsoleView.Help();
-            //if they are logged in show the option to return to the home page
-            //if they aren't show the option to go to usertype page
-            //always show option to exit
-        }
+
         public static void Exit()
         {
             view.Clear();
@@ -121,6 +130,24 @@ namespace NutriTrackerApp
             string foodName = view.GetInput();
             int rowsAffected = storageManager.DeleteFoodByName(foodName);
             view.DisplayMessage($"Rows affected: {rowsAffected}");
+        }
+
+        public void GetHelp()
+        {
+            Console.Clear();
+            view.Help();
+            if (userType == "")
+            {
+                RunUserTypeMenu();
+            }
+            else if (userType == "user")
+            {
+                UserHomePage();
+            }
+            else
+            {
+                AdminHomePage();
+            }
         }
     }
 }
