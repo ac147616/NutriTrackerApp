@@ -12,29 +12,20 @@ namespace NutriTrackerApp
 
             storageManager = new StorageManager(connectionString);
             System.Threading.Thread.Sleep(2500);
-            Console.Clear();
+          
             view = new ConsoleView();
+            view.Clear();
 
-            RunMainMenu(); //This menu shows the options for the type of user
+            RunUserTypeMenu(); //This menu shows the options for the type of user
 
 
             storageManager.CloseConnection();
         }
 
-        public static void RunMainMenu()
+        public static void RunUserTypeMenu()
         {
             Console.SetWindowSize(Math.Min(150, Console.LargestWindowWidth), Math.Min(30, Console.LargestWindowHeight));
-            string prompt = @"
-███╗   ██╗██╗   ██╗████████╗██████╗ ██╗████████╗██╗ ██████╗ ███╗   ██╗    ████████╗██████╗  █████╗  ██████╗██╗  ██╗███████╗██████╗ 
-████╗  ██║██║   ██║╚══██╔══╝██╔══██╗██║╚══██╔══╝██║██╔═══██╗████╗  ██║    ╚══██╔══╝██╔══██╗██╔══██╗██╔════╝██║ ██╔╝██╔════╝██╔══██╗
-██╔██╗ ██║██║   ██║   ██║   ██████╔╝██║   ██║   ██║██║   ██║██╔██╗ ██║       ██║   ██████╔╝███████║██║     █████╔╝ █████╗  ██████╔╝
-██║╚██╗██║██║   ██║   ██║   ██╔══██╗██║   ██║   ██║██║   ██║██║╚██╗██║       ██║   ██╔══██╗██╔══██║██║     ██╔═██╗ ██╔══╝  ██╔══██╗
-██║ ╚████║╚██████╔╝   ██║   ██║  ██║██║   ██║   ██║╚██████╔╝██║ ╚████║       ██║   ██║  ██║██║  ██║╚██████╗██║  ██╗███████╗██║  ██║
-╚═╝  ╚═══╝ ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝       ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
-                                                                                                                                   
-
-
-Welcome to the NutriTracker App, Please choose your role using the arrow keys and pressing enter to select";
+            string prompt = "Welcome to the NutriTracker App, Please choose your role using the arrow keys and pressing enter to select";
             string[] options = { "New User", "Existing User", "Admin", "Help", "Exit" };
             Menu mainMenu = new Menu(prompt, options);
             int SelectedIndex = mainMenu.Run();
@@ -64,33 +55,25 @@ Welcome to the NutriTracker App, Please choose your role using the arrow keys an
 
         public static void InsertNewUser()
         { 
-            Console.Clear();
+            view.Clear();
         }
         
         public static void ExistingUserLogIn()
         {
-            Console.Clear();
+            view.Clear();
             List<string> collectedResponses = InputManager.GetInput(new string[]
             {
-                "Username",
+                "User ID",
                 "Password",
             });
 
-            // Clear screen and show summary
-            Console.Clear();
-            Console.WriteLine("You entered:");
-            for (int i = 0; i < collectedResponses.Count; i++)
-            {
-                Console.WriteLine($"{i + 1}. {collectedResponses[i]}");
-            }
-
-            Console.WriteLine("\nPress any key to exit...");
-            Console.ReadKey();
+            
+            //check if it exists
         }
 
         public static void AdminLogIn()
         {
-            Console.Clear();
+            view.Clear();
             Console.WriteLine("admin");
         }
         
@@ -103,7 +86,7 @@ Welcome to the NutriTracker App, Please choose your role using the arrow keys an
         }
         public static void Exit()
         {
-            Console.Clear();
+            view.Clear();
         }
 
         private static void UpdateFoodName()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NutriTrackerApp;
 
 namespace NutriTrackerApp
 {
@@ -51,7 +52,8 @@ namespace NutriTrackerApp
             ConsoleKey keyPressed;
             do
             {
-                Console.Clear();
+                ConsoleView view = new ConsoleView();
+                view.Clear();
                 DisplayOptions();
 
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);

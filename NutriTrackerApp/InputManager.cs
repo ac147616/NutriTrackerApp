@@ -19,7 +19,7 @@ namespace NutriTrackerApp //This class manages how to make the input look like a
             int[] yRowPosition = new int[labels.Length];
 
             int spaceFromLeft = 10;  // X-position of field labels
-            int spaceFromTop = 5;    // Y-position of the first field
+            int spaceFromTop = 8;    // Y-position of the first field
 
             for (int i = 0; i < labels.Length; i++)
             {

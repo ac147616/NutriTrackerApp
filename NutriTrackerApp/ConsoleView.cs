@@ -7,15 +7,6 @@ using System;
 
 public class ConsoleView
 {
-	public string DisplayMenu()
-	{
-		//some sort of heading like health and nutrition etc and options for pressing x and home at all times so will need to include in all functions
-		Console.WriteLine("Welcome PUT USER's NAME HERE");
-		Console.WriteLine("Menu: ");
-		Console.WriteLine("1. View All records in foods");
-
-		return Console.ReadLine();
-	}
 
 	public void DisplayFoods(List<Food> foods)
 	{
@@ -44,6 +35,20 @@ public class ConsoleView
 	{
 		Console.WriteLine("blah blah");
 	}
+
+	public void Clear()
+	{
+		Console.Clear();
+		string title = @"
+███╗   ██╗██╗   ██╗████████╗██████╗ ██╗████████╗██╗ ██████╗ ███╗   ██╗    ████████╗██████╗  █████╗  ██████╗██╗  ██╗███████╗██████╗ 
+████╗  ██║██║   ██║╚══██╔══╝██╔══██╗██║╚══██╔══╝██║██╔═══██╗████╗  ██║    ╚══██╔══╝██╔══██╗██╔══██╗██╔════╝██║ ██╔╝██╔════╝██╔══██╗
+██╔██╗ ██║██║   ██║   ██║   ██████╔╝██║   ██║   ██║██║   ██║██╔██╗ ██║       ██║   ██████╔╝███████║██║     █████╔╝ █████╗  ██████╔╝
+██║╚██╗██║██║   ██║   ██║   ██╔══██╗██║   ██║   ██║██║   ██║██║╚██╗██║       ██║   ██╔══██╗██╔══██║██║     ██╔═██╗ ██╔══╝  ██╔══██╗
+██║ ╚████║╚██████╔╝   ██║   ██║  ██║██║   ██║   ██║╚██████╔╝██║ ╚████║       ██║   ██║  ██║██║  ██║╚██████╗██║  ██╗███████╗██║  ██║
+╚═╝  ╚═══╝ ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝       ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═";
+
+        Console.WriteLine(title);
+    }
 
 
 }
