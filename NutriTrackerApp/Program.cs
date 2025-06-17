@@ -48,24 +48,85 @@ namespace NutriTrackerApp
                     myProgram.GetHelp();
                     break;
                 case 4:
-                    Exit();
+                    myProgram.Exit();
                     break;
             }
 
         }
 
-        public static void UserHomePage()
+        public void UserHomePage()
         {
+            string prompt = "\nYou have arrived at the User Home Page, choose an option using the arrow keys and pressing enter to select\n";
+            string[] options = { "Settings", "Allergies", "Food", "Diet Plans", "Goals", "DailyLog", "Help", "Exit" };
+            Menu mainMenu = new Menu(prompt, options);
+            int SelectedIndex = mainMenu.Run();
+            view.Clear();
+
+            switch (SelectedIndex)
+            {
+                case 0:
+                    SettingsOptions();
+                    break;
+                case 1:
+                    AllergiesOptions();
+                    break;
+                case 2:
+                    FoodOptions();
+                    break;
+                case 3:
+                    DietPlansOptions();
+                    break;
+                case 4:
+                    GoalsOptions();
+                    break;
+                case 5:
+                    DailyLogOptions();
+                    break;
+                case 6:
+                    GetHelp();
+                    break;
+                case 7:
+                    Exit();
+                    break;
+            }
 
         }
         public void AdminHomePage()
         {
+            string prompt = "\nYou have arrived at the Admin Home Page, choose an option using the arrow keys and pressing enter to select\n";
+            string[] options = { "Users", "Admins", "Foods", "Diet Plans", "Help", "Exit" };
+            Menu mainMenu = new Menu(prompt, options);
+            int SelectedIndex = mainMenu.Run();
+            view.Clear();
 
+            switch (SelectedIndex)
+            {
+                case 0:
+                    UserOptions();
+                    break;
+                case 1:
+                    AdminOptions();
+                    break;
+                case 2:
+                    FoodOptions();
+                    break;
+                case 3:
+                    DietPlansOptions();
+                    break;
+                case 4:
+                    GetHelp();
+                    break;
+                case 5:
+                    Exit();
+                    break;
+            }
         }
         public void InsertNewUser()
         { 
             view.Clear();
-            Console.WriteLine("Check if successfully signed up");
+            Console.WriteLine("Checking if successfully signed up");
+            System.Threading.Thread.Sleep(1000);
+            userType = "user";
             UserHomePage();
         }
         
@@ -82,6 +143,7 @@ namespace NutriTrackerApp
             {
                 int UserID = Convert.ToInt32(collectedResponses[0]);
                 string password = collectedResponses[1];
+                userType = "user";
                 UserHomePage();
             }
             catch (Exception ex)
@@ -95,11 +157,52 @@ namespace NutriTrackerApp
         public void AdminLogIn()
         {
             view.Clear();
-            Console.WriteLine("Check if successfully signed up");
+            Console.WriteLine("Checking if successfully logged in");
+            userType = "admin";
+            System.Threading.Thread.Sleep(1000);
             AdminHomePage();
         }
+        public void UserOptions()
+        {
 
-        public static void Exit()
+        }
+
+        public void AdminOptions()
+        {
+
+        }
+
+        public void SettingsOptions()
+        {
+
+        }
+
+        public void AllergiesOptions()
+        {
+
+        }
+
+        public void FoodOptions()
+        {
+
+        }
+
+        public void DietPlansOptions()
+        {
+
+        }
+
+        public void GoalsOptions()
+        {
+
+        }
+
+        public void DailyLogOptions()
+        {
+
+        }
+
+        public void Exit()
         {
             view.Clear();
             Menu mainMenu = new Menu("\nAre you sure you want to exit the application?\n", ["yes", "no"]);
@@ -114,8 +217,20 @@ namespace NutriTrackerApp
                     break;
                 case 1:
                     view.Clear();
-                    RunUserTypeMenu();
-                    break;
+                    
+                    if (userType == "")
+                    {
+                        RunUserTypeMenu();
+                    }
+                    else if (userType == "user")
+                    {
+                        UserHomePage();
+                    }
+                    else
+                    {
+                        AdminHomePage();
+                    }
+                        break;
             }
         }
 
