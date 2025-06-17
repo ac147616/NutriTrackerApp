@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Identity.Client;
+using System;
 
 namespace NutriTrackerApp
 {
@@ -35,13 +36,13 @@ namespace NutriTrackerApp
             switch (SelectedIndex)
             {
                 case 0:
-                    InsertNewUser();
+                    myProgram.InsertNewUser();
                     break;
                 case 1:
-                    ExistingUserLogIn();
+                    myProgram.ExistingUserLogIn();
                     break;
                 case 2:
-                    AdminLogIn();
+                    myProgram.AdminLogIn();
                     break;
                 case 3:
                     myProgram.GetHelp();
@@ -53,7 +54,7 @@ namespace NutriTrackerApp
 
         }
 
-        public void UserHomePage()
+        public static void UserHomePage()
         {
 
         }
@@ -61,12 +62,14 @@ namespace NutriTrackerApp
         {
 
         }
-        public static void InsertNewUser()
+        public void InsertNewUser()
         { 
             view.Clear();
+            Console.WriteLine("Check if successfully signed up");
+            UserHomePage();
         }
         
-        public static void ExistingUserLogIn()
+        public void ExistingUserLogIn()
         {
             view.Clear();
             List<string> collectedResponses = InputManager.GetInput(new string[]
@@ -79,23 +82,41 @@ namespace NutriTrackerApp
             {
                 int UserID = Convert.ToInt32(collectedResponses[0]);
                 string password = collectedResponses[1];
+                UserHomePage();
             }
             catch (Exception ex)
             {
                 Console.WriteLine("The User Id is not in correct format. Must be a number.");
+                RunUserTypeMenu();
             }
            
         }
 
-        public static void AdminLogIn()
+        public void AdminLogIn()
         {
             view.Clear();
-            Console.WriteLine("admin");
+            Console.WriteLine("Check if successfully signed up");
+            AdminHomePage();
         }
 
         public static void Exit()
         {
             view.Clear();
+            Menu mainMenu = new Menu("\nAre you sure you want to exit the application?\n", ["yes", "no"]);
+            int SelectedIndex = mainMenu.Run();
+
+            switch (SelectedIndex)
+            {
+                case 0:
+                    view.Clear();
+                    Console.WriteLine("Bye Bye");
+                    System.Environment.Exit(0);
+                    break;
+                case 1:
+                    view.Clear();
+                    RunUserTypeMenu();
+                    break;
+            }
         }
 
         private static void UpdateFoodName()
@@ -136,6 +157,9 @@ namespace NutriTrackerApp
         {
             Console.Clear();
             view.Help();
+            Console.WriteLine("\nPress any key to go back...");
+            ConsoleKeyInfo key = Console.ReadKey(true);
+
             if (userType == "")
             {
                 RunUserTypeMenu();
