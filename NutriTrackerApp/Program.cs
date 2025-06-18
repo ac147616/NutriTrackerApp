@@ -65,7 +65,7 @@ namespace NutriTrackerApp
             switch (SelectedIndex)
             {
                 case 0:
-                    SettingsOptions();
+                    UserOptions();
                     break;
                 case 1:
                     AllergiesOptions();
@@ -164,19 +164,60 @@ namespace NutriTrackerApp
         }
         public void UserOptions()
         {
+            if (userType == "user")
+            {
+                string prompt = "\nSettings, choose an option using the arrow keys and pressing enter to select\n";
+                string[] options = { "View you details", "Update your details", "Delete account", "<--- Back to home page", "Help", "Exit" };
+                Menu mainMenu = new Menu(prompt, options);
+                int SelectedIndex = mainMenu.Run();
+                view.Clear();
 
+                switch (SelectedIndex)
+                {
+                    case 0:
+                        Console.WriteLine("VIEW YOUR DETAILS COMING SOON...Press any key to go back");
+                        ConsoleKeyInfo key = Console.ReadKey(true);
+                        UserOptions();
+                        break;
+                    case 1:
+                        Console.WriteLine("UPDATE YOUR DETAILS COMING SOON...Press any key to go back");
+                        ConsoleKeyInfo key1 = Console.ReadKey(true);
+                        UserOptions();
+                        break;
+                    case 2:
+                        Console.WriteLine("DELETE YOUR DETAILS COMING SOON...Press any key to go back");
+                        ConsoleKeyInfo key4 = Console.ReadKey(true);
+                        UserOptions();
+                        break;
+                    case 3:
+                        UserHomePage();
+                        break;
+                    case 4:
+                        GetHelp();
+                        view.Clear();
+                        UserOptions();
+                        break;
+                    case 5:
+                        Exit();
+                        view.Clear();
+                        UserOptions();
+                        break;
+                }
+            }
+            else
+            {
+                string prompt = "\nManage Users, choose an option using the arrow keys and pressing enter to select\n";
+                string[] options = { "View all users", "Insert new user", "Delete a user", "Update existing user details", "<--- Back to home page", "Help", "Exit" };
+                Menu mainMenu = new Menu(prompt, options);
+                int SelectedIndex = mainMenu.Run();
+                view.Clear();
+            }
         }
 
         public void AdminOptions()
         {
 
         }
-
-        public void SettingsOptions()
-        {
-
-        }
-
         public void AllergiesOptions()
         {
 
@@ -270,7 +311,6 @@ namespace NutriTrackerApp
 
         public void GetHelp()
         {
-            Console.Clear();
             view.Help();
             Console.WriteLine("\nPress any key to go back...");
             ConsoleKeyInfo key = Console.ReadKey(true);
