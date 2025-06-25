@@ -279,18 +279,50 @@ namespace NutriTrackerApp
                     GetHelp();
 
                     view.Clear();
-                    UserOptions();
+                    AdminOptions();
                     break;
             }
         }
         public void AllergiesOptions()
         {
+            string prompt = "\nManage your allergies, choose an option using the arrow keys and pressing enter to select\n";
+            string[] options = { "View all allergies", "Insert new allergy",  "Delete an allergy", "Back to home page", "Help", };
+            Menu mainMenu = new Menu(prompt, options);
+            int SelectedIndex = mainMenu.Run();
+            view.Clear();
 
+            switch (SelectedIndex)
+            {
+                case 0:
+                    Console.WriteLine("view all allergies DETAILS COMING SOON...Press any key to go back");
+                    ConsoleKeyInfo key = Console.ReadKey(true);
+                    AllergiesOptions();
+                    break;
+                case 1:
+                    Console.WriteLine("Insert new allergy COMING SOON...Press any key to go back");
+                    ConsoleKeyInfo key1 = Console.ReadKey(true);
+                    AllergiesOptions();
+                    break;
+                case 2:
+                    Console.WriteLine("delete an allergy Press any key to go back");
+                    ConsoleKeyInfo key2 = Console.ReadKey(true);
+                    AllergiesOptions();
+                    break;
+                case 3:
+                    UserHomePage();
+                    break;
+                case 4:
+                    GetHelp();
+
+                    view.Clear();
+                    AllergiesOptions();
+                    break;
+            }
         }
 
         public void FoodOptions()
         {
-
+            
         }
 
         public void DietPlansOptions()
