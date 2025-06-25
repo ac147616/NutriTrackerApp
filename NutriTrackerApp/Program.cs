@@ -234,6 +234,7 @@ namespace NutriTrackerApp
                         break;
                     case 5:
                         GetHelp();
+
                         view.Clear();
                         UserOptions();
                         break;
@@ -243,7 +244,44 @@ namespace NutriTrackerApp
 
         public void AdminOptions()
         {
-           
+            string prompt = "\nManage Admins, choose an option using the arrow keys and pressing enter to select\n";
+            string[] options = { "View all admins", "Insert new admin", "Update existing admin", "Delete an admin", "Back to home page", "Help", };
+            Menu mainMenu = new Menu(prompt, options);
+            int SelectedIndex = mainMenu.Run();
+            view.Clear();
+
+            switch (SelectedIndex)
+            {
+                case 0:
+                    Console.WriteLine("VIEW All admin DETAILS COMING SOON...Press any key to go back");
+                    ConsoleKeyInfo key = Console.ReadKey(true);
+                    AdminOptions();
+                    break;
+                case 1:
+                    Console.WriteLine("Insert new admin COMING SOON...Press any key to go back");
+                    ConsoleKeyInfo key1 = Console.ReadKey(true);
+                    AdminOptions();
+                    break;
+                case 2:
+                    Console.WriteLine("update existing admin...Press any key to go back");
+                    ConsoleKeyInfo key2 = Console.ReadKey(true);
+                    AdminOptions();
+                    break;
+                case 3:
+                    Console.WriteLine("delete an admin Press any key to go back");
+                    ConsoleKeyInfo key3 = Console.ReadKey(true);
+                    AdminOptions();
+                    break;
+                case 4:
+                    AdminHomePage();
+                    break;
+                case 5:
+                    GetHelp();
+
+                    view.Clear();
+                    UserOptions();
+                    break;
+            }
         }
         public void AllergiesOptions()
         {
