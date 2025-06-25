@@ -57,7 +57,7 @@ namespace NutriTrackerApp
         public void UserHomePage()
         {
             string prompt = "\nYou have arrived at the User Home Page, choose an option using the arrow keys and pressing enter to select\n";
-            string[] options = { "Settings", "Allergies", "Food", "Diet Plans", "Goals", "DailyLog", "Help", "Exit" };
+            string[] options = { "Settings", "Allergies", "Food", "Diet Plans", "Goals", "Daily Log", "Help", "Exit" };
             Menu mainMenu = new Menu(prompt, options);
             int SelectedIndex = mainMenu.Run();
             view.Clear();
@@ -167,7 +167,7 @@ namespace NutriTrackerApp
             if (userType == "user")
             {
                 string prompt = "\nSettings, choose an option using the arrow keys and pressing enter to select\n";
-                string[] options = { "View you details", "Update your details", "Delete account", "<--- Back to home page", "Help", "Exit" };
+                string[] options = { "View you details", "Update your details", "Delete account", "Back to home page", "Help",};
                 Menu mainMenu = new Menu(prompt, options);
                 int SelectedIndex = mainMenu.Run();
                 view.Clear();
@@ -197,26 +197,53 @@ namespace NutriTrackerApp
                         view.Clear();
                         UserOptions();
                         break;
-                    case 5:
-                        Exit();
-                        view.Clear();
-                        UserOptions();
-                        break;
                 }
             }
             else
             {
                 string prompt = "\nManage Users, choose an option using the arrow keys and pressing enter to select\n";
-                string[] options = { "View all users", "Insert new user", "Delete a user", "Update existing user details", "<--- Back to home page", "Help", "Exit" };
+                string[] options = { "View all users", "Insert new user", "Update existing user details", "Delete a user", "Back to home page", "Help",};
                 Menu mainMenu = new Menu(prompt, options);
                 int SelectedIndex = mainMenu.Run();
                 view.Clear();
+
+                switch (SelectedIndex)
+                {
+                    case 0:
+                        Console.WriteLine("VIEW All User DETAILS COMING SOON...Press any key to go back");
+                        ConsoleKeyInfo key = Console.ReadKey(true);
+                        UserOptions();
+                        break;
+                    case 1:
+                        Console.WriteLine("insert new user COMING SOON...Press any key to go back");
+                        ConsoleKeyInfo key1 = Console.ReadKey(true);
+                        UserOptions();
+                        break;
+                    case 2:
+                        Console.WriteLine("Update an existing user details COMING SOON...Press any key to go back");
+                        ConsoleKeyInfo key4 = Console.ReadKey(true);
+                        UserOptions();
+                        break;
+                    case 3:
+                        Console.WriteLine("DELETE a user COMING SOON...Press any key to go back");
+                        ConsoleKeyInfo key5 = Console.ReadKey(true);
+                        UserOptions();
+                        break;
+                    case 4:
+                        AdminHomePage();
+                        break;
+                    case 5:
+                        GetHelp();
+                        view.Clear();
+                        UserOptions();
+                        break;
+                }
             }
         }
 
         public void AdminOptions()
         {
-
+           
         }
         public void AllergiesOptions()
         {
