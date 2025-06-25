@@ -322,7 +322,36 @@ namespace NutriTrackerApp
 
         public void FoodOptions()
         {
-            
+            if (userType == "user")
+            {
+                string prompt = "\View Foods, choose an option using the arrow keys and pressing enter to select\n";
+                string[] options = { "View all foods", "Back to home page", "Help", };
+                Menu mainMenu = new Menu(prompt, options);
+                int SelectedIndex = mainMenu.Run();
+                view.Clear();
+
+                switch (SelectedIndex)
+                {
+                    case 0:
+                        Console.WriteLine("VIEW All admin DETAILS COMING SOON...Press any key to go back");
+                        ConsoleKeyInfo key = Console.ReadKey(true);
+                        FoodOptions();
+                        break;
+                    case 4:
+                        UserHomePage();
+                        break;
+                    case 5:
+                        GetHelp();
+
+                        view.Clear();
+                        FoodOptions();
+                        break;
+                }
+            }
+            else
+            {
+
+            }
         }
 
         public void DietPlansOptions()
