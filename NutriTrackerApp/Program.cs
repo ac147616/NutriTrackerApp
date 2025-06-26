@@ -419,6 +419,47 @@ namespace NutriTrackerApp
                         break;
                 }
             }
+            else
+            {
+                string prompt = "\nManage Diet Plans, choose an option using the arrow keys and pressing enter to select\n";
+                string[] options = { "View all diet plans", "Insert new diet plan", "Update existing diet plan", "Delete a diet plan", "Back to home page", "Help", };
+                Menu mainMenu = new Menu(prompt, options);
+                int SelectedIndex = mainMenu.Run();
+                view.Clear();
+
+                switch (SelectedIndex)
+                {
+                    case 0:
+                        Console.WriteLine("VIEW All diet plans DETAILS COMING SOON...Press any key to go back");
+                        ConsoleKeyInfo key = Console.ReadKey(true);
+                        DietPlansOptions();
+                        break;
+                    case 1:
+                        Console.WriteLine("Insert new diet plan COMING SOON...Press any key to go back");
+                        ConsoleKeyInfo key1 = Console.ReadKey(true);
+                        DietPlansOptions();
+                        break;
+                    case 2:
+                        Console.WriteLine("update existing diet plan...Press any key to go back");
+                        ConsoleKeyInfo key2 = Console.ReadKey(true);
+                        DietPlansOptions();
+                        break;
+                    case 3:
+                        Console.WriteLine("delete a diet plan Press any key to go back");
+                        ConsoleKeyInfo key3 = Console.ReadKey(true);
+                        DietPlansOptions();
+                        break;
+                    case 4:
+                        AdminHomePage();
+                        break;
+                    case 5:
+                        GetHelp();
+
+                        view.Clear();
+                        DietPlansOptions();
+                        break;
+                }
+            }
         }
 
         public void GoalsOptions()
