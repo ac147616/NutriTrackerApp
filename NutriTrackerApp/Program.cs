@@ -324,7 +324,7 @@ namespace NutriTrackerApp
         {
             if (userType == "user")
             {
-                string prompt = "\View Foods, choose an option using the arrow keys and pressing enter to select\n";
+                string prompt = "\nView Foods, choose an option using the arrow keys and pressing enter to select\n";
                 string[] options = { "View all foods", "Back to home page", "Help", };
                 Menu mainMenu = new Menu(prompt, options);
                 int SelectedIndex = mainMenu.Run();
@@ -350,7 +350,44 @@ namespace NutriTrackerApp
             }
             else
             {
+                string prompt = "\nManage Foods, choose an option using the arrow keys and pressing enter to select\n";
+                string[] options = { "View all foods", "Insert new food", "Update existing food", "Delete a food", "Back to home page", "Help", };
+                Menu mainMenu = new Menu(prompt, options);
+                int SelectedIndex = mainMenu.Run();
+                view.Clear();
 
+                switch (SelectedIndex)
+                {
+                    case 0:
+                        Console.WriteLine("VIEW All food DETAILS COMING SOON...Press any key to go back");
+                        ConsoleKeyInfo key = Console.ReadKey(true);
+                        FoodOptions();
+                        break;
+                    case 1:
+                        Console.WriteLine("Insert new food COMING SOON...Press any key to go back");
+                        ConsoleKeyInfo key1 = Console.ReadKey(true);
+                        FoodOptions();
+                        break;
+                    case 2:
+                        Console.WriteLine("update existing food...Press any key to go back");
+                        ConsoleKeyInfo key2 = Console.ReadKey(true);
+                        FoodOptions();
+                        break;
+                    case 3:
+                        Console.WriteLine("delete a food Press any key to go back");
+                        ConsoleKeyInfo key3 = Console.ReadKey(true);
+                        FoodOptions();
+                        break;
+                    case 4:
+                        AdminHomePage();
+                        break;
+                    case 5:
+                        GetHelp();
+
+                        view.Clear();
+                        FoodOptions();
+                        break;
+                }
             }
         }
 
