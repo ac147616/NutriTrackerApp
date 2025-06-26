@@ -333,7 +333,7 @@ namespace NutriTrackerApp
                 switch (SelectedIndex)
                 {
                     case 0:
-                        Console.WriteLine("VIEW All admin DETAILS COMING SOON...Press any key to go back");
+                        Console.WriteLine("VIEW All foods DETAILS COMING SOON...Press any key to go back");
                         ConsoleKeyInfo key = Console.ReadKey(true);
                         FoodOptions();
                         break;
@@ -393,7 +393,32 @@ namespace NutriTrackerApp
 
         public void DietPlansOptions()
         {
+            if (userType == "user")
+            {
+                string prompt = "\nView Diet Plans, choose an option using the arrow keys and pressing enter to select\n";
+                string[] options = { "View all diet plans", "Back to home page", "Help", };
+                Menu mainMenu = new Menu(prompt, options);
+                int SelectedIndex = mainMenu.Run();
+                view.Clear();
 
+                switch (SelectedIndex)
+                {
+                    case 0:
+                        Console.WriteLine("VIEW All diet plans DETAILS COMING SOON...Press any key to go back");
+                        ConsoleKeyInfo key = Console.ReadKey(true);
+                        DietPlansOptions();
+                        break;
+                    case 4:
+                        UserHomePage();
+                        break;
+                    case 5:
+                        GetHelp();
+
+                        view.Clear();
+                        DietPlansOptions();
+                        break;
+                }
+            }
         }
 
         public void GoalsOptions()
