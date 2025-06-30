@@ -166,6 +166,8 @@ namespace NutriTrackerApp
             while (true)
             {
                 view.Clear();
+                Console.WriteLine("Enter your ID and password, use CTR + ENTER to submit and use the arrows and backspace to navigate!");
+
                 List<string> collectedResponses = InputManager.GetInput(new string[]
                 {
                 "User ID",
@@ -180,8 +182,7 @@ namespace NutriTrackerApp
                     int? result = storageManager.GetUserID(userID, passwordkey);
                     if (result == null)
                     {
-                        Console.WriteLine("Incorrect username or password, try again");
-                        System.Threading.Thread.Sleep(5000);
+                        ShowMessage("Incorrect username or password, press any key to try again");
                     }
                     else
                     {
@@ -192,8 +193,7 @@ namespace NutriTrackerApp
                 catch (Exception ex)
                 
                 {
-                    Console.WriteLine("The User Id is not in correct format. Must be a number.");
-                    System.Threading.Thread.Sleep(5000);
+                    ShowMessage("Incorrect User ID. Must be a number. Press any key to try again");
                 }
 
             }
