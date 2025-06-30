@@ -40,6 +40,7 @@ public class ConsoleView
 	public void Clear()
 	{
 		Console.Clear();
+		int consoleWidth = Console.WindowWidth;
 		string title = @"
 ███╗  ██╗██╗   ██╗████████╗██████╗ ██╗  ████████╗██████╗  █████╗  █████╗ ██╗  ██╗███████╗██████╗ 
 ████╗ ██║██║   ██║╚══██╔══╝██╔══██╗██║  ╚══██╔══╝██╔══██╗██╔══██╗██╔══██╗██║ ██╔╝██╔════╝██╔══██╗
@@ -47,9 +48,26 @@ public class ConsoleView
 ██║╚████║██║   ██║   ██║   ██╔══██╗██║     ██║   ██╔══██╗██╔══██║██║  ██╗██╔═██╗ ██╔══╝  ██╔══██╗
 ██║ ╚███║╚██████╔╝   ██║   ██║  ██║██║     ██║   ██║  ██║██║  ██║╚█████╔╝██║ ╚██╗███████╗██║  ██║
 ╚═╝  ╚══╝ ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚═╝     ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝ ╚════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝";
-		Console.WriteLine(title);
+
+		string[] lines = title.Split('\n');
+		foreach (string line in lines)
+		{
+			string trimmed = line.Trim('\r');
+            int padding = (consoleWidth - trimmed.Length) / 2;
+            Console.SetCursorPosition(Math.Max(0, padding), Console.CursorTop);
+            Console.WriteLine(trimmed);
+        }
+
+		Console.WriteLine();
+
+        string back = "[Back: CTRL + B]";
+        string help = "[Help: CTRL + H]";
+        string exit = "[Exit: CTRL + E]";
+
+        int spacing = consoleWidth - (back.Length + help.Length + exit.Length);
+        if (spacing < 2) spacing = 2;
+        string spacer = new string(' ', spacing - 2);
+
+        Console.WriteLine($"{back}{spacer}{help} {exit}");
     }
-
-
 }
-

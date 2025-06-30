@@ -29,7 +29,7 @@ namespace NutriTrackerApp
 
         public static void RunUserTypeMenu()
         {
-            Console.SetWindowSize(Math.Min(150, Console.LargestWindowWidth), Math.Min(30, Console.LargestWindowHeight));
+            view.Clear();
             string prompt = "\nWelcome to the NutriTracker App, Please choose your role using the arrow keys and pressing enter to select\n";
             string[] options = { "New User", "Existing User", "Admin", "Help", "Exit" };
             Menu mainMenu = new Menu(prompt, options);
