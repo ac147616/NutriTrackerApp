@@ -586,6 +586,14 @@ namespace NutriTrackerApp
             view.DisplayMessage($"Rows affected: {rowsAffected}");
         }
 
+        public void ShowMessage(string message)
+        {
+            Console.SetCursorPosition(0, Console.WindowHeight - 2);
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(message);
+            Console.ResetColor();
+            Console.ReadKey(true);
+        }
         public void GetHelp()
         {
             view.Help();
