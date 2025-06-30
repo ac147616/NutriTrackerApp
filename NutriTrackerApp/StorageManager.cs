@@ -103,7 +103,7 @@ public class StorageManager
 
 	public int? GetUserID(int userID, string passwordkey)
 	{
-        using (SqlCommand cmd = new SqlCommand("SELECT userID FROM UserDetails WHERE userID = @userID AND passwordkey = @passwordkey", conn))
+        using (SqlCommand cmd = new SqlCommand("SELECT userID FROM users.tblUserDetails WHERE userID = @userID AND passwordkey = @passwordkey", conn))
         {
             cmd.Parameters.AddWithValue("@userID", userID);
             cmd.Parameters.AddWithValue("@passwordkey", passwordkey);
@@ -118,7 +118,6 @@ public class StorageManager
 			}
         }
     }
-
     public List<UserDetails> GetAllUserDetails()
     {
         List<UserDetails> users = new List<UserDetails>();
@@ -149,5 +148,6 @@ public class StorageManager
 
         return users;
     }
+
 
 }

@@ -43,6 +43,8 @@ namespace NutriTrackerApp
                     break;
                 case 1:
                     myProgram.ExistingUserLogIn();
+                    //myProgram.ViewAllUsers();
+
                     break;
                 case 2:
                     myProgram.AdminLogIn();
@@ -56,6 +58,32 @@ namespace NutriTrackerApp
             }
 
         }
+
+        public void ViewAllUsers()
+        {
+            view.Clear();
+            List<UserDetails> allUsers = storageManager.GetAllUserDetails();
+
+            if (allUsers.Count == 0)
+            {
+                Console.WriteLine("No users found in the database.");
+            }
+            else
+            {
+                Console.WriteLine("List of Registered Users:\n");
+                Console.WriteLine($"{"ID",-5} {"Name",-20} {"Email",-25} {"Age",-5} {"Gender",-8} {"Weight",-8} {"Height",-8}");
+
+                foreach (var user in allUsers)
+                {
+                    string fullName = $"{user.FirstName} {user.LastName}";
+                    Console.WriteLine($"{user.UserID,-5} {fullName,-20} {user.EmailID,-25} {user.Age,-5} {user.Gender,-8} {user.UserWeight,-8} {user.UserHeight,-8}");
+                }
+            }
+
+            Console.WriteLine("\nPress any key to go back...");
+            Console.ReadKey(true);
+        }
+
 
         public void UserHomePage()
         {
@@ -162,6 +190,7 @@ namespace NutriTrackerApp
                     }
                 }
                 catch (Exception ex)
+                
                 {
                     Console.WriteLine("The User Id is not in correct format. Must be a number.");
                     System.Threading.Thread.Sleep(5000);

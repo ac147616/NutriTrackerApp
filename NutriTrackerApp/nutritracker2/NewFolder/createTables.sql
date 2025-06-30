@@ -13,8 +13,10 @@ DROP SCHEMA IF EXISTS admins;
 GO
 
 -- Create 2 Schemas
-CREATE SCHEMA users; GO
-CREATE SCHEMA admins; GO
+CREATE SCHEMA users; 
+GO
+CREATE SCHEMA admins; 
+GO
 
 
 -- Create 7 Tables

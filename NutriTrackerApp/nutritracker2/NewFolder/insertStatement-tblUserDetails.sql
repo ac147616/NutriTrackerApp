@@ -1,4 +1,10 @@
-﻿INSERT INTO users.tblUserDetails (firstName, lastName, emailID, passwordkey, age, gender, userWeight, userHeight, signUpDate)
+﻿-- Delete all rows
+DELETE FROM users.tblUserDetails;
+
+-- Reset identity seed to 0 so the next inserted row starts at 1
+DBCC CHECKIDENT ('users.tblUserDetails', RESEED, 0);
+
+INSERT INTO users.tblUserDetails (firstName, lastName, emailID, passwordkey, age, gender, userWeight, userHeight, signUpDate)
 VALUES
 ('Jennifer', 'Richards', 'jennifer-richards93@mail.com', 'FgvQ', '74', 'NULL', '124', '170', '2008/07/05'),
 ('Ericka', 'Heyde', 'ericka-heyde38@outlook.com', 'l1dyyzK', '11', 'NULL', '143', '133', '2014/11/25'),
