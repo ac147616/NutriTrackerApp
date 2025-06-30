@@ -19,7 +19,7 @@ namespace NutriTrackerApp
             System.Threading.Thread.Sleep(2500);
           
             view = new ConsoleView();
-            view.Clear();
+            view.Clear("Welcome!");
 
             RunUserTypeMenu(); //This menu shows the options for the type of user
 
@@ -29,12 +29,12 @@ namespace NutriTrackerApp
 
         public static void RunUserTypeMenu()
         {
-            view.Clear();
-            string prompt = "\nWelcome to the NutriTracker App, Please choose your role using the arrow keys and pressing enter to select\n";
+            view.Clear("Welcome!");
+            string prompt = "";
             string[] options = { "New User", "Existing User", "Admin", "Help", "Exit" };
             Menu mainMenu = new Menu(prompt, options);
             Program myProgram = new Program();
-            int SelectedIndex = mainMenu.Run();
+            int SelectedIndex = mainMenu.Run("Welcome!");
 
             switch (SelectedIndex)
             {
@@ -61,7 +61,7 @@ namespace NutriTrackerApp
 
         public void ViewAllUsers()
         {
-            view.Clear();
+            view.Clear("");
             List<UserDetails> allUsers = storageManager.GetAllUserDetails();
 
             if (allUsers.Count == 0)
@@ -90,8 +90,8 @@ namespace NutriTrackerApp
             string prompt = "\nYou have arrived at the User Home Page, choose an option using the arrow keys and pressing enter to select\n";
             string[] options = { "Settings", "Allergies", "Food", "Diet Plans", "Goals", "Daily Log", "Help", "Exit" };
             Menu mainMenu = new Menu(prompt, options);
-            int SelectedIndex = mainMenu.Run();
-            view.Clear();
+            int SelectedIndex = mainMenu.Run("");
+            view.Clear("");
 
             switch (SelectedIndex)
             {
@@ -127,8 +127,8 @@ namespace NutriTrackerApp
             string prompt = "\nYou have arrived at the Admin Home Page, choose an option using the arrow keys and pressing enter to select\n";
             string[] options = { "Users", "Admins", "Foods", "Diet Plans", "Help", "Exit" };
             Menu mainMenu = new Menu(prompt, options);
-            int SelectedIndex = mainMenu.Run();
-            view.Clear();
+            int SelectedIndex = mainMenu.Run("");
+            view.Clear("");
 
             switch (SelectedIndex)
             {
@@ -154,7 +154,7 @@ namespace NutriTrackerApp
         }
         public void InsertNewUser()
         { 
-            view.Clear();
+            view.Clear("");
             Console.WriteLine("Checking if successfully signed up");
             System.Threading.Thread.Sleep(1000);
             userType = "user";
@@ -165,7 +165,7 @@ namespace NutriTrackerApp
         {
             while (true)
             {
-                view.Clear();
+                view.Clear("");
                 Console.WriteLine("Enter your ID and password, use CTR + ENTER to submit and use the arrows and backspace to navigate!");
 
                 List<string> collectedResponses = InputManager.GetInput(new string[]
@@ -204,7 +204,7 @@ namespace NutriTrackerApp
 
         public void AdminLogIn()
         {
-            view.Clear();
+            view.Clear("");
             Console.WriteLine("Checking if successfully logged in");
             userType = "admin";
             System.Threading.Thread.Sleep(1000);
@@ -217,8 +217,8 @@ namespace NutriTrackerApp
                 string prompt = "\nSettings, choose an option using the arrow keys and pressing enter to select\n";
                 string[] options = { "View you details", "Update your details", "Delete account", "Back to home page", "Help",};
                 Menu mainMenu = new Menu(prompt, options);
-                int SelectedIndex = mainMenu.Run();
-                view.Clear();
+                int SelectedIndex = mainMenu.Run("");
+                view.Clear("");
 
                 switch (SelectedIndex)
                 {
@@ -242,7 +242,7 @@ namespace NutriTrackerApp
                         break;
                     case 4:
                         GetHelp();
-                        view.Clear();
+                        view.Clear("");
                         UserOptions();
                         break;
                 }
@@ -252,8 +252,8 @@ namespace NutriTrackerApp
                 string prompt = "\nManage Users, choose an option using the arrow keys and pressing enter to select\n";
                 string[] options = { "View all users", "Insert new user", "Update existing user details", "Delete a user", "Back to home page", "Help",};
                 Menu mainMenu = new Menu(prompt, options);
-                int SelectedIndex = mainMenu.Run();
-                view.Clear();
+                int SelectedIndex = mainMenu.Run("");
+                view.Clear("");
 
                 switch (SelectedIndex)
                 {
@@ -283,7 +283,7 @@ namespace NutriTrackerApp
                     case 5:
                         GetHelp();
 
-                        view.Clear();
+                        view.Clear("");
                         UserOptions();
                         break;
                 }
@@ -295,8 +295,8 @@ namespace NutriTrackerApp
             string prompt = "\nManage Admins, choose an option using the arrow keys and pressing enter to select\n";
             string[] options = { "View all admins", "Insert new admin", "Update existing admin", "Delete an admin", "Back to home page", "Help", };
             Menu mainMenu = new Menu(prompt, options);
-            int SelectedIndex = mainMenu.Run();
-            view.Clear();
+            int SelectedIndex = mainMenu.Run("");
+            view.Clear("");
 
             switch (SelectedIndex)
             {
@@ -326,7 +326,7 @@ namespace NutriTrackerApp
                 case 5:
                     GetHelp();
 
-                    view.Clear();
+                    view.Clear("");
                     AdminOptions();
                     break;
             }
@@ -336,8 +336,8 @@ namespace NutriTrackerApp
             string prompt = "\nManage your allergies, choose an option using the arrow keys and pressing enter to select\n";
             string[] options = { "View all allergies", "Insert new allergy",  "Delete an allergy", "Back to home page", "Help", };
             Menu mainMenu = new Menu(prompt, options);
-            int SelectedIndex = mainMenu.Run();
-            view.Clear();
+            int SelectedIndex = mainMenu.Run("");
+            view.Clear("");
 
             switch (SelectedIndex)
             {
@@ -362,7 +362,7 @@ namespace NutriTrackerApp
                 case 4:
                     GetHelp();
 
-                    view.Clear();
+                    view.Clear("");
                     AllergiesOptions();
                     break;
             }
@@ -375,8 +375,8 @@ namespace NutriTrackerApp
                 string prompt = "\nView Foods, choose an option using the arrow keys and pressing enter to select\n";
                 string[] options = { "View all foods", "Back to home page", "Help", };
                 Menu mainMenu = new Menu(prompt, options);
-                int SelectedIndex = mainMenu.Run();
-                view.Clear();
+                int SelectedIndex = mainMenu.Run("");
+                view.Clear("");
 
                 switch (SelectedIndex)
                 {
@@ -391,7 +391,7 @@ namespace NutriTrackerApp
                     case 5:
                         GetHelp();
 
-                        view.Clear();
+                        view.Clear("");
                         FoodOptions();
                         break;
                 }
@@ -401,8 +401,8 @@ namespace NutriTrackerApp
                 string prompt = "\nManage Foods, choose an option using the arrow keys and pressing enter to select\n";
                 string[] options = { "View all foods", "Insert new food", "Update existing food", "Delete a food", "Back to home page", "Help", };
                 Menu mainMenu = new Menu(prompt, options);
-                int SelectedIndex = mainMenu.Run();
-                view.Clear();
+                int SelectedIndex = mainMenu.Run("");
+                view.Clear("");
 
                 switch (SelectedIndex)
                 {
@@ -432,7 +432,7 @@ namespace NutriTrackerApp
                     case 5:
                         GetHelp();
 
-                        view.Clear();
+                        view.Clear("");
                         FoodOptions();
                         break;
                 }
@@ -446,8 +446,8 @@ namespace NutriTrackerApp
                 string prompt = "\nView Diet Plans, choose an option using the arrow keys and pressing enter to select\n";
                 string[] options = { "View all diet plans", "Back to home page", "Help", };
                 Menu mainMenu = new Menu(prompt, options);
-                int SelectedIndex = mainMenu.Run();
-                view.Clear();
+                int SelectedIndex = mainMenu.Run("");
+                view.Clear("");
 
                 switch (SelectedIndex)
                 {
@@ -462,7 +462,7 @@ namespace NutriTrackerApp
                     case 5:
                         GetHelp();
 
-                        view.Clear();
+                        view.Clear("");
                         DietPlansOptions();
                         break;
                 }
@@ -472,8 +472,8 @@ namespace NutriTrackerApp
                 string prompt = "\nManage Diet Plans, choose an option using the arrow keys and pressing enter to select\n";
                 string[] options = { "View all diet plans", "Insert new diet plan", "Update existing diet plan", "Delete a diet plan", "Back to home page", "Help", };
                 Menu mainMenu = new Menu(prompt, options);
-                int SelectedIndex = mainMenu.Run();
-                view.Clear();
+                int SelectedIndex = mainMenu.Run("");
+                view.Clear("");
 
                 switch (SelectedIndex)
                 {
@@ -503,7 +503,7 @@ namespace NutriTrackerApp
                     case 5:
                         GetHelp();
 
-                        view.Clear();
+                        view.Clear("");
                         DietPlansOptions();
                         break;
                 }
@@ -522,19 +522,19 @@ namespace NutriTrackerApp
 
         public void Exit()
         {
-            view.Clear();
+            view.Clear("");
             Menu mainMenu = new Menu("\nAre you sure you want to exit the application?\n", ["yes", "no"]);
-            int SelectedIndex = mainMenu.Run();
+            int SelectedIndex = mainMenu.Run("");
 
             switch (SelectedIndex)
             {
                 case 0:
-                    view.Clear();
+                    view.Clear("");
                     Console.WriteLine("Bye Bye");
                     System.Environment.Exit(0);
                     break;
                 case 1:
-                    view.Clear();
+                    view.Clear("");
                     
                     if (userType == "")
                     {

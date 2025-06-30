@@ -46,14 +46,14 @@ namespace NutriTrackerApp
 
             Console.ResetColor();
         }
-        public int Run()
+        public int Run(string pageName)
         {
             //We need a loop structure so that everytime the user clicks a key it re-renders the console view
             ConsoleKey keyPressed;
             do
             {
                 ConsoleView view = new ConsoleView();
-                view.Clear();
+                view.Clear(pageName);
                 DisplayOptions();
 
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);

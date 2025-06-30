@@ -33,15 +33,16 @@ public class ConsoleView
 
 	public void Help()
 	{
-		Clear();
+		Clear("Help");
 		Console.WriteLine("\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\r\n");
 	}
 
-	public void Clear()
+	public void Clear(string nameOfPage)
 	{
 		Console.Clear();
-		int consoleWidth = Console.WindowWidth;
-		string title = @"
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
+
+        string title = @"
 ███╗  ██╗██╗   ██╗████████╗██████╗ ██╗  ████████╗██████╗  █████╗  █████╗ ██╗  ██╗███████╗██████╗ 
 ████╗ ██║██║   ██║╚══██╔══╝██╔══██╗██║  ╚══██╔══╝██╔══██╗██╔══██╗██╔══██╗██║ ██╔╝██╔════╝██╔══██╗
 ██╔██╗██║██║   ██║   ██║   ██████╔╝██║     ██║   ██████╔╝███████║██║  ╚═╝█████═╝ █████╗  ██████╔╝
@@ -49,25 +50,38 @@ public class ConsoleView
 ██║ ╚███║╚██████╔╝   ██║   ██║  ██║██║     ██║   ██║  ██║██║  ██║╚█████╔╝██║ ╚██╗███████╗██║  ██║
 ╚═╝  ╚══╝ ╚═════╝    ╚═╝   ╚═╝  ╚═╝╚═╝     ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝ ╚════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝";
 
-		string[] lines = title.Split('\n');
-		foreach (string line in lines)
-		{
-			string trimmed = line.Trim('\r');
+        int consoleWidth = Console.WindowWidth;
+        string[] eachLine = title.Split('\n');
+        foreach (string aLine in eachLine)
+        {
+            string trimmed = aLine.TrimEnd('\r');
             int padding = (consoleWidth - trimmed.Length) / 2;
             Console.SetCursorPosition(Math.Max(0, padding), Console.CursorTop);
             Console.WriteLine(trimmed);
         }
 
 		Console.WriteLine();
+        Console.WriteLine("+" + new string('-', consoleWidth - 2) + "+");
 
-        string back = "[Back: CTRL + B]";
-        string help = "[Help: CTRL + H]";
-        string exit = "[Exit: CTRL + E]";
+ 
+        string left = "[Back: Ctrl + B]";
+        string right = "[Help: Ctrl + H] [Exit: Ctrl + E]";
 
-        int spacing = consoleWidth - (back.Length + help.Length + exit.Length);
-        if (spacing < 2) spacing = 2;
-        string spacer = new string(' ', spacing - 2);
+        int spaceForCenter = consoleWidth - left.Length - right.Length - 4;
+        string center = "";
 
-        Console.WriteLine($"{back}{spacer}{help} {exit}");
+        if (nameOfPage.Length <= spaceForCenter)
+        {
+            int paddingLeft = (spaceForCenter - nameOfPage.Length) / 2;
+            center = new string(' ', paddingLeft) + nameOfPage + new string(' ', spaceForCenter - paddingLeft - nameOfPage.Length);
+        }
+        else
+        {
+            center = new string(' ', spaceForCenter);
+        }
+
+        string headerLine = "| " + left + center + right + " |";
+        Console.WriteLine(headerLine);
+        Console.WriteLine("+" + new string('-', consoleWidth - 2) + "+");
     }
 }
