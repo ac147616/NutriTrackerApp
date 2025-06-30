@@ -1,5 +1,6 @@
 ﻿using Microsoft.Identity.Client;
 using System;
+using System.ComponentModel.Design;
 
 namespace NutriTrackerApp
 {
@@ -8,6 +9,8 @@ namespace NutriTrackerApp
         private static StorageManager storageManager;
         private static ConsoleView view;
         public string userType = "";
+        public int? TheUserID = null;
+        public int? TheAdminID = null;
         static void Main(string[] args)
         {
             string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=nutriTracker2;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
@@ -132,25 +135,41 @@ namespace NutriTrackerApp
         
         public void ExistingUserLogIn()
         {
-            view.Clear();
-            List<string> collectedResponses = InputManager.GetInput(new string[]
+            while (true)
             {
+                view.Clear();
+                List<string> collectedResponses = InputManager.GetInput(new string[]
+                {
                 "User ID",
                 "Password",
-            });
+                });
 
-            try
-            {
-                int UserID = Convert.ToInt32(collectedResponses[0]);
-                string password = collectedResponses[1];
-                userType = "user";
-                UserHomePage();
+                try
+                {
+                    int userID = Convert.ToInt32(collectedResponses[0]);
+                    string passwordkey = collectedResponses[1];
+                    userType = "user";
+                    int? result = storageManager.GetUserID(userID, passwordkey);
+                    if (result == null)
+                    {
+                        Console.WriteLine("Incorrect username or password, try again");
+                        System.Threading.Thread.Sleep(5000);
+                    }
+                    else
+                    {
+                        TheUserID = result;
+                        break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("The User Id is not in correct format. Must be a number.");
+                    System.Threading.Thread.Sleep(5000);
+                }
+
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("The User Id is not in correct format. Must be a number.");
-                RunUserTypeMenu();
-            }
+
+            UserHomePage();
            
         }
 

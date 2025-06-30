@@ -101,11 +101,53 @@ public class StorageManager
 		}
 	}
 
-	//validates if a user exists..the question mark means that it can also be null
-	/*public int? CheckUser(int userID, string password)
-	{	
+	public int? GetUserID(int userID, string passwordkey)
+	{
+        using (SqlCommand cmd = new SqlCommand("SELECT userID FROM UserDetails WHERE userID = @userID AND passwordkey = @passwordkey", conn))
+        {
+            cmd.Parameters.AddWithValue("@userID", userID);
+            cmd.Parameters.AddWithValue("@passwordkey", passwordkey);
 
-		return;
-	} */
+			if (cmd.ExecuteScalar() != null)
+			{ 
+				return Convert.ToInt32(cmd.ExecuteScalar()); //return only one column
+			}
+			else
+			{
+				return null;
+			}
+        }
+    }
 
-	}
+    public List<UserDetails> GetAllUserDetails()
+    {
+        List<UserDetails> users = new List<UserDetails>();
+
+        string query = "SELECT * FROM users.tblUserDetails"; // Adjust schema/table if needed
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            using (SqlDataReader reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    int userID = Convert.ToInt32(reader["userID"]);
+                    string firstName = reader["firstName"].ToString();
+                    string lastName = reader["lastName"].ToString();
+                    string emailID = reader["emailID"].ToString();
+                    string passwordKey = reader["passwordKey"].ToString();
+                    int age = Convert.ToInt32(reader["age"]);
+                    string gender = reader["gender"].ToString();
+                    double weight = Convert.ToDouble(reader["userWeight"]);
+                    double height = Convert.ToDouble(reader["userHeight"]);
+                    DateOnly signUpDate = DateOnly.FromDateTime(Convert.ToDateTime(reader["signUpDate"]));
+
+                    users.Add(new UserDetails(userID, firstName, lastName, emailID, passwordKey, age, gender, weight, height, signUpDate));
+                }
+            }
+        }
+
+        return users;
+    }
+
+}
