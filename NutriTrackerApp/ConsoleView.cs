@@ -67,21 +67,31 @@ public class ConsoleView
         string left = "[Back: Ctrl + B]";
         string right = "[Help: Ctrl + H] [Exit: Ctrl + E]";
 
-        int spaceForCenter = consoleWidth - left.Length - right.Length - 4;
-        string center = "";
+        int y = Console.CursorTop;
+        Console.SetCursorPosition(1, y);
+        Console.Write(left);
 
-        if (nameOfPage.Length <= spaceForCenter)
+        if (nameOfPage.Length < consoleWidth - 2)
         {
-            int paddingLeft = (spaceForCenter - nameOfPage.Length) / 2;
-            center = new string(' ', paddingLeft) + nameOfPage + new string(' ', spaceForCenter - paddingLeft - nameOfPage.Length);
+            int center = (consoleWidth - nameOfPage.Length) / 2;
+            Console.SetCursorPosition(center, y);
+            Console.Write(nameOfPage);
         }
         else
         {
-            center = new string(' ', spaceForCenter);
+            int center = (consoleWidth - "".Length) / 2;
+            Console.SetCursorPosition(center, y);
+            Console.Write("");
         }
 
-        string headerLine = "| " + left + center + right + " |";
-        Console.WriteLine(headerLine);
+        int rightMarg = consoleWidth - 2 - right.Length;
+        Console.SetCursorPosition(rightMarg, y);
+        Console.Write(right);
+
+        Console.SetCursorPosition(consoleWidth - 1, y);
+        Console.Write("|");
+
+        Console.SetCursorPosition(0, y + 1);
         Console.WriteLine("+" + new string('-', consoleWidth - 2) + "+");
     }
 }

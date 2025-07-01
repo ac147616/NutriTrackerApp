@@ -41,7 +41,12 @@ namespace NutriTrackerApp
                     Console.BackgroundColor = ConsoleColor.Black;
                 }
 
-                Console.WriteLine($"{prefix} << {currentOption} >>");
+                string menuItem = $"{prefix} << {currentOption} >>";
+                int windowWidth = Console.WindowWidth;
+                int x = Math.Max(0, (windowWidth - menuItem.Length) / 2);
+                int y = Console.CursorTop;
+                Console.SetCursorPosition(x, y);
+                Console.WriteLine(menuItem);
             }
 
             Console.ResetColor();
