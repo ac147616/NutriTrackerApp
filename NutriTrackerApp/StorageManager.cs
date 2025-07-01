@@ -118,6 +118,25 @@ public class StorageManager
 			}
         }
     }
+
+    public int? GetAdminID(int adminID, string passwordkey)
+    {
+        using (SqlCommand cmd = new SqlCommand("SELECT adminID FROM admin.tblAdminDetails WHERE adminID = @adminID AND passwordkey = @passwordkey", conn))
+        {
+            cmd.Parameters.AddWithValue("@adminID", adminID);
+            cmd.Parameters.AddWithValue("@passwordkey", passwordkey);
+
+            if (cmd.ExecuteScalar() != null)
+            {
+                return Convert.ToInt32(cmd.ExecuteScalar()); //return only one column
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
+
     public List<UserDetails> GetAllUserDetails()
     {
         List<UserDetails> users = new List<UserDetails>();

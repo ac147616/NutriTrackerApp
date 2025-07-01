@@ -68,7 +68,9 @@ public class ConsoleView
         string right = "[Help: Ctrl + H] [Exit: Ctrl + E]";
 
         int y = Console.CursorTop;
-        Console.SetCursorPosition(1, y);
+        Console.SetCursorPosition(0, y);
+        Console.Write("|");
+        Console.SetCursorPosition(2, y);
         Console.Write(left);
 
         if (nameOfPage.Length < consoleWidth - 2)

@@ -165,8 +165,7 @@ namespace NutriTrackerApp
         {
             while (true)
             {
-                view.Clear("");
-                Console.WriteLine("Enter your ID and password, use CTR + ENTER to submit and use the arrows and backspace to navigate!");
+                view.Clear("User Log In");
 
                 List<string> collectedResponses = InputManager.GetInput(new string[]
                 {
@@ -182,7 +181,7 @@ namespace NutriTrackerApp
                     int? result = storageManager.GetUserID(userID, passwordkey);
                     if (result == null)
                     {
-                        ShowMessage("Incorrect username or password, press any key to try again");
+                        ShowMessage("Invalid ID and password combination, press any key to try again");
                     }
                     else
                     {
@@ -193,7 +192,7 @@ namespace NutriTrackerApp
                 catch (Exception ex)
                 
                 {
-                    ShowMessage("Incorrect User ID. Must be a number. Press any key to try again");
+                    ShowMessage("ID must be a number, press any key to try again");
                 }
 
             }
@@ -204,10 +203,40 @@ namespace NutriTrackerApp
 
         public void AdminLogIn()
         {
-            view.Clear("");
-            Console.WriteLine("Checking if successfully logged in");
-            userType = "admin";
-            System.Threading.Thread.Sleep(1000);
+            while (true)
+            {
+                view.Clear("Admin Log In");
+
+                List<string> collectedResponses = InputManager.GetInput(new string[]
+                {
+                "Admin ID",
+                "Password",
+                });
+
+                try
+                {
+                    int adminID = Convert.ToInt32(collectedResponses[0]);
+                    string passwordkey = collectedResponses[1];
+                    userType = "admin";
+                    int? result = storageManager.GetAdminID(adminID, passwordkey);
+                    if (result == null)
+                    {
+                        ShowMessage("Invalid ID and password combination, press any key to try again");
+                    }
+                    else
+                    {
+                        TheAdminID = result;
+                        break;
+                    }
+                }
+                catch (Exception ex)
+
+                {
+                    ShowMessage("ID must be a number, press any key to try again");
+                }
+
+            }
+
             AdminHomePage();
         }
         public void UserOptions()

@@ -78,7 +78,7 @@ namespace NutriTrackerApp
                         }
                         break;
                 }
-            }//Um So i already have seperate admina dn suer tables as part of my database so i didnt have to make a new like users tale. But because i used first name and last name as fields and my unique ID was just like numbers instead of username or emailID im having to use
+            }//So i already have seperate admina dn suer tables as part of my database so i didnt have to make a new like users tale. But because i used first name and last name as fields and my unique ID was just like numbers instead of username or emailID im having to use
         }
 
         public string[] ReturnAllInformation()

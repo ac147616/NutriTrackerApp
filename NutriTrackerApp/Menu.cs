@@ -26,22 +26,19 @@ namespace NutriTrackerApp
             for (int i = 0; i < Options.Length; i++)
             {
                 string currentOption = Options[i];
-                string prefix;
 
                 if (i == SelectedIndex)
                 {
-                    prefix = "*";
                     Console.ForegroundColor = ConsoleColor.Black;
                     Console.BackgroundColor = ConsoleColor.White;
                 }
                 else
                 {
-                    prefix = " ";
                     Console.ForegroundColor = ConsoleColor.White;
                     Console.BackgroundColor = ConsoleColor.Black;
                 }
 
-                string menuItem = $"{prefix} << {currentOption} >>";
+                string menuItem = $"<< {currentOption} >>";
                 int windowWidth = Console.WindowWidth;
                 int x = Math.Max(0, (windowWidth - menuItem.Length) / 2);
                 int y = Console.CursorTop;
