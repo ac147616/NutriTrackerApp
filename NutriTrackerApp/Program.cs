@@ -25,7 +25,6 @@ namespace NutriTrackerApp
 
             storageManager.CloseConnection();
         }
-
         public static void RunUserTypeMenu()
         {
             view.Clear("Welcome!");
@@ -49,33 +48,6 @@ namespace NutriTrackerApp
             }
 
         }
-
-        public void ViewAllUsers()
-        {
-            view.Clear("");
-            List<UserDetails> allUsers = storageManager.GetAllUserDetails();
-
-            if (allUsers.Count == 0)
-            {
-                Console.WriteLine("No users found in the database.");
-            }
-            else
-            {
-                Console.WriteLine("List of Registered Users:\n");
-                Console.WriteLine($"{"ID",-5} {"Name",-20} {"Email",-25} {"Age",-5} {"Gender",-8} {"Weight",-8} {"Height",-8}");
-
-                foreach (var user in allUsers)
-                {
-                    string fullName = $"{user.FirstName} {user.LastName}";
-                    Console.WriteLine($"{user.UserID,-5} {fullName,-20} {user.EmailID,-25} {user.Age,-5} {user.Gender,-8} {user.UserWeight,-8} {user.UserHeight,-8}");
-                }
-            }
-
-            Console.WriteLine("\nPress any key to go back...");
-            Console.ReadKey(true);
-        }
-
-
         public void UserHomePage()
         {
             string prompt = "\nYou have arrived at the User Home Page, choose an option using the arrow keys and pressing enter to select\n";
@@ -155,7 +127,7 @@ namespace NutriTrackerApp
                 "Height (optional)",
                 });
 
-                if (collectedResponses[0] == null || collectedResponses[1] == null || collectedResponses[2] == null || collectedResponses[3] == null || collectedResponses[4] == null)
+                if (collectedResponses[0] == "" || collectedResponses[1] == "" || collectedResponses[2] == "" || collectedResponses[3] == "" || collectedResponses[4] == "")
                 {
                     ShowMessage("Required fields cannot be empty, press any key to fill again", 9);
                 }
@@ -189,7 +161,7 @@ namespace NutriTrackerApp
                     }
                 }
             }
-            storageManager.PrintLatestUserDetails();
+            UserHomePage();
         }
         
         public void ExistingUserLogIn()
@@ -658,13 +630,26 @@ namespace NutriTrackerApp
 
         public void ShowMessage(string message, int labelsLength)
         {
-            int spaceLeftForHeader = 15;
-            int messagePosY = spaceLeftForHeader + (labelsLength * 2);
-            Console.SetCursorPosition(50, messagePosY);
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(message);
-            Console.ResetColor();
-            Console.ReadKey(true);
+            if (message.Length < 100)
+            {
+                int spaceLeftForHeader = 15;
+                int messagePosY = spaceLeftForHeader + (labelsLength * 2);
+                Console.SetCursorPosition(50, messagePosY);
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(message);
+                Console.ResetColor();
+                Console.ReadKey(true);
+            }
+            else
+            {
+                int spaceLeftForHeader = 15;
+                int messagePosY = spaceLeftForHeader + (labelsLength * 2);
+                Console.SetCursorPosition(0, messagePosY);
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(message);
+                Console.ResetColor();
+                Console.ReadKey(true);
+            }
         }
         public void GetHelp()
         {
