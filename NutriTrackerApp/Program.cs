@@ -9,8 +9,7 @@ namespace NutriTrackerApp
         private static StorageManager storageManager;
         private static ConsoleView view;
         public string userType = "";
-        public int? TheUserID = null;
-        public int? TheAdminID = null;
+        public int? TheID = null;
         static void Main(string[] args)
         {
             string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=nutriTracker2;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
@@ -31,7 +30,7 @@ namespace NutriTrackerApp
         {
             view.Clear("Welcome!");
             string prompt = "";
-            string[] options = { "New User", "Existing User", "Admin", "Help", "Exit" };
+            string[] options = { "New User", "Existing User", "Admin"};
             Menu mainMenu = new Menu(prompt, options);
             Program myProgram = new Program();
             int SelectedIndex = mainMenu.Run("Welcome!");
@@ -43,17 +42,9 @@ namespace NutriTrackerApp
                     break;
                 case 1:
                     myProgram.ExistingUserLogIn();
-                    //myProgram.ViewAllUsers();
-
                     break;
                 case 2:
                     myProgram.AdminLogIn();
-                    break;
-                case 3:
-                    myProgram.GetHelp();
-                    break;
-                case 4:
-                    myProgram.Exit();
                     break;
             }
 
@@ -88,7 +79,7 @@ namespace NutriTrackerApp
         public void UserHomePage()
         {
             string prompt = "\nYou have arrived at the User Home Page, choose an option using the arrow keys and pressing enter to select\n";
-            string[] options = { "Settings", "Allergies", "Food", "Diet Plans", "Goals", "Daily Log", "Help", "Exit" };
+            string[] options = { "Settings", "Allergies", "Food", "Diet Plans", "Goals", "Daily Log"};
             Menu mainMenu = new Menu(prompt, options);
             int SelectedIndex = mainMenu.Run("");
             view.Clear("");
@@ -113,19 +104,13 @@ namespace NutriTrackerApp
                 case 5:
                     DailyLogOptions();
                     break;
-                case 6:
-                    GetHelp();
-                    break;
-                case 7:
-                    Exit();
-                    break;
             }
 
         }
         public void AdminHomePage()
         {
-            string prompt = "\nYou have arrived at the Admin Home Page, choose an option using the arrow keys and pressing enter to select\n";
-            string[] options = { "Users", "Admins", "Foods", "Diet Plans", "Help", "Exit" };
+            string prompt = "";
+            string[] options = { "Users", "Admins", "Foods", "Diet Plans"};
             Menu mainMenu = new Menu(prompt, options);
             int SelectedIndex = mainMenu.Run("");
             view.Clear("");
@@ -144,21 +129,67 @@ namespace NutriTrackerApp
                 case 3:
                     DietPlansOptions();
                     break;
-                case 4:
-                    GetHelp();
-                    break;
-                case 5:
-                    Exit();
-                    break;
             }
         }
         public void InsertNewUser()
-        { 
-            view.Clear("");
-            Console.WriteLine("Checking if successfully signed up");
-            System.Threading.Thread.Sleep(1000);
-            userType = "user";
-            UserHomePage();
+        {
+            while (true)
+            {
+                view.Clear("Sign Up");
+                Console.WriteLine();
+                Console.SetCursorPosition(50, Console.CursorTop);
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("(press ctrl + enter to submit form)\n");
+                Console.ForegroundColor = ConsoleColor.White;
+
+                List<string> collectedResponses = InputManager.GetInput(new string[]
+                {
+                "First Name",
+                "Last Name",
+                "Email Adress",
+                "Password",
+                "Confirm Password",
+                "Age (optional)",
+                "Gender (optional)",
+                "Weight (optional)",
+                "Height (optional)",
+                });
+
+                if (collectedResponses[0] == null || collectedResponses[1] == null || collectedResponses[2] == null || collectedResponses[3] == null || collectedResponses[4] == null)
+                {
+                    ShowMessage("Required fields cannot be empty, press any key to fill again", 9);
+                }
+                else if (collectedResponses[3] != collectedResponses[4])
+                {
+                    ShowMessage("Password does not match confirmed password, press any key to fill again", 9);
+                }
+                else
+                {
+                    try
+                    {
+                        string firstName = collectedResponses[0];
+                        string lastname = collectedResponses[1];
+                        string emailID = collectedResponses[2];
+                        string passwordkey = collectedResponses[3];
+                        int age = Convert.ToInt32(collectedResponses[5]);
+                        string gender = collectedResponses[6];
+                        double weight = Convert.ToDouble(collectedResponses[7]);
+                        double height = Convert.ToDouble(collectedResponses[8]);
+                        string date = DateTime.Now.ToString();
+                        int userID = 0;
+                        UserDetails user1 = new UserDetails(userID, firstName, lastname, emailID, passwordkey, age, gender, weight, height, date);
+                        TheID = storageManager.InsertUser(user1);
+                        ShowMessage($"New user created with ID: {TheID}, press any key to continue", 9);
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+
+                        ShowMessage("Ivalid format (age, weight, height must be integer and gender can only be male, female, or null), press any key to fill again", 9);
+                    }
+                }
+            }
+            storageManager.PrintLatestUserDetails();
         }
         
         public void ExistingUserLogIn()
@@ -166,6 +197,11 @@ namespace NutriTrackerApp
             while (true)
             {
                 view.Clear("User Log In");
+                Console.WriteLine();
+                Console.SetCursorPosition(50, Console.CursorTop);
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("(press ctrl + enter to submit form)\n");
+                Console.ForegroundColor = ConsoleColor.White;
 
                 List<string> collectedResponses = InputManager.GetInput(new string[]
                 {
@@ -181,18 +217,18 @@ namespace NutriTrackerApp
                     int? result = storageManager.GetUserID(userID, passwordkey);
                     if (result == null)
                     {
-                        ShowMessage("Invalid ID and password combination, press any key to try again");
+                        ShowMessage("Invalid ID and password combination, press any key to try again", 2);
                     }
                     else
                     {
-                        TheUserID = result;
+                        TheID = result;
                         break;
                     }
                 }
                 catch (Exception ex)
                 
                 {
-                    ShowMessage("ID must be a number, press any key to try again");
+                    ShowMessage("ID must be a number, press any key to try again", 2);
                 }
 
             }
@@ -206,6 +242,11 @@ namespace NutriTrackerApp
             while (true)
             {
                 view.Clear("Admin Log In");
+                Console.WriteLine();
+                Console.SetCursorPosition(50, Console.CursorTop);
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("(press ctrl + enter to submit form)\n");
+                Console.ForegroundColor = ConsoleColor.White;
 
                 List<string> collectedResponses = InputManager.GetInput(new string[]
                 {
@@ -221,18 +262,18 @@ namespace NutriTrackerApp
                     int? result = storageManager.GetAdminID(adminID, passwordkey);
                     if (result == null)
                     {
-                        ShowMessage("Invalid ID and password combination, press any key to try again");
+                        ShowMessage("Invalid ID and password combination, press any key to try again", 2);
                     }
                     else
                     {
-                        TheAdminID = result;
+                        TheID = result;
                         break;
                     }
                 }
                 catch (Exception ex)
 
                 {
-                    ShowMessage("ID must be a number, press any key to try again");
+                    ShowMessage("ID must be a number, press any key to try again", 2);
                 }
 
             }
@@ -615,9 +656,11 @@ namespace NutriTrackerApp
             view.DisplayMessage($"Rows affected: {rowsAffected}");
         }
 
-        public void ShowMessage(string message)
+        public void ShowMessage(string message, int labelsLength)
         {
-            Console.SetCursorPosition(0, Console.WindowHeight - 2);
+            int spaceLeftForHeader = 15;
+            int messagePosY = spaceLeftForHeader + (labelsLength * 2);
+            Console.SetCursorPosition(50, messagePosY);
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine(message);
             Console.ResetColor();

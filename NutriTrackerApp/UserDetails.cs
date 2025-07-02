@@ -14,8 +14,8 @@ namespace NutriTrackerApp
         public string Gender { get; set; }
         public double UserWeight { get; set; }
         public double UserHeight { get; set; }
-        public DateOnly SignUpDate { get; set; }
-        public UserDetails(int userID, string firstName, string lastName, string emailID, string passwordkey, int age, string gender, double userWeight, double userHeight, DateOnly signUpDate)
+        public string SignUpDate { get; set; }
+        public UserDetails(int userID, string firstName, string lastName, string emailID, string passwordkey, int age, string gender, double userWeight, double userHeight, string signUpDate)
         {
             UserID = userID;
             FirstName = firstName;

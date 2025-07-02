@@ -71,7 +71,9 @@ public class ConsoleView
         Console.SetCursorPosition(0, y);
         Console.Write("|");
         Console.SetCursorPosition(2, y);
+        Console.ForegroundColor = ConsoleColor.Cyan;
         Console.Write(left);
+        Console.ForegroundColor = ConsoleColor.White;
 
         if (nameOfPage.Length < consoleWidth - 2)
         {
@@ -88,7 +90,9 @@ public class ConsoleView
 
         int rightMarg = consoleWidth - 2 - right.Length;
         Console.SetCursorPosition(rightMarg, y);
+        Console.ForegroundColor = ConsoleColor.Cyan;
         Console.Write(right);
+        Console.ForegroundColor = ConsoleColor.White;
 
         Console.SetCursorPosition(consoleWidth - 1, y);
         Console.Write("|");

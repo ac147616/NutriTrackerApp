@@ -1,7 +1,9 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Azure;
+using Microsoft.Data.SqlClient;
 using NutriTrackerApp;
 using System;
 using System.Data;
+using System.Reflection;
 
 public class StorageManager
 {
@@ -29,10 +31,53 @@ public class StorageManager
 		}
 	}
 
-	public List<Food> GetAllFoods()
+	public int InsertUser(UserDetails user1)
+	{
+        string query = "INSERT INTO users.tblUserDetails (firstName, lastName, emailID, passwordKey, age, gender, userWeight, userHeight, signUpDate) VALUES (@FirstName, @LastName, @EmailID, @PasswordKey, @Age, @Gender, @UserWeight, @UserHeight, @SignUpDate); SELECT SCOPE_IDENTITY();";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@FirstName", user1.FirstName);
+            cmd.Parameters.AddWithValue("@LastName", user1.LastName);
+            cmd.Parameters.AddWithValue("@EmailID", user1.EmailID);
+            cmd.Parameters.AddWithValue("@PasswordKey", user1.Passwordkey);
+            cmd.Parameters.AddWithValue("@Age", user1.Age);
+            cmd.Parameters.AddWithValue("@Gender", user1.Gender);
+            cmd.Parameters.AddWithValue("@UserWeight", user1.UserWeight);
+            cmd.Parameters.AddWithValue("@UserHeight", user1.UserHeight);
+            cmd.Parameters.AddWithValue("@SignUpDate", user1.SignUpDate);
+
+            return Convert.ToInt32(cmd.ExecuteScalar());
+        }
+    }
+
+    public void PrintLatestUserDetails()
+    {
+        string query = "SELECT TOP 1 * FROM users.tblUserDetails ORDER BY userID DESC";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            if (reader.Read())
+            {
+                Console.WriteLine("----- Latest User Details -----");
+                Console.WriteLine($"User ID   : {reader["userID"]}");
+                Console.WriteLine($"First Name: {reader["firstName"]}");
+                Console.WriteLine($"Last Name : {reader["lastName"]}");
+                Console.WriteLine($"Email     : {reader["emailID"]}");
+                // Add more fields as needed
+            }
+            else
+            {
+                Console.WriteLine("No users found in the database.");
+            }
+        }
+    }
+
+    public List<Food> GetAllFoods()
 	{
 		List<Food> foods = new List<Food>();
-		string sqlString = "SELECT * FROM admin.tblFoods";
+		string sqlString = "SELECT * FROM admins.tblFoods";
 		using (SqlCommand cmd = new SqlCommand(sqlString, conn))
 		{
 			using (SqlDataReader reader = cmd.ExecuteReader())
@@ -53,7 +98,6 @@ public class StorageManager
 		}
 		return foods;
 	}
-
 	public int InsertFood(Food foodtemp)
 	{
 		using (SqlCommand cmd = new SqlCommand("INSERT INTO admin.Foods (FOOD_NAME) VALUES (@FoodName); SELECT SCOPE_IDENTITY();", conn))
@@ -63,17 +107,6 @@ public class StorageManager
 		}
 
     }
-
-    public int InsertUserDetails(UserDetails userDetailstemp)
-    {
-        using (SqlCommand cmd = new SqlCommand("INSERT INTO users.UserDetails (firstName) VALUES (@FoodName); SELECT SCOPE_IDENTITY();", conn))
-        {
-            cmd.Parameters.AddWithValue("@FoodName", userDetailstemp.FirstName);
-            return Convert.ToInt32(cmd.ExecuteScalar());
-        }
-
-    }
-
     public int DeleteFoodByName(string foodName)
 	{
 		using (SqlCommand cmd = new SqlCommand("DELETE FROM admin.Foods WHERE FOOD_NAME = @FoodName", conn))
@@ -83,7 +116,6 @@ public class StorageManager
 		}
 
 	}
-
 	public int UpdateFoodName(int foodID, string foodName)
 	{
         using (SqlCommand cmd = new SqlCommand("UPDATE admin.Foods SET FOOD_NAME = @FoodName WHERE FOOD_ID = foodID", conn))
@@ -100,7 +132,6 @@ public class StorageManager
 			Console.WriteLine("Connection closed");
 		}
 	}
-
 	public int? GetUserID(int userID, string passwordkey)
 	{
         using (SqlCommand cmd = new SqlCommand("SELECT userID FROM users.tblUserDetails WHERE userID = @userID AND passwordkey = @passwordkey", conn))
@@ -118,10 +149,9 @@ public class StorageManager
 			}
         }
     }
-
     public int? GetAdminID(int adminID, string passwordkey)
     {
-        using (SqlCommand cmd = new SqlCommand("SELECT adminID FROM admin.tblAdminDetails WHERE adminID = @adminID AND passwordkey = @passwordkey", conn))
+        using (SqlCommand cmd = new SqlCommand("SELECT adminID FROM admins.tblAdminDetails WHERE adminID = @adminID AND passwordkey = @passwordkey", conn))
         {
             cmd.Parameters.AddWithValue("@adminID", adminID);
             cmd.Parameters.AddWithValue("@passwordkey", passwordkey);
@@ -136,37 +166,5 @@ public class StorageManager
             }
         }
     }
-
-    public List<UserDetails> GetAllUserDetails()
-    {
-        List<UserDetails> users = new List<UserDetails>();
-
-        string query = "SELECT * FROM users.tblUserDetails"; // Adjust schema/table if needed
-
-        using (SqlCommand cmd = new SqlCommand(query, conn))
-        {
-            using (SqlDataReader reader = cmd.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    int userID = Convert.ToInt32(reader["userID"]);
-                    string firstName = reader["firstName"].ToString();
-                    string lastName = reader["lastName"].ToString();
-                    string emailID = reader["emailID"].ToString();
-                    string passwordKey = reader["passwordKey"].ToString();
-                    int age = Convert.ToInt32(reader["age"]);
-                    string gender = reader["gender"].ToString();
-                    double weight = Convert.ToDouble(reader["userWeight"]);
-                    double height = Convert.ToDouble(reader["userHeight"]);
-                    DateOnly signUpDate = DateOnly.FromDateTime(Convert.ToDateTime(reader["signUpDate"]));
-
-                    users.Add(new UserDetails(userID, firstName, lastName, emailID, passwordKey, age, gender, weight, height, signUpDate));
-                }
-            }
-        }
-
-        return users;
-    }
-
 
 }

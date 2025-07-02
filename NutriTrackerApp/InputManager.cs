@@ -18,8 +18,8 @@ namespace NutriTrackerApp //This class manages how to make the input look like a
             // Stores the Y-position (row) of each field
             int[] yRowPosition = new int[labels.Length];
 
-            int spaceFromLeft = 10;  // X-position of field labels
-            int spaceFromTop = 8;    // Y-position of the first field
+            int spaceFromLeft = 40;  // X-position of field labels
+            int spaceFromTop = 14;    // Y-position of the first field
 
             for (int i = 0; i < labels.Length; i++)
             {
@@ -44,7 +44,7 @@ namespace NutriTrackerApp //This class manages how to make the input look like a
                 // Write the current value again after clearing the field
                 Console.SetCursorPosition(inputLeftPadding, inputTopPadding);
 
-                if (labels[currentField].ToLower().Contains("password"))
+                if (labels[currentField].ToLower().Contains("password") || (labels[currentField].ToLower().Contains("confirm password")))
                 {
                     Console.Write(new string('*', collectedResponses[currentField].Length));
                 }
