@@ -154,7 +154,18 @@ public class StorageManager
         }
         return value.PadRight(width);
     }
+    public bool DeleteUserByID(int userID)
+    {
+        string query = "DELETE FROM users.tblUserDetails WHERE userID = @UserID";
 
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@UserID", userID);
+
+            int rowsAffected = cmd.ExecuteNonQuery();
+            return rowsAffected > 0;
+        }
+    }
     public List<Food> GetAllFoods()
 	{
 		List<Food> foods = new List<Food>();

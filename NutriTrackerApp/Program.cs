@@ -121,10 +121,10 @@ namespace NutriTrackerApp
                 "Email Adress",
                 "Password",
                 "Confirm Password",
-                "Age (optional)",
-                "Gender (optional)",
-                "Weight (optional) e.g 45",
-                "Height (optional) e.g 172",
+                "Age",
+                "Gender (e.g female or male)",
+                "Weight e.g 45",
+                "Height e.g 172",
                 });
 
                 if (collectedResponses[0] == "" || collectedResponses[1] == "" || collectedResponses[2] == "" || collectedResponses[3] == "" || collectedResponses[4] == "")
@@ -151,13 +151,14 @@ namespace NutriTrackerApp
                         int userID = 0;
                         UserDetails user1 = new UserDetails(userID, firstName, lastname, emailID, passwordkey, age, gender, weight, height, date);
                         TheID = storageManager.InsertUser(user1);
+                        userType = "user";
                         ShowMessage($"New user created with ID: {TheID}, press any key to continue", 9);
                         break;
                     }
                     catch (Exception ex)
                     {
 
-                        ShowMessage("Ivalid format (age, weight, height must be integer and gender can only be male, female, or null), press any key to fill again", 9);
+                        ShowMessage("Ivalid format (age, weight, height must be integer and gender can only be male, female), press any key to fill again", 9);
                     }
                 }
             }
@@ -284,9 +285,9 @@ namespace NutriTrackerApp
             "Password",
             "Confirm Password",
             "Age",
-            "Gender",
-            "Weight",
-            "Height"
+            "Gender (female or male)",
+            "Weight (e.g 45)",
+            "Height (e.g 172)"
                 });
 
                 if (collectedResponses[0] == "" || collectedResponses[1] == "" || collectedResponses[2] == "" || collectedResponses[3] == "" || collectedResponses[4] == "")
@@ -324,12 +325,52 @@ namespace NutriTrackerApp
 
             UserOptions();
         }
+        public void DeleteUser(int userID)
+        {
+            Menu confirmDelete;
+            
+            view.Clear("Delete User");
+            if (userType == "admin")
+            {
+                confirmDelete = new Menu("\nAre you sure you want to delete this account?\n", new string[] { "Yes", "No" });
+            }
+            else
+            {
+                confirmDelete = new Menu("\nAre you sure you want to delete your account?\n", new string[] { "Yes", "No" });
+            }
+            
+            int selectedIndex = confirmDelete.Run("Delete Account");
+
+            switch (selectedIndex)
+            {
+                case 0:
+                    bool success = storageManager.DeleteUserByID(userID);
+                    view.Clear("Delete User");
+                    if (success)
+                    {
+                        Console.WriteLine("This account has been successfully deleted.");
+                        System.Environment.Exit(0);
+                    }
+                    else
+                    {
+                        Console.WriteLine("An error occurred. The account could not be deleted. It may be it doesnt exist");
+                    }
+                    Console.WriteLine("Press any key to go back...");
+                    Console.ReadKey(true);
+                    UserOptions();
+                    break;
+
+                case 1:
+                    UserOptions();
+                    break;
+            }
+        }
         public void UserOptions()
         {
             if (userType == "user")
             {
                 string prompt = "";
-                string[] options = { "View you details", "Update your details", "Delete account"};
+                string[] options = { "View you details", "Update your details", "Delete account" };
                 Menu mainMenu = new Menu(prompt, options);
                 int SelectedIndex = mainMenu.Run("Settings");
                 view.Clear("Settings");
@@ -348,24 +389,14 @@ namespace NutriTrackerApp
                         UpdateUser(TheID);
                         break;
                     case 2:
-                        Console.WriteLine("DELETE YOUR DETAILS COMING SOON...Press any key to go back");
-                        ConsoleKeyInfo key4 = Console.ReadKey(true);
-                        UserOptions();
-                        break;
-                    case 3:
-                        UserHomePage();
-                        break;
-                    case 4:
-                        GetHelp();
-                        view.Clear("");
-                        UserOptions();
+                        DeleteUser(TheID);
                         break;
                 }
             }
             else
             {
                 string prompt = "";
-                string[] options = { "View all users", "Insert new user", "Update existing user details", "Delete a user"};
+                string[] options = { "View all users", "Insert new user", "Update existing user details", "Delete a user" };
                 Menu mainMenu = new Menu(prompt, options);
                 int SelectedIndex = mainMenu.Run("Manage Users");
                 view.Clear("Manage Users");
@@ -373,6 +404,9 @@ namespace NutriTrackerApp
                 switch (SelectedIndex)
                 {
                     case 0:
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Can only show top 100 users");
+                        Console.ResetColor();
                         storageManager.PrintUserDetails(userType, TheID);
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("\n\nPress any key to go back");
@@ -384,14 +418,34 @@ namespace NutriTrackerApp
                         InsertNewUser();
                         break;
                     case 2:
-                        Console.WriteLine("Update an existing user details COMING SOON...Press any key to go back");
-                        ConsoleKeyInfo key4 = Console.ReadKey(true);
-                        UserOptions();
+                        view.Clear("Edit User Details");
+                        Console.Write("\nUserID to edit: ");
+                        try
+                        {
+                            int usersID = Convert.ToInt32(Console.ReadLine());
+                            UpdateUser(usersID);
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowMessage("ID must be a number and cannot be null, press any key to go back", 2);
+                            Console.ReadKey(true);
+                            UserOptions();
+                        }
                         break;
                     case 3:
-                        Console.WriteLine("DELETE a user COMING SOON...Press any key to go back");
-                        ConsoleKeyInfo key5 = Console.ReadKey(true);
-                        UserOptions();
+                        view.Clear("Delete User");
+                        Console.Write("\nUserID to delete: ");
+                        try
+                        {
+                            int usersID = Convert.ToInt32(Console.ReadLine());
+                            DeleteUser(usersID);
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowMessage("ID must be a number and cannot be null, press any key to go back", 2);
+                            Console.ReadKey(true);
+                            UserOptions();
+                        }
                         break;
                 }
             }
@@ -652,38 +706,9 @@ namespace NutriTrackerApp
                         break;
             }
         }
-        //private static void UpdateFoodName()
-        //{
-        //    view.DisplayMessage("Enter the food_id to update: ");
-        //    int foodID = view.GetIntInput();
-        //    view.DisplayMessage("Enter the new food name: ");
-        //    string foodName = view.GetInput();
-        //    int rowsAffected = storageManager.UpdateFoodName(foodID, foodName);
-        //    view.DisplayMessage($"Rows affected: {rowsAffected}");
-        //}
-        //private static void InsertNewFood()
-        //{
-        //    view.DisplayMessage("Enter the new food name: ");
-        //    string foodName = view.GetInput();
-        //    string category = view.GetInput();
-        //    double calories = Convert.ToDouble(view.GetInput());
-        //    double carbohydrates = Convert.ToDouble(view.GetInput());
-        //    double proteins = Convert.ToDouble(view.GetInput());
-        //    double fats = Convert.ToDouble(view.GetInput());
-        //    double servingSize = Convert.ToDouble(view.GetInput());
-        //    int foodID = 0;
-        //    Food food1 = new Food(foodID, foodName, category, calories, carbohydrates, proteins, fats, servingSize);
-        //    int generatedId = storageManager.InsertFood(food1);
-        //    view.DisplayMessage($"New food inserted with ID: {generatedId}");
-
-        //}
-        private static void DeleteFoodByName()
-        {
-
-        }
         public void ShowMessage(string message, int labelsLength)
         {
-            if (message.Length > 100)
+            if (message.Length > 80)
             {
                 int spaceLeftForHeader = 15;
                 int messagePosY = spaceLeftForHeader + (labelsLength * 2);
