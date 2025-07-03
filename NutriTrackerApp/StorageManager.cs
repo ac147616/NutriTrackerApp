@@ -154,6 +154,26 @@ public class StorageManager
             return Convert.ToInt32(cmd.ExecuteScalar());
         }
     }
+    public void UpdateAdmin(AdminDetails admin)
+    {
+        string query = @"UPDATE admins.tblAdminDetails 
+                     SET firstName = @FirstName, 
+                         lastName = @LastName, 
+                         emailID = @EmailID, 
+                         passwordKey = @PasswordKey 
+                     WHERE adminID = @AdminID";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@FirstName", admin.FirstName);
+            cmd.Parameters.AddWithValue("@LastName", admin.LastName);
+            cmd.Parameters.AddWithValue("@EmailID", admin.EmailID);
+            cmd.Parameters.AddWithValue("@PasswordKey", admin.Passwordkey);
+            cmd.Parameters.AddWithValue("@AdminID", admin.AdminID);
+
+            cmd.ExecuteNonQuery();
+        }
+    }
     public void PrintAdminDetails()
     {
         Console.WriteLine();
@@ -347,5 +367,28 @@ public class StorageManager
             }
         }
     }
+    public AdminDetails GetAdminByID(int id)
+    {
+        string query = "SELECT * FROM admins.tblAdminDetails WHERE adminID = @AdminID";
 
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@AdminID", id);
+
+            using (SqlDataReader reader = cmd.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    return new AdminDetails(
+                        id,
+                        reader.GetString(1), // FirstName
+                        reader.GetString(2), // LastName
+                        reader.GetString(3), // EmailID
+                        reader.GetString(4)  // PasswordKey
+                    );
+                }
+            }
+        }
+        return null;
+    }
 }

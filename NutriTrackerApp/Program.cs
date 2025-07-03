@@ -379,6 +379,65 @@ namespace NutriTrackerApp
 
             UserOptions();
         }
+        public void UpdateAdmin(int TheID)
+        {
+            AdminDetails admin = storageManager.GetAdminByID(TheID);
+
+            while (true)
+            {
+                if (admin == null)
+                {
+                    Console.WriteLine("Admin not found.");
+                    return;
+                }
+
+                view.Clear("Update Admin");
+                Console.WriteLine();
+                Console.SetCursorPosition(50, Console.CursorTop);
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("(press ctrl + enter to submit form)\n");
+                Console.ForegroundColor = ConsoleColor.White;
+
+                List<string> collectedResponses = InputManager.GetInput(new string[]
+                {
+            "First Name",
+            "Last Name",
+            "Email Address",
+            "Password",
+            "Confirm Password"
+                });
+
+                if (collectedResponses[0] == "" || collectedResponses[1] == "" || collectedResponses[2] == "" || collectedResponses[3] == "" || collectedResponses[4] == "")
+                {
+                    ShowMessage("Required fields cannot be empty, press any key to fill again", 9);
+                }
+                else if (collectedResponses[3] != collectedResponses[4])
+                {
+                    ShowMessage("Password does not match confirmed password, press any key to fill again", 9);
+                }
+                else
+                {
+                    try
+                    {
+                        admin.FirstName = collectedResponses[0];
+                        admin.LastName = collectedResponses[1];
+                        admin.EmailID = collectedResponses[2];
+                        admin.Passwordkey = collectedResponses[3];
+
+                        storageManager.UpdateAdmin(admin);
+
+                        ShowMessage("Admin updated successfully. Press any key to continue.", 9);
+                        break;
+                    }
+                    catch
+                    {
+                        ShowMessage("Invalid input format. Please try again.", 9);
+                    }
+                }
+            }
+
+            AdminOptions();
+        }
         public void DeleteUser(int userID)
         {
             Menu confirmDelete;
@@ -529,9 +588,19 @@ namespace NutriTrackerApp
                     InsertNewAdmin();
                     break;
                 case 2:
-                    Console.WriteLine("update existing admin...Press any key to go back");
-                    ConsoleKeyInfo key2 = Console.ReadKey(true);
-                    AdminOptions();
+                    view.Clear("Edit User Details");
+                    Console.Write("\nAdminID to edit: ");
+                    try
+                    {
+                        int usersID = Convert.ToInt32(Console.ReadLine());
+                        UpdateAdmin(usersID);
+                    }
+                    catch (Exception ex)
+                    {
+                        ShowMessage("ID must be a number and cannot be null, press any key to go back", 2);
+                        Console.ReadKey(true);
+                        AdminOptions();
+                    }
                     break;
                 case 3:
                     Console.WriteLine("delete an admin Press any key to go back");
