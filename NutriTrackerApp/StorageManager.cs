@@ -49,6 +49,21 @@ public class StorageManager
             return Convert.ToInt32(cmd.ExecuteScalar());
         }
     }
+    public int InsertAdmin(AdminDetails admin)
+    {
+        string query = "INSERT INTO admins.tblAdminDetails (firstName, lastName, emailID, passwordKey) " +
+                       "VALUES (@FirstName, @LastName, @EmailID, @PasswordKey); SELECT SCOPE_IDENTITY();";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@FirstName", admin.FirstName);
+            cmd.Parameters.AddWithValue("@LastName", admin.LastName);
+            cmd.Parameters.AddWithValue("@EmailID", admin.EmailID);
+            cmd.Parameters.AddWithValue("@PasswordKey", admin.Passwordkey);
+
+            return Convert.ToInt32(cmd.ExecuteScalar());
+        }
+    }
     public void UpdateUser(UserDetails user1)
     {
         string query = @"UPDATE users.tblUserDetails 
@@ -73,6 +88,26 @@ public class StorageManager
             cmd.Parameters.AddWithValue("@UserWeight", user1.UserWeight);
             cmd.Parameters.AddWithValue("@UserHeight", user1.UserHeight);
             cmd.Parameters.AddWithValue("@UserID", user1.UserID);
+
+            cmd.ExecuteNonQuery();
+        }
+    }
+    public void UpdateAdmin(AdminDetails admin)
+    {
+        string query = @"UPDATE admins.tblAdminDetails 
+                     SET firstName = @FirstName, 
+                         lastName = @LastName, 
+                         emailID = @EmailID, 
+                         passwordKey = @PasswordKey 
+                     WHERE adminID = @AdminID";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@FirstName", admin.FirstName);
+            cmd.Parameters.AddWithValue("@LastName", admin.LastName);
+            cmd.Parameters.AddWithValue("@EmailID", admin.EmailID);
+            cmd.Parameters.AddWithValue("@PasswordKey", admin.Passwordkey);
+            cmd.Parameters.AddWithValue("@AdminID", admin.AdminID);
 
             cmd.ExecuteNonQuery();
         }
@@ -137,41 +172,6 @@ public class StorageManager
                     rowCount++;
                 }
             }
-        }
-    }
-    public int InsertAdmin(AdminDetails admin)
-    {
-        string query = "INSERT INTO admins.tblAdminDetails (firstName, lastName, emailID, passwordKey) " +
-                       "VALUES (@FirstName, @LastName, @EmailID, @PasswordKey); SELECT SCOPE_IDENTITY();";
-
-        using (SqlCommand cmd = new SqlCommand(query, conn))
-        {
-            cmd.Parameters.AddWithValue("@FirstName", admin.FirstName);
-            cmd.Parameters.AddWithValue("@LastName", admin.LastName);
-            cmd.Parameters.AddWithValue("@EmailID", admin.EmailID);
-            cmd.Parameters.AddWithValue("@PasswordKey", admin.Passwordkey);
-
-            return Convert.ToInt32(cmd.ExecuteScalar());
-        }
-    }
-    public void UpdateAdmin(AdminDetails admin)
-    {
-        string query = @"UPDATE admins.tblAdminDetails 
-                     SET firstName = @FirstName, 
-                         lastName = @LastName, 
-                         emailID = @EmailID, 
-                         passwordKey = @PasswordKey 
-                     WHERE adminID = @AdminID";
-
-        using (SqlCommand cmd = new SqlCommand(query, conn))
-        {
-            cmd.Parameters.AddWithValue("@FirstName", admin.FirstName);
-            cmd.Parameters.AddWithValue("@LastName", admin.LastName);
-            cmd.Parameters.AddWithValue("@EmailID", admin.EmailID);
-            cmd.Parameters.AddWithValue("@PasswordKey", admin.Passwordkey);
-            cmd.Parameters.AddWithValue("@AdminID", admin.AdminID);
-
-            cmd.ExecuteNonQuery();
         }
     }
     public void PrintAdminDetails()
@@ -258,81 +258,6 @@ public class StorageManager
             return rowsAffected > 0;
         }
     }
-    public List<Food> GetAllFoods()
-	{
-		List<Food> foods = new List<Food>();
-		string sqlString = "SELECT * FROM admins.tblFoods";
-		using (SqlCommand cmd = new SqlCommand(sqlString, conn))
-		{
-			using (SqlDataReader reader = cmd.ExecuteReader())
-			{
-				while (reader.Read())
-				{
-					int foodId = Convert.ToInt32(reader["FOOD_ID"]);
-					string foodName = reader["FOOD_NAME"].ToString();
-					string category = reader["CATEGORY"].ToString();
-                    double calories = Convert.ToDouble(reader["CATEGORY"].ToString());
-                    double carbohydrates = Convert.ToDouble(reader["CARBOHYDRATES"].ToString());
-                    double proteins = Convert.ToDouble(reader["PROTEINS"].ToString());
-                    double fats = Convert.ToDouble(reader["FATS"].ToString());
-                    double servingSize = Convert.ToDouble(reader["SERVING_SIZE"].ToString());
-                    foods.Add(new Food(foodId, foodName, category, calories, carbohydrates, proteins, fats, servingSize));
-				}
-			}
-		}
-		return foods;
-	}
-	public int InsertFood(Food foodtemp)
-	{
-		using (SqlCommand cmd = new SqlCommand("INSERT INTO admin.Foods (FOOD_NAME) VALUES (@FoodName); SELECT SCOPE_IDENTITY();", conn))
-		{
-			cmd.Parameters.AddWithValue("@FoodName", foodtemp.FoodName);
-			return Convert.ToInt32(cmd.ExecuteScalar());
-		}
-
-    }
-    public int DeleteFoodByName(string foodName)
-	{
-		using (SqlCommand cmd = new SqlCommand("DELETE FROM admin.Foods WHERE FOOD_NAME = @FoodName", conn))
-		{
-			cmd.Parameters.AddWithValue("@FoodName", foodName);
-			return cmd.ExecuteNonQuery();
-		}
-
-	}
-	public int UpdateFoodName(int foodID, string foodName)
-	{
-        using (SqlCommand cmd = new SqlCommand("UPDATE admin.Foods SET FOOD_NAME = @FoodName WHERE FOOD_ID = foodID", conn))
-        {
-            cmd.Parameters.AddWithValue("@FoodName", foodName);
-            return cmd.ExecuteNonQuery();
-        }
-    }
-	public void CloseConnection()
-	{
-		if (conn != null && conn.State == ConnectionState.Open)
-		{
-			conn.Close();
-			Console.WriteLine("Connection closed");
-		}
-	}
-	public int GetUserID(int userID, string passwordkey)
-	{
-        using (SqlCommand cmd = new SqlCommand("SELECT userID FROM users.tblUserDetails WHERE userID = @userID AND passwordkey = @passwordkey", conn))
-        {
-            cmd.Parameters.AddWithValue("@userID", userID);
-            cmd.Parameters.AddWithValue("@passwordkey", passwordkey);
-
-			if (cmd.ExecuteScalar() != null)
-			{ 
-				return Convert.ToInt32(cmd.ExecuteScalar()); //return only one column
-			}
-			else
-			{
-				return 0;
-			}
-        }
-    }
     public UserDetails GetUserByID(int id)
     {
         string query = "SELECT * FROM users.tblUserDetails WHERE userID = @UserID";
@@ -362,23 +287,6 @@ public class StorageManager
         }
         return null;
     }
-    public int GetAdminID(int adminID, string passwordkey)
-    {
-        using (SqlCommand cmd = new SqlCommand("SELECT adminID FROM admins.tblAdminDetails WHERE adminID = @adminID AND passwordkey = @passwordkey", conn))
-        {
-            cmd.Parameters.AddWithValue("@adminID", adminID);
-            cmd.Parameters.AddWithValue("@passwordkey", passwordkey);
-
-            if (cmd.ExecuteScalar() != null)
-            {
-                return Convert.ToInt32(cmd.ExecuteScalar()); //return only one column
-            }
-            else
-            {
-                return 0;
-            }
-        }
-    }
     public AdminDetails GetAdminByID(int id)
     {
         string query = "SELECT * FROM admins.tblAdminDetails WHERE adminID = @AdminID";
@@ -402,5 +310,47 @@ public class StorageManager
             }
         }
         return null;
+    }
+    public int GetUserID(int userID, string passwordkey)
+    {
+        using (SqlCommand cmd = new SqlCommand("SELECT userID FROM users.tblUserDetails WHERE userID = @userID AND passwordkey = @passwordkey", conn))
+        {
+            cmd.Parameters.AddWithValue("@userID", userID);
+            cmd.Parameters.AddWithValue("@passwordkey", passwordkey);
+
+            if (cmd.ExecuteScalar() != null)
+            {
+                return Convert.ToInt32(cmd.ExecuteScalar()); //return only one column
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
+    public int GetAdminID(int adminID, string passwordkey)
+    {
+        using (SqlCommand cmd = new SqlCommand("SELECT adminID FROM admins.tblAdminDetails WHERE adminID = @adminID AND passwordkey = @passwordkey", conn))
+        {
+            cmd.Parameters.AddWithValue("@adminID", adminID);
+            cmd.Parameters.AddWithValue("@passwordkey", passwordkey);
+
+            if (cmd.ExecuteScalar() != null)
+            {
+                return Convert.ToInt32(cmd.ExecuteScalar()); //return only one column
+            }
+            else
+            {
+                return 0;
+            }
+        }
+    }
+    public void CloseConnection()
+    {
+        if (conn != null && conn.State == ConnectionState.Open)
+        {
+            conn.Close();
+            Console.WriteLine("Connection closed");
+        }
     }
 }
