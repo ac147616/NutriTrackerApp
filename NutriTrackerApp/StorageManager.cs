@@ -246,6 +246,18 @@ public class StorageManager
             return rowsAffected > 0;
         }
     }
+    public bool DeleteAdminByID(int adminID)
+    {
+        string query = "DELETE FROM admins.tblAdminDetails WHERE adminID = @AdminID";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@AdminID", adminID);
+
+            int rowsAffected = cmd.ExecuteNonQuery();
+            return rowsAffected > 0;
+        }
+    }
     public List<Food> GetAllFoods()
 	{
 		List<Food> foods = new List<Food>();

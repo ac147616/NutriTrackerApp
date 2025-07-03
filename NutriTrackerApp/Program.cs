@@ -478,6 +478,42 @@ namespace NutriTrackerApp
                     break;
             }
         }
+        public void DeleteAdmin(int adminID)
+        {
+            view.Clear("Delete Admin");
+            Menu confirmDelete = new Menu("\nAre you sure you want to delete this admin account?\n", new string[] { "Yes", "No" });
+
+            int selectedIndex = confirmDelete.Run("Delete Admin");
+
+            switch (selectedIndex)
+            {
+                case 0:
+                    bool success = storageManager.DeleteAdminByID(adminID);
+                    view.Clear("Delete Admin");
+
+                    if (success)
+                    {
+                        Console.WriteLine("The admin account has been successfully deleted.");
+                        if (adminID == TheID)
+                        {
+                            System.Environment.Exit(0);
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("An error occurred. The account could not be deleted. It may not exist.");
+                    }
+
+                    Console.WriteLine("Press any key to go back...");
+                    Console.ReadKey(true);
+                    AdminOptions();
+                    break;
+
+                case 1:
+                    AdminOptions();
+                    break;
+            }
+        }
         public void UserOptions()
         {
             if (userType == "user")
@@ -603,9 +639,19 @@ namespace NutriTrackerApp
                     }
                     break;
                 case 3:
-                    Console.WriteLine("delete an admin Press any key to go back");
-                    ConsoleKeyInfo key3 = Console.ReadKey(true);
-                    AdminOptions();
+                    view.Clear("Delete Admin");
+                    Console.Write("\nAdminID to delete: ");
+                    try
+                    {
+                        int adminsID = Convert.ToInt32(Console.ReadLine());
+                        DeleteAdmin(adminsID);
+                    }
+                    catch (Exception ex)
+                    {
+                        ShowMessage("ID must be a number and cannot be null, press any key to go back", 2);
+                        Console.ReadKey(true);
+                        UserOptions();
+                    }
                     break;
             }
         }
