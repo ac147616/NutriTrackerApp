@@ -16,20 +16,6 @@ public class ConsoleView
 		}
 	}
 
-	public void DisplayMessage(string message)
-	{
-		Console.WriteLine(message);
-	}
-
-	public string GetInput()
-	{
-		return Console.ReadLine();
-	}
-
-	public int GetIntInput()
-	{
-		return Convert.ToInt32(Console.ReadLine());
-	}
 
 	public void Help()
 	{

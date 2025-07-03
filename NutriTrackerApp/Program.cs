@@ -9,7 +9,7 @@ namespace NutriTrackerApp
         private static StorageManager storageManager;
         private static ConsoleView view;
         public string userType = "";
-        public int? TheID = null;
+        public int TheID = 0;
         static void Main(string[] args)
         {
             string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=nutriTracker2;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
@@ -50,11 +50,11 @@ namespace NutriTrackerApp
         }
         public void UserHomePage()
         {
-            string prompt = "\nYou have arrived at the User Home Page, choose an option using the arrow keys and pressing enter to select\n";
+            string prompt = "";
             string[] options = { "Settings", "Allergies", "Food", "Diet Plans", "Goals", "Daily Log"};
             Menu mainMenu = new Menu(prompt, options);
-            int SelectedIndex = mainMenu.Run("");
-            view.Clear("");
+            int SelectedIndex = mainMenu.Run("User Home Page");
+            view.Clear("User Home Page");
 
             switch (SelectedIndex)
             {
@@ -84,8 +84,8 @@ namespace NutriTrackerApp
             string prompt = "";
             string[] options = { "Users", "Admins", "Foods", "Diet Plans"};
             Menu mainMenu = new Menu(prompt, options);
-            int SelectedIndex = mainMenu.Run("");
-            view.Clear("");
+            int SelectedIndex = mainMenu.Run("Admin Home Page");
+            view.Clear("Admin Hone Page");
 
             switch (SelectedIndex)
             {
@@ -123,8 +123,8 @@ namespace NutriTrackerApp
                 "Confirm Password",
                 "Age (optional)",
                 "Gender (optional)",
-                "Weight (optional)",
-                "Height (optional)",
+                "Weight (optional) e.g 45",
+                "Height (optional) e.g 172",
                 });
 
                 if (collectedResponses[0] == "" || collectedResponses[1] == "" || collectedResponses[2] == "" || collectedResponses[3] == "" || collectedResponses[4] == "")
@@ -163,7 +163,6 @@ namespace NutriTrackerApp
             }
             UserHomePage();
         }
-        
         public void ExistingUserLogIn()
         {
             while (true)
@@ -186,8 +185,8 @@ namespace NutriTrackerApp
                     int userID = Convert.ToInt32(collectedResponses[0]);
                     string passwordkey = collectedResponses[1];
                     userType = "user";
-                    int? result = storageManager.GetUserID(userID, passwordkey);
-                    if (result == null)
+                    int result = storageManager.GetUserID(userID, passwordkey);
+                    if (result == 0)
                     {
                         ShowMessage("Invalid ID and password combination, press any key to try again", 2);
                     }
@@ -208,7 +207,6 @@ namespace NutriTrackerApp
             UserHomePage();
            
         }
-
         public void AdminLogIn()
         {
             while (true)
@@ -231,8 +229,8 @@ namespace NutriTrackerApp
                     int adminID = Convert.ToInt32(collectedResponses[0]);
                     string passwordkey = collectedResponses[1];
                     userType = "admin";
-                    int? result = storageManager.GetAdminID(adminID, passwordkey);
-                    if (result == null)
+                    int result = storageManager.GetAdminID(adminID, passwordkey);
+                    if (result == 0)
                     {
                         ShowMessage("Invalid ID and password combination, press any key to try again", 2);
                     }
@@ -256,16 +254,19 @@ namespace NutriTrackerApp
         {
             if (userType == "user")
             {
-                string prompt = "\nSettings, choose an option using the arrow keys and pressing enter to select\n";
-                string[] options = { "View you details", "Update your details", "Delete account", "Back to home page", "Help",};
+                string prompt = "";
+                string[] options = { "View you details", "Update your details", "Delete account"};
                 Menu mainMenu = new Menu(prompt, options);
-                int SelectedIndex = mainMenu.Run("");
-                view.Clear("");
+                int SelectedIndex = mainMenu.Run("Settings");
+                view.Clear("Settings");
 
                 switch (SelectedIndex)
                 {
                     case 0:
-                        Console.WriteLine("VIEW YOUR DETAILS COMING SOON...Press any key to go back");
+                        storageManager.PrintUserDetails(userType, TheID);
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("\n\nPress any key to go back");
+                        Console.ResetColor();
                         ConsoleKeyInfo key = Console.ReadKey(true);
                         UserOptions();
                         break;
@@ -291,16 +292,19 @@ namespace NutriTrackerApp
             }
             else
             {
-                string prompt = "\nManage Users, choose an option using the arrow keys and pressing enter to select\n";
-                string[] options = { "View all users", "Insert new user", "Update existing user details", "Delete a user", "Back to home page", "Help",};
+                string prompt = "";
+                string[] options = { "View all users", "Insert new user", "Update existing user details", "Delete a user"};
                 Menu mainMenu = new Menu(prompt, options);
-                int SelectedIndex = mainMenu.Run("");
-                view.Clear("");
+                int SelectedIndex = mainMenu.Run("Manage Users");
+                view.Clear("Manage Users");
 
                 switch (SelectedIndex)
                 {
                     case 0:
-                        Console.WriteLine("VIEW All User DETAILS COMING SOON...Press any key to go back");
+                        storageManager.PrintUserDetails(userType, TheID);
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("\n\nPress any key to go back");
+                        Console.ResetColor();
                         ConsoleKeyInfo key = Console.ReadKey(true);
                         UserOptions();
                         break;
@@ -319,19 +323,9 @@ namespace NutriTrackerApp
                         ConsoleKeyInfo key5 = Console.ReadKey(true);
                         UserOptions();
                         break;
-                    case 4:
-                        AdminHomePage();
-                        break;
-                    case 5:
-                        GetHelp();
-
-                        view.Clear("");
-                        UserOptions();
-                        break;
                 }
             }
         }
-
         public void AdminOptions()
         {
             string prompt = "\nManage Admins, choose an option using the arrow keys and pressing enter to select\n";
@@ -409,7 +403,6 @@ namespace NutriTrackerApp
                     break;
             }
         }
-
         public void FoodOptions()
         {
             if (userType == "user")
@@ -480,7 +473,6 @@ namespace NutriTrackerApp
                 }
             }
         }
-
         public void DietPlansOptions()
         {
             if (userType == "user")
@@ -551,17 +543,14 @@ namespace NutriTrackerApp
                 }
             }
         }
-
         public void GoalsOptions()
         {
 
         }
-
         public void DailyLogOptions()
         {
 
         }
-
         public void Exit()
         {
             view.Clear("");
@@ -593,44 +582,38 @@ namespace NutriTrackerApp
                         break;
             }
         }
+        //private static void UpdateFoodName()
+        //{
+        //    view.DisplayMessage("Enter the food_id to update: ");
+        //    int foodID = view.GetIntInput();
+        //    view.DisplayMessage("Enter the new food name: ");
+        //    string foodName = view.GetInput();
+        //    int rowsAffected = storageManager.UpdateFoodName(foodID, foodName);
+        //    view.DisplayMessage($"Rows affected: {rowsAffected}");
+        //}
+        //private static void InsertNewFood()
+        //{
+        //    view.DisplayMessage("Enter the new food name: ");
+        //    string foodName = view.GetInput();
+        //    string category = view.GetInput();
+        //    double calories = Convert.ToDouble(view.GetInput());
+        //    double carbohydrates = Convert.ToDouble(view.GetInput());
+        //    double proteins = Convert.ToDouble(view.GetInput());
+        //    double fats = Convert.ToDouble(view.GetInput());
+        //    double servingSize = Convert.ToDouble(view.GetInput());
+        //    int foodID = 0;
+        //    Food food1 = new Food(foodID, foodName, category, calories, carbohydrates, proteins, fats, servingSize);
+        //    int generatedId = storageManager.InsertFood(food1);
+        //    view.DisplayMessage($"New food inserted with ID: {generatedId}");
 
-        private static void UpdateFoodName()
-        {
-            view.DisplayMessage("Enter the food_id to update: ");
-            int foodID = view.GetIntInput();
-            view.DisplayMessage("Enter the new food name: ");
-            string foodName = view.GetInput();
-            int rowsAffected = storageManager.UpdateFoodName(foodID, foodName);
-            view.DisplayMessage($"Rows affected: {rowsAffected}");
-        }
-        private static void InsertNewFood()
-        {
-            view.DisplayMessage("Enter the new food name: ");
-            string foodName = view.GetInput();
-            string category = view.GetInput();
-            double calories = Convert.ToDouble(view.GetInput());
-            double carbohydrates = Convert.ToDouble(view.GetInput());
-            double proteins = Convert.ToDouble(view.GetInput());
-            double fats = Convert.ToDouble(view.GetInput());
-            double servingSize = Convert.ToDouble(view.GetInput());
-            int foodID = 0;
-            Food food1 = new Food(foodID, foodName, category, calories, carbohydrates, proteins, fats, servingSize);
-            int generatedId = storageManager.InsertFood(food1);
-            view.DisplayMessage($"New food inserted with ID: {generatedId}");
-
-        }
-
+        //}
         private static void DeleteFoodByName()
         {
-            view.DisplayMessage("Enter the food name to delete: ");
-            string foodName = view.GetInput();
-            int rowsAffected = storageManager.DeleteFoodByName(foodName);
-            view.DisplayMessage($"Rows affected: {rowsAffected}");
-        }
 
+        }
         public void ShowMessage(string message, int labelsLength)
         {
-            if (message.Length < 100)
+            if (message.Length > 100)
             {
                 int spaceLeftForHeader = 15;
                 int messagePosY = spaceLeftForHeader + (labelsLength * 2);

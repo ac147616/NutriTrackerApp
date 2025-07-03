@@ -51,27 +51,81 @@ public class StorageManager
         }
     }
 
-    public void PrintLatestUserDetails()
+    public void PrintUserDetails(string userType, int? TheID)
     {
-        string query = "SELECT TOP 1 * FROM users.tblUserDetails ORDER BY userID DESC";
+        Console.WriteLine();
+        string query = (userType == "admin")
+            ? "SELECT firstName, lastName, emailID, age, gender, userWeight, userHeight, signUpDate FROM users.tblUserDetails"
+            : "SELECT firstName, lastName, emailID, age, gender, userWeight, userHeight, signUpDate FROM users.tblUserDetails WHERE userID = @UserID";
 
         using (SqlCommand cmd = new SqlCommand(query, conn))
-        using (SqlDataReader reader = cmd.ExecuteReader())
         {
-            if (reader.Read())
+            if (userType != "admin" && TheID.HasValue)
             {
-                Console.WriteLine("----- Latest User Details -----");
-                Console.WriteLine($"User ID   : {reader["userID"]}");
-                Console.WriteLine($"First Name: {reader["firstName"]}");
-                Console.WriteLine($"Last Name : {reader["lastName"]}");
-                Console.WriteLine($"Email     : {reader["emailID"]}");
-                // Add more fields as needed
+                cmd.Parameters.AddWithValue("@UserID", TheID.Value);
             }
-            else
+
+            using (SqlDataReader reader = cmd.ExecuteReader())
             {
-                Console.WriteLine("No users found in the database.");
+                if (!reader.HasRows)
+                {
+                    Console.WriteLine("No records found.");
+                    return;
+                }
+
+                var headers = new[]
+                {
+                ("First Name", 11),
+                ("Last Name", 11),
+                ("Email", 20),
+                ("Age", 3),
+                ("Gender", 6),
+                ("Weight", 6),
+                ("Height", 6),
+                ("Date", 10)
+            };
+
+                foreach (var (title, width) in headers)
+                {
+                    Console.Write(cut(title, width) + " | ");
+                }
+                Console.WriteLine();
+                int totalWidth = 11 + 11 + 20 + 3 + 6 + 6 + 6 + 10 + (3 * 8);
+                Console.WriteLine(new string('-', totalWidth)); // separator
+
+                int rowCount = 0;
+
+                // Print each row
+                while (reader.Read() && rowCount < 100)
+                {
+                    Console.Write(cut(reader.GetString(0), 11) + " | "); // First Name
+                    Console.Write(cut(reader.GetString(1), 11) + " | "); // Last Name
+                    Console.Write(cut(reader.GetString(2), 20) + " | "); // Email
+                    Console.Write(cut(reader.GetInt32(3).ToString(), 3) + " | "); // Age
+                    Console.Write(cut(reader.GetString(4), 6) + " | "); // Gender
+                    Console.Write(cut(Math.Round(reader.GetDecimal(5)).ToString(), 6) + " | "); // Weight
+                    Console.Write(cut(Math.Round(reader.GetDecimal(6)).ToString(), 6) + " | "); // Height
+                    Console.Write(cut(Convert.ToDateTime(reader.GetDateTime(7)).ToString("yyyy-MM-dd"), 10));
+                    Console.WriteLine();
+
+                    rowCount++;
+                }
             }
         }
+    }
+    private string cut(string value, int width)
+    {
+        if (value.Length < width)
+        {
+            string extraNeeded = new string(' ', width - value.Length);
+            value = extraNeeded + value;
+            return value;
+        }
+        if (value.Length > width)
+        {
+            return value.Substring(0, Math.Max(0, width - 3)) + "...";
+        }
+        return value.PadRight(width);
     }
 
     public List<Food> GetAllFoods()
@@ -132,7 +186,7 @@ public class StorageManager
 			Console.WriteLine("Connection closed");
 		}
 	}
-	public int? GetUserID(int userID, string passwordkey)
+	public int GetUserID(int userID, string passwordkey)
 	{
         using (SqlCommand cmd = new SqlCommand("SELECT userID FROM users.tblUserDetails WHERE userID = @userID AND passwordkey = @passwordkey", conn))
         {
@@ -145,11 +199,11 @@ public class StorageManager
 			}
 			else
 			{
-				return null;
+				return 0;
 			}
         }
     }
-    public int? GetAdminID(int adminID, string passwordkey)
+    public int GetAdminID(int adminID, string passwordkey)
     {
         using (SqlCommand cmd = new SqlCommand("SELECT adminID FROM admins.tblAdminDetails WHERE adminID = @adminID AND passwordkey = @passwordkey", conn))
         {
@@ -162,7 +216,7 @@ public class StorageManager
             }
             else
             {
-                return null;
+                return 0;
             }
         }
     }
