@@ -30,7 +30,6 @@ public class StorageManager
 			Console.WriteLine(ex.Message);
 		}
 	}
-
 	public int InsertUser(UserDetails user1)
 	{
         string query = "INSERT INTO users.tblUserDetails (firstName, lastName, emailID, passwordKey, age, gender, userWeight, userHeight, signUpDate) VALUES (@FirstName, @LastName, @EmailID, @PasswordKey, @Age, @Gender, @UserWeight, @UserHeight, @SignUpDate); SELECT SCOPE_IDENTITY();";
@@ -137,6 +136,52 @@ public class StorageManager
 
                     rowCount++;
                 }
+            }
+        }
+    }
+    public void PrintAdminDetails()
+    {
+        Console.WriteLine();
+        string query = "SELECT TOP 100 firstName, lastName, emailID FROM admins.tblAdminDetails";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            if (!reader.HasRows)
+            {
+                Console.WriteLine("No admin records found.");
+                return;
+            }
+
+            var headers = new[]
+            {
+            ("First Name", 11),
+            ("Last Name", 11),
+            ("Email", 20)
+        };
+
+            // Print header row
+            foreach (var (title, width) in headers)
+            {
+                Console.Write(cut(title, width) + " | ");
+            }
+            Console.WriteLine();
+
+            int totalWidth = 11 + 11 + 20 + (3 * 3); // column widths + 3 separators
+                                                     // total width + separators
+            Console.WriteLine(new string('-', totalWidth));
+
+            int rowCount = 0;
+
+            // Print each record row
+            while (reader.Read() && rowCount < 100)
+            {
+                Console.Write(cut(reader.GetString(0), 11) + " | "); // First Name
+                Console.Write(cut(reader.GetString(1), 11) + " | "); // Last Name
+                Console.Write(cut(reader.GetString(2), 20));         // Email
+                Console.WriteLine();
+
+                rowCount++;
             }
         }
     }

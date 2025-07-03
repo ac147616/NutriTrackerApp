@@ -452,18 +452,24 @@ namespace NutriTrackerApp
         }
         public void AdminOptions()
         {
-            string prompt = "\nManage Admins, choose an option using the arrow keys and pressing enter to select\n";
-            string[] options = { "View all admins", "Insert new admin", "Update existing admin", "Delete an admin", "Back to home page", "Help", };
+            string prompt = "";
+            string[] options = { "View all admins", "Insert new admin", "Update existing admin", "Delete an admin"};
             Menu mainMenu = new Menu(prompt, options);
-            int SelectedIndex = mainMenu.Run("");
-            view.Clear("");
+            int SelectedIndex = mainMenu.Run("Manage Admins");
+            view.Clear("Manage Admins");
 
             switch (SelectedIndex)
             {
                 case 0:
-                    Console.WriteLine("VIEW All admin DETAILS COMING SOON...Press any key to go back");
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Can only show a 100 results");
+                    Console.ResetColor();
+                    storageManager.PrintAdminDetails();
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("\n\nPress any key to go back");
+                    Console.ResetColor();
                     ConsoleKeyInfo key = Console.ReadKey(true);
-                    AdminOptions();
+                    UserOptions();
                     break;
                 case 1:
                     Console.WriteLine("Insert new admin COMING SOON...Press any key to go back");
