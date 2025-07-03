@@ -7,16 +7,6 @@ using System;
 
 public class ConsoleView
 {
-
-	public void DisplayFoods(List<Food> foods)
-	{
-		foreach (Food food in foods)
-		{
-			Console.WriteLine($"{food.FoodID}, {food.FoodName}, {food.Category}, {food.Calories}, {food.Carbohydrates}, {food.Proteins}, {food.Fats}, {food.ServingSize}");
-		}
-	}
-
-
 	public void Help()
 	{
 		Clear("Help");

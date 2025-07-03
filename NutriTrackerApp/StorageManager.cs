@@ -8,7 +8,6 @@ using System.Reflection;
 public class StorageManager
 {
 	private SqlConnection conn;
-
 	public StorageManager(string connectionString)
 	{
 		try
@@ -220,6 +219,40 @@ public class StorageManager
             }
         }
     }
+    public void PrintAllergiesByUserID(int userID)
+    {
+        string query = "SELECT allergy FROM users.tblAllergies WHERE userID = @UserID";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@UserID", userID);
+
+            using (SqlDataReader reader = cmd.ExecuteReader())
+            {
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"Allergies for User ID: {userID}");
+                Console.ResetColor();
+                Console.WriteLine(new string('-', 40));
+
+                int count = 0;
+
+                while (reader.Read())
+                {
+                    string allergy = reader.GetString(0);
+                    Console.WriteLine($"- {allergy}");
+                    count++;
+                }
+
+                if (count == 0)
+                {
+                    Console.WriteLine("No allergies recorded.");
+                }
+
+                Console.WriteLine(new string('-', 40));
+            }
+        }
+    }  
     private string cut(string value, int width)
     {
         if (value.Length < width)

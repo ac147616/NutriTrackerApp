@@ -666,14 +666,15 @@ namespace NutriTrackerApp
             switch (SelectedIndex)
             {
                 case 0:
-                    Console.WriteLine("view all allergies DETAILS COMING SOON...Press any key to go back");
+                    storageManager.PrintAllergiesByUserID(TheID);
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Press any key to go back");
+                    Console.ResetColor();
                     ConsoleKeyInfo key = Console.ReadKey(true);
                     AllergiesOptions();
                     break;
                 case 1:
-                    Console.WriteLine("Insert new allergy COMING SOON...Press any key to go back");
-                    ConsoleKeyInfo key1 = Console.ReadKey(true);
-                    AllergiesOptions();
+                    
                     break;
                 case 2:
                     Console.WriteLine("delete an allergy Press any key to go back");
