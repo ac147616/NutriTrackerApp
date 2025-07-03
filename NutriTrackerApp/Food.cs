@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NutriTrackerApp
 {
-   public class Food
+   public class Foods
     {
         public int FoodID { get; set; }
         public string FoodName { get; set; }
@@ -16,7 +16,7 @@ namespace NutriTrackerApp
         public double Proteins { get; set; }
         public double Fats { get; set; }
         public double ServingSize { get; set; }
-        public Food(int foodID, string foodName, string category, double calories, double carbohydrates, double proteins, double fats, double servingSize)
+        public Foods(int foodID, string foodName, string category, double calories, double carbohydrates, double proteins, double fats, double servingSize)
         {
             FoodID = foodID;
             FoodName = foodName;
