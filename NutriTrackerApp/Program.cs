@@ -161,7 +161,14 @@ namespace NutriTrackerApp
                     }
                 }
             }
-            UserHomePage();
+            if (userType == "admin")
+            {
+                UserOptions();
+            }
+            else
+            {
+                UserHomePage();
+            }
         }
         public void ExistingUserLogIn()
         {
@@ -250,6 +257,73 @@ namespace NutriTrackerApp
 
             AdminHomePage();
         }
+        public void UpdateUser(int TheID)
+        {
+            ConsoleView view = new ConsoleView();
+            UserDetails user = storageManager.GetUserByID(TheID);
+
+            while (true)
+            {
+                if (user == null)
+                {
+                    Console.WriteLine("User not found.");
+                }
+
+                view.Clear("Update User");
+                Console.WriteLine();
+                Console.SetCursorPosition(50, Console.CursorTop);
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("(press ctrl + enter to submit form)\n");
+                Console.ForegroundColor = ConsoleColor.White;
+
+                List<string> collectedResponses = InputManager.GetInput(new string[]
+                {
+            "First Name",
+            "Last Name",
+            "Email Address",
+            "Password",
+            "Confirm Password",
+            "Age",
+            "Gender",
+            "Weight",
+            "Height"
+                });
+
+                if (collectedResponses[0] == "" || collectedResponses[1] == "" || collectedResponses[2] == "" || collectedResponses[3] == "" || collectedResponses[4] == "")
+                {
+                    ShowMessage("Required fields cannot be empty, press any key to fill again", 9);
+                }
+                else if (collectedResponses[3] != collectedResponses[4])
+                {
+                    ShowMessage("Password does not match confirmed password, press any key to fill again", 9);
+                }
+                else
+                {
+                    try
+                    {
+                        user.FirstName = collectedResponses[0];
+                        user.LastName = collectedResponses[1];
+                        user.EmailID = collectedResponses[2];
+                        user.Passwordkey = collectedResponses[3];
+                        user.Age = Convert.ToInt32(collectedResponses[5]);
+                        user.Gender = collectedResponses[6];
+                        user.UserWeight = Convert.ToDouble(collectedResponses[7]);
+                        user.UserHeight = Convert.ToDouble(collectedResponses[8]);
+
+                        storageManager.UpdateUser(user);
+
+                        ShowMessage("User updated successfully. Press any key to continue.", 9);
+                        break;
+                    }
+                    catch
+                    {
+                        ShowMessage("Invalid input format. Please try again.", 9);
+                    }
+                }
+            }
+
+            UserOptions();
+        }
         public void UserOptions()
         {
             if (userType == "user")
@@ -271,9 +345,7 @@ namespace NutriTrackerApp
                         UserOptions();
                         break;
                     case 1:
-                        Console.WriteLine("UPDATE YOUR DETAILS COMING SOON...Press any key to go back");
-                        ConsoleKeyInfo key1 = Console.ReadKey(true);
-                        UserOptions();
+                        UpdateUser(TheID);
                         break;
                     case 2:
                         Console.WriteLine("DELETE YOUR DETAILS COMING SOON...Press any key to go back");
@@ -309,9 +381,7 @@ namespace NutriTrackerApp
                         UserOptions();
                         break;
                     case 1:
-                        Console.WriteLine("insert new user COMING SOON...Press any key to go back");
-                        ConsoleKeyInfo key1 = Console.ReadKey(true);
-                        UserOptions();
+                        InsertNewUser();
                         break;
                     case 2:
                         Console.WriteLine("Update an existing user details COMING SOON...Press any key to go back");

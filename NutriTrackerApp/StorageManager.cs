@@ -50,7 +50,34 @@ public class StorageManager
             return Convert.ToInt32(cmd.ExecuteScalar());
         }
     }
+    public void UpdateUser(UserDetails user1)
+    {
+        string query = @"UPDATE users.tblUserDetails 
+                    SET firstName = @FirstName, 
+                        lastName = @LastName, 
+                        emailID = @EmailID, 
+                        passwordKey = @PasswordKey, 
+                        age = @Age, 
+                        gender = @Gender, 
+                        userWeight = @UserWeight, 
+                        userHeight = @UserHeight 
+                    WHERE userID = @UserID";
 
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@FirstName", user1.FirstName);
+            cmd.Parameters.AddWithValue("@LastName", user1.LastName);
+            cmd.Parameters.AddWithValue("@EmailID", user1.EmailID);
+            cmd.Parameters.AddWithValue("@PasswordKey", user1.Passwordkey);
+            cmd.Parameters.AddWithValue("@Age", user1.Age);
+            cmd.Parameters.AddWithValue("@Gender", user1.Gender);
+            cmd.Parameters.AddWithValue("@UserWeight", user1.UserWeight);
+            cmd.Parameters.AddWithValue("@UserHeight", user1.UserHeight);
+            cmd.Parameters.AddWithValue("@UserID", user1.UserID);
+
+            cmd.ExecuteNonQuery();
+        }
+    }
     public void PrintUserDetails(string userType, int? TheID)
     {
         Console.WriteLine();
@@ -202,6 +229,35 @@ public class StorageManager
 				return 0;
 			}
         }
+    }
+    public UserDetails GetUserByID(int id)
+    {
+        string query = "SELECT * FROM users.tblUserDetails WHERE userID = @UserID";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@UserID", id);
+
+            using (SqlDataReader reader = cmd.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    return new UserDetails(
+                        id,
+                        reader.GetString(1), // FirstName
+                        reader.GetString(2), // LastName
+                        reader.GetString(3), // Email
+                        reader.GetString(4), // Password
+                        reader.GetInt32(5),  // Age
+                        reader.GetString(6), // Gender
+                        Convert.ToDouble(reader.GetDecimal(7)), // Weight
+                        Convert.ToDouble(reader.GetDecimal(8)), // Height
+                        reader.GetDateTime(9).ToString("yyyy-MM-dd") // SignUpDate
+                    );
+                }
+            }
+        }
+        return null;
     }
     public int GetAdminID(int adminID, string passwordkey)
     {
