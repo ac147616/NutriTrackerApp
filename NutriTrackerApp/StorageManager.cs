@@ -139,6 +139,21 @@ public class StorageManager
             }
         }
     }
+    public int InsertAdmin(AdminDetails admin)
+    {
+        string query = "INSERT INTO admins.tblAdminDetails (firstName, lastName, emailID, passwordKey) " +
+                       "VALUES (@FirstName, @LastName, @EmailID, @PasswordKey); SELECT SCOPE_IDENTITY();";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@FirstName", admin.FirstName);
+            cmd.Parameters.AddWithValue("@LastName", admin.LastName);
+            cmd.Parameters.AddWithValue("@EmailID", admin.EmailID);
+            cmd.Parameters.AddWithValue("@PasswordKey", admin.Passwordkey);
+
+            return Convert.ToInt32(cmd.ExecuteScalar());
+        }
+    }
     public void PrintAdminDetails()
     {
         Console.WriteLine();

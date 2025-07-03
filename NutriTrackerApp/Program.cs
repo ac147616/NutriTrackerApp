@@ -171,6 +171,60 @@ namespace NutriTrackerApp
                 UserHomePage();
             }
         }
+        public void InsertNewAdmin()
+        {
+            while (true)
+            {
+                view.Clear("Create New Admin");
+                Console.WriteLine();
+                Console.SetCursorPosition(50, Console.CursorTop);
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("(press ctrl + enter to submit form)\n");
+                Console.ForegroundColor = ConsoleColor.White;
+
+                List<string> collectedResponses = InputManager.GetInput(new string[]
+                {
+            "First Name",
+            "Last Name",
+            "Email Address",
+            "Password",
+            "Confirm Password"
+                });
+
+                // Basic validation
+                if (collectedResponses[0] == "" || collectedResponses[1] == "" ||
+                    collectedResponses[2] == "" || collectedResponses[3] == "" || collectedResponses[4] == "")
+                {
+                    ShowMessage("All fields are required. Press any key to fill again.", 9);
+                }
+                else if (collectedResponses[3] != collectedResponses[4])
+                {
+                    ShowMessage("Password and Confirm Password do not match. Press any key to fill again.", 9);
+                }
+                else
+                {
+                    try
+                    {
+                        string firstName = collectedResponses[0];
+                        string lastName = collectedResponses[1];
+                        string email = collectedResponses[2];
+                        string password = collectedResponses[3];
+
+                        AdminDetails newAdmin = new AdminDetails(0, firstName, lastName, email, password);
+                        int adminID = storageManager.InsertAdmin(newAdmin);
+
+                        ShowMessage($"New admin created with ID: {adminID}, press any key to continue", 9);
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                        ShowMessage("An error occurred while creating admin. Press any key to try again.", 9);
+                    }
+                }
+            }
+
+            AdminOptions();
+        }
         public void ExistingUserLogIn()
         {
             while (true)
@@ -472,9 +526,7 @@ namespace NutriTrackerApp
                     UserOptions();
                     break;
                 case 1:
-                    Console.WriteLine("Insert new admin COMING SOON...Press any key to go back");
-                    ConsoleKeyInfo key1 = Console.ReadKey(true);
-                    AdminOptions();
+                    InsertNewAdmin();
                     break;
                 case 2:
                     Console.WriteLine("update existing admin...Press any key to go back");
@@ -486,21 +538,12 @@ namespace NutriTrackerApp
                     ConsoleKeyInfo key3 = Console.ReadKey(true);
                     AdminOptions();
                     break;
-                case 4:
-                    AdminHomePage();
-                    break;
-                case 5:
-                    GetHelp();
-
-                    view.Clear("");
-                    AdminOptions();
-                    break;
             }
         }
         public void AllergiesOptions()
         {
             string prompt = "\nManage your allergies, choose an option using the arrow keys and pressing enter to select\n";
-            string[] options = { "View all allergies", "Insert new allergy",  "Delete an allergy", "Back to home page", "Help", };
+            string[] options = { "View all allergies", "Insert new allergy",  "Delete an allergy"};
             Menu mainMenu = new Menu(prompt, options);
             int SelectedIndex = mainMenu.Run("");
             view.Clear("");
@@ -538,7 +581,7 @@ namespace NutriTrackerApp
             if (userType == "user")
             {
                 string prompt = "\nView Foods, choose an option using the arrow keys and pressing enter to select\n";
-                string[] options = { "View all foods", "Back to home page", "Help", };
+                string[] options = { "View all foods"};
                 Menu mainMenu = new Menu(prompt, options);
                 int SelectedIndex = mainMenu.Run("");
                 view.Clear("");
@@ -550,21 +593,12 @@ namespace NutriTrackerApp
                         ConsoleKeyInfo key = Console.ReadKey(true);
                         FoodOptions();
                         break;
-                    case 4:
-                        UserHomePage();
-                        break;
-                    case 5:
-                        GetHelp();
-
-                        view.Clear("");
-                        FoodOptions();
-                        break;
                 }
             }
             else
             {
                 string prompt = "\nManage Foods, choose an option using the arrow keys and pressing enter to select\n";
-                string[] options = { "View all foods", "Insert new food", "Update existing food", "Delete a food", "Back to home page", "Help", };
+                string[] options = { "View all foods", "Insert new food", "Update existing food", "Delete a food"};
                 Menu mainMenu = new Menu(prompt, options);
                 int SelectedIndex = mainMenu.Run("");
                 view.Clear("");
@@ -608,7 +642,7 @@ namespace NutriTrackerApp
             if (userType == "user")
             {
                 string prompt = "\nView Diet Plans, choose an option using the arrow keys and pressing enter to select\n";
-                string[] options = { "View all diet plans", "Back to home page", "Help", };
+                string[] options = { "View all diet plans"};
                 Menu mainMenu = new Menu(prompt, options);
                 int SelectedIndex = mainMenu.Run("");
                 view.Clear("");
@@ -620,21 +654,12 @@ namespace NutriTrackerApp
                         ConsoleKeyInfo key = Console.ReadKey(true);
                         DietPlansOptions();
                         break;
-                    case 4:
-                        UserHomePage();
-                        break;
-                    case 5:
-                        GetHelp();
-
-                        view.Clear("");
-                        DietPlansOptions();
-                        break;
                 }
             }
             else
             {
                 string prompt = "\nManage Diet Plans, choose an option using the arrow keys and pressing enter to select\n";
-                string[] options = { "View all diet plans", "Insert new diet plan", "Update existing diet plan", "Delete a diet plan", "Back to home page", "Help", };
+                string[] options = { "View all diet plans", "Insert new diet plan", "Update existing diet plan", "Delete a diet plan"};
                 Menu mainMenu = new Menu(prompt, options);
                 int SelectedIndex = mainMenu.Run("");
                 view.Clear("");
@@ -714,7 +739,7 @@ namespace NutriTrackerApp
         }
         public void ShowMessage(string message, int labelsLength)
         {
-            if (message.Length > 80)
+            if (message.Length < 100)
             {
                 int spaceLeftForHeader = 15;
                 int messagePosY = spaceLeftForHeader + (labelsLength * 2);
