@@ -657,7 +657,7 @@ namespace NutriTrackerApp
         }
         public void AllergiesOptions()
         {
-            string prompt = "\nManage your allergies, choose an option using the arrow keys and pressing enter to select\n";
+            string prompt = "";
             string[] options = { "View all allergies", "Insert new allergy",  "Delete an allergy"};
             Menu mainMenu = new Menu(prompt, options);
             int SelectedIndex = mainMenu.Run("");
