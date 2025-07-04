@@ -225,6 +225,52 @@ namespace NutriTrackerApp
 
             AdminOptions();
         }
+        public void InsertNewAllergy()
+        {
+            while (true)
+            {
+                view.Clear("Add Allergy");
+                Console.WriteLine();
+                Console.SetCursorPosition(50, Console.CursorTop);
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("(press ctrl + enter to submit form)\n");
+                Console.ForegroundColor = ConsoleColor.White;
+
+                List<string> collectedResponses = InputManager.GetInput(new string[]
+                {
+            "Allergy (e.g. Peanuts, Dairy)"
+                });
+
+                if (string.IsNullOrWhiteSpace(collectedResponses[0]))
+                {
+                    ShowMessage("Allergy field cannot be empty. Press any key to fill again.", 9);
+                }
+                else
+                {
+                    try
+                    {
+                        string allergy = collectedResponses[0];
+                        bool success = storageManager.InsertAllergy(TheID, allergy);
+
+                        if (success)
+                        {
+                            ShowMessage("Allergy added successfully. Press any key to continue.", 9);
+                            break;
+                        }
+                        else
+                        {
+                            ShowMessage("An error occurred while adding allergy. Press any key to try again.", 9);
+                        }
+                    }
+                    catch
+                    {
+                        ShowMessage("Something went wrong. Please try again.", 9);
+                    }
+                }
+            }
+
+            AllergiesOptions();
+        }
         public void ExistingUserLogIn()
         {
             while (true)
@@ -514,7 +560,7 @@ namespace NutriTrackerApp
                     break;
             }
         }
-        public void DeleteAllergy(int allergyID, int userID)
+        public void DeleteAllergy(int allergyID)
         {
             Menu confirmDelete = new Menu("\nAre you sure you want to delete this allergy?\n", new string[] { "Yes", "No" });
 
@@ -524,7 +570,7 @@ namespace NutriTrackerApp
             switch (selectedIndex)
             {
                 case 0: // Yes selected
-                    bool success = storageManager.DeleteAllergyByID(allergyID, userID);
+                    bool success = storageManager.DeleteAllergyByID(allergyID, TheID);
                     view.Clear("Delete Allergy");
 
                     if (success)
@@ -628,7 +674,9 @@ namespace NutriTrackerApp
                         }
                         catch (Exception ex)
                         {
-                            ShowMessage("ID must be a number and cannot be null, press any key to go back", 2);
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine("ID must be a number and cannot be null, press any key to go back", 2);
+                            Console.ResetColor();
                             Console.ReadKey(true);
                             UserOptions();
                         }
@@ -685,9 +733,11 @@ namespace NutriTrackerApp
                     }
                     catch (Exception ex)
                     {
-                        ShowMessage("ID must be a number and cannot be null, press any key to go back", 2);
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("ID must be a number and cannot be null, press any key to go back", 2);
+                        Console.ResetColor();
                         Console.ReadKey(true);
-                        UserOptions();
+                        AdminOptions();
                     }
                     break;
             }
@@ -711,29 +761,7 @@ namespace NutriTrackerApp
                     AllergiesOptions();
                     break;
                 case 1:
-                    Console.ForegroundColor= ConsoleColor.Yellow;
-                    Console.Write("\nEnter the allergy to add: ");
-                    Console.ResetColor();
-                    string allergyInput = Console.ReadLine();
-                    bool success = storageManager.InsertAllergy(TheID, allergyInput);
-
-                    if (success)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("\nAllergy added successfully. Press any key to go back");
-                        Console.ResetColor();
-                        Console.ReadKey(true);
-                        AllergiesOptions();
-                    }
-                    else
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("\nAllergy could not be added. Press any key to go back");
-                        Console.ResetColor();
-                        Console.ReadKey(true);
-                        AllergiesOptions();
-                    }
-                    AllergiesOptions();
+                    InsertNewAllergy();
                     break;
                 case 2:
                     view.Clear("Delete Allergy");
@@ -741,7 +769,7 @@ namespace NutriTrackerApp
                     try
                     {
                         int allergyID = Convert.ToInt32(Console.ReadLine());
-                        DeleteAllergy(allergyID, TheID);
+                        DeleteAllergy(allergyID);
                     }
                     catch (Exception ex)
                     {
