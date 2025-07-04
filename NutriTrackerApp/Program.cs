@@ -243,7 +243,7 @@ namespace NutriTrackerApp
 
                 if (string.IsNullOrWhiteSpace(collectedResponses[0]))
                 {
-                    ShowMessage("Allergy field cannot be empty. Press any key to fill again.", 9);
+                    ShowMessage("Allergy field cannot be empty. Press any key to fill again.", 2);
                 }
                 else
                 {
@@ -254,12 +254,12 @@ namespace NutriTrackerApp
 
                         if (success)
                         {
-                            ShowMessage("Allergy added successfully. Press any key to continue.", 9);
+                            ShowMessage("Allergy added successfully. Press any key to continue.", 2);
                             break;
                         }
                         else
                         {
-                            ShowMessage("An error occurred while adding allergy. Press any key to try again.", 9);
+                            ShowMessage("An error occurred while adding allergy. Press any key to try again.", 2);
                         }
                     }
                     catch
