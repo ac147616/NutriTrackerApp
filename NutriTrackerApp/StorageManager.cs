@@ -63,6 +63,27 @@ public class StorageManager
             return Convert.ToInt32(cmd.ExecuteScalar());
         }
     }
+    public bool InsertAllergy(int userID, string allergy)
+    {
+        string query = "INSERT INTO users.tblAllergies (userID, allergy) VALUES (@UserID, @Allergy)";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@UserID", userID);
+            cmd.Parameters.AddWithValue("@Allergy", allergy);
+
+            try
+            {
+                int rowsAffected = cmd.ExecuteNonQuery();
+                return rowsAffected > 0; // returns true if insert was successful
+            }
+            catch (SqlException ex)
+            {
+                Console.WriteLine("Error inserting allergy: " + ex.Message);
+                return false;
+            }
+        }
+    }
     public void UpdateUser(UserDetails user1)
     {
         string query = @"UPDATE users.tblUserDetails 

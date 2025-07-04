@@ -1,6 +1,7 @@
 ﻿using Microsoft.Identity.Client;
 using System;
 using System.ComponentModel.Design;
+using System.Net.Http;
 
 namespace NutriTrackerApp
 {
@@ -16,7 +17,6 @@ namespace NutriTrackerApp
 
             storageManager = new StorageManager(connectionString);
             System.Threading.Thread.Sleep(2500);
-          
             view = new ConsoleView();
             view.Clear("Welcome!");
 
@@ -660,21 +660,43 @@ namespace NutriTrackerApp
             string prompt = "";
             string[] options = { "View all allergies", "Insert new allergy",  "Delete an allergy"};
             Menu mainMenu = new Menu(prompt, options);
-            int SelectedIndex = mainMenu.Run("");
-            view.Clear("");
+            int SelectedIndex = mainMenu.Run("Manage Allergies");
+            view.Clear("Manage Allergies");
 
             switch (SelectedIndex)
             {
                 case 0:
                     storageManager.PrintAllergiesByUserID(TheID);
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Press any key to go back");
+                    Console.WriteLine("\nPress any key to go back");
                     Console.ResetColor();
                     ConsoleKeyInfo key = Console.ReadKey(true);
                     AllergiesOptions();
                     break;
                 case 1:
-                    
+                    Console.ForegroundColor= ConsoleColor.Yellow;
+                    Console.Write("\nEnter the allergy to add: ");
+                    Console.ResetColor();
+                    string allergyInput = Console.ReadLine();
+                    bool success = storageManager.InsertAllergy(TheID, allergyInput);
+
+                    if (success)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("\nAllergy added successfully. Press any key to go back");
+                        Console.ResetColor();
+                        Console.ReadKey(true);
+                        AllergiesOptions();
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("\nAllergy added successfully. Press any key to go back");
+                        Console.ResetColor();
+                        Console.ReadKey(true);
+                        AllergiesOptions();
+                    }
+                    AllergiesOptions();
                     break;
                 case 2:
                     Console.WriteLine("delete an allergy Press any key to go back");
@@ -824,20 +846,18 @@ namespace NutriTrackerApp
         }
         public void Exit()
         {
-            view.Clear("");
+            view.Clear("Exit");
             Menu mainMenu = new Menu("\nAre you sure you want to exit the application?\n", ["yes", "no"]);
             int SelectedIndex = mainMenu.Run("");
 
             switch (SelectedIndex)
             {
                 case 0:
-                    view.Clear("");
-                    Console.WriteLine("Bye Bye");
+                    view.Clear("Exit");
+                    Console.WriteLine("\n Thank you for using the NutriTracker, adios!\n");
                     System.Environment.Exit(0);
                     break;
-                case 1:
-                    view.Clear("");
-                    
+                case 1:                    
                     if (userType == "")
                     {
                         RunUserTypeMenu();
@@ -893,6 +913,21 @@ namespace NutriTrackerApp
             else
             {
                 AdminHomePage();
+            }
+        }
+        public void Back()
+        {
+            if (userType == "")
+            {
+                RunUserTypeMenu(); ;
+            }
+            else if (userType == "admin")
+            {
+                AdminHomePage();
+            }
+            else
+            {
+                UserHomePage();
             }
         }
     }

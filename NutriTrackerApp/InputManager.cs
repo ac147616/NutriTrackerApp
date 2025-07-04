@@ -11,6 +11,7 @@ namespace NutriTrackerApp //This class manages how to make the input look like a
         public static List<string> GetInput(string[] labels)
         {
             //This is creates an empty list with the same amount of empty values as number of responses expected. It will store responses.
+            Program myProgram = new Program();
             List<string> collectedResponses = new List<string>();
             for (int i = 0; i < labels.Length; i++)
                 collectedResponses.Add("");
@@ -56,6 +57,25 @@ namespace NutriTrackerApp //This class manages how to make the input look like a
                 Console.SetCursorPosition(inputLeftPadding + collectedResponses[currentField].Length, inputTopPadding); //Move cursor to end of the line
 
                 ConsoleKeyInfo key = Console.ReadKey(true);  // Get what kind of key they pressed
+                if ((key.Modifiers & ConsoleModifiers.Control) != 0)
+                {
+                    if (key.Key == ConsoleKey.B)
+                    {
+                        myProgram.Back();  // or call a delegate like OnBackPressed()
+                        return null;   // cancel form input if necessary
+                    }
+                    else if (key.Key == ConsoleKey.H)
+                    {
+                        myProgram.GetHelp();
+                        // optionally: continue; if you want them to resume filling the form
+                    }
+                    else if (key.Key == ConsoleKey.E)
+                    {
+                        myProgram.Exit();
+                        return null;   // stop the form and exit
+                    }
+                }
+
 
                 // Navigate down or move to next field
                 if (key.Key == ConsoleKey.Enter || key.Key == ConsoleKey.DownArrow)

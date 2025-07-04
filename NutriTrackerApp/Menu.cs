@@ -19,7 +19,6 @@ namespace NutriTrackerApp
             Options = options;
             SelectedIndex = 1;
         }
-
         private void DisplayOptions()
         {
             Console.WriteLine(Prompt);
