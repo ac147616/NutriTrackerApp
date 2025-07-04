@@ -49,6 +49,7 @@ namespace NutriTrackerApp
         }
         public int Run(string pageName)
         {
+            Program myProgram = new Program();
             //We need a loop structure so that everytime the user clicks a key it re-renders the console view
             ConsoleKey keyPressed;
             do
@@ -59,6 +60,25 @@ namespace NutriTrackerApp
 
                 ConsoleKeyInfo keyInfo = Console.ReadKey(true);
                 keyPressed = keyInfo.Key;
+
+                if ((keyInfo.Modifiers & ConsoleModifiers.Control) != 0)
+                {
+                    if (keyPressed == ConsoleKey.B)
+                    {
+                        myProgram.Back();
+                        return -1;
+                    }
+                    else if (keyPressed == ConsoleKey.H)
+                    {
+                        myProgram.GetHelp();
+                        return -1;
+                    }
+                    else if (keyPressed == ConsoleKey.E)
+                    {
+                        myProgram.Exit();
+                        return -1;
+                    }
+                }
 
                 //Update SelectedIndex based on arrow keys.
                 if (keyPressed == ConsoleKey.UpArrow)

@@ -242,7 +242,7 @@ public class StorageManager
     }
     public void PrintAllergiesByUserID(int userID)
     {
-        string query = "SELECT allergy FROM users.tblAllergies WHERE userID = @UserID";
+        string query = "SELECT allergy, allergyID FROM users.tblAllergies WHERE userID = @UserID";
 
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
@@ -261,7 +261,8 @@ public class StorageManager
                 while (reader.Read())
                 {
                     string allergy = reader.GetString(0);
-                    Console.WriteLine($"- {allergy}");
+                    string allergyID = Convert.ToString(reader.GetInt32(1));
+                    Console.WriteLine($"- {allergy} (ID: {allergyID})");
                     count++;
                 }
 
@@ -307,6 +308,20 @@ public class StorageManager
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
             cmd.Parameters.AddWithValue("@AdminID", adminID);
+
+            int rowsAffected = cmd.ExecuteNonQuery();
+            return rowsAffected > 0;
+        }
+    }
+    public bool DeleteAllergyByID(int allergyID, int userID)
+    {
+        string query = @"DELETE FROM users.tblAllergies 
+                     WHERE allergyID = @AllergyID AND userID = @UserID";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@AllergyID", allergyID);
+            cmd.Parameters.AddWithValue("@UserID", userID);
 
             int rowsAffected = cmd.ExecuteNonQuery();
             return rowsAffected > 0;

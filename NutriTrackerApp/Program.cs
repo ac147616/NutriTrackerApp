@@ -514,6 +514,43 @@ namespace NutriTrackerApp
                     break;
             }
         }
+        public void DeleteAllergy(int allergyID, int userID)
+        {
+            Menu confirmDelete = new Menu("\nAre you sure you want to delete this allergy?\n", new string[] { "Yes", "No" });
+
+            view.Clear("Delete Allergy");
+            int selectedIndex = confirmDelete.Run("Delete Allergy");
+
+            switch (selectedIndex)
+            {
+                case 0: // Yes selected
+                    bool success = storageManager.DeleteAllergyByID(allergyID, userID);
+                    view.Clear("Delete Allergy");
+
+                    if (success)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("The allergy has been successfully deleted.");
+                        Console.ResetColor();
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Failed to delete the allergy. It may not exist or you are not authorized.");
+                        Console.ResetColor();
+                    }
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine("\nPress any key to go back...");
+                    Console.ResetColor();
+                    Console.ReadKey(true);
+                    AllergiesOptions();
+                    break;
+
+                case 1: // No selected
+                    AllergiesOptions();
+                    break;
+            }
+        }
         public void UserOptions()
         {
             if (userType == "user")
@@ -691,7 +728,7 @@ namespace NutriTrackerApp
                     else
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("\nAllergy added successfully. Press any key to go back");
+                        Console.WriteLine("\nAllergy could not be added. Press any key to go back");
                         Console.ResetColor();
                         Console.ReadKey(true);
                         AllergiesOptions();
@@ -699,19 +736,23 @@ namespace NutriTrackerApp
                     AllergiesOptions();
                     break;
                 case 2:
-                    Console.WriteLine("delete an allergy Press any key to go back");
-                    ConsoleKeyInfo key2 = Console.ReadKey(true);
-                    AllergiesOptions();
+                    view.Clear("Delete Allergy");
+                    Console.Write("\nAllergyID to delete: ");
+                    try
+                    {
+                        int allergyID = Convert.ToInt32(Console.ReadLine());
+                        DeleteAllergy(allergyID, TheID);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("ID must be a number and cannot be null, press any key to go back", 2);
+                        Console.ResetColor();
+                        Console.ReadKey(true);
+                        AllergiesOptions();
+                    }
                     break;
-                case 3:
-                    UserHomePage();
-                    break;
-                case 4:
-                    GetHelp();
-
-                    view.Clear("");
-                    AllergiesOptions();
-                    break;
+                    
             }
         }
         public void FoodOptions()
