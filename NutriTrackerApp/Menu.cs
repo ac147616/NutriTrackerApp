@@ -47,9 +47,8 @@ namespace NutriTrackerApp
 
             Console.ResetColor();
         }
-        public int Run(string pageName)
+        public int Run(string pageName, string actualUserType, Program myProgram)
         {
-            Program myProgram = new Program();
             //We need a loop structure so that everytime the user clicks a key it re-renders the console view
             ConsoleKey keyPressed;
             do
@@ -65,17 +64,17 @@ namespace NutriTrackerApp
                 {
                     if (keyPressed == ConsoleKey.B)
                     {
-                        myProgram.Back();
+                        Menu.Back(myProgram);
                         return -1;
                     }
                     else if (keyPressed == ConsoleKey.H)
                     {
-                        myProgram.GetHelp();
+                        Menu.GetHelp(myProgram);
                         return -1;
                     }
                     else if (keyPressed == ConsoleKey.E)
                     {
-                        myProgram.Exit();
+                        Menu.Exit(myProgram);
                         return -1;
                     }
                 }
@@ -101,6 +100,47 @@ namespace NutriTrackerApp
             while (keyPressed != ConsoleKey.Enter);
 
             return SelectedIndex;
+        }
+        public static void Back(Program myProgram)
+        {
+            if (myProgram.userType == "admin")
+            {
+                myProgram.AdminHomePage();
+            }
+            else if (myProgram.userType == "user")
+            {
+                myProgram.UserHomePage();
+            }
+            else
+            {
+                myProgram.RunUserTypeMenu2();
+            }
+        }
+        public static void GetHelp(Program myProgram)
+        {
+            ConsoleView view = new ConsoleView();
+            view.Help();
+            Console.ReadKey(true);
+            Back(myProgram);
+        }
+        public static void Exit(Program myProgram)
+        {
+            ConsoleView view = new ConsoleView();
+            view.Clear("Exit");
+            Menu mainMenu = new Menu("\nAre you sure you want to exit the application?\n", ["yes", "no"]);
+            int SelectedIndex = mainMenu.Run(" ", myProgram.userType, myProgram);
+
+            switch (SelectedIndex)
+            {
+                case 0:
+                    view.Clear("Exit");
+                    Console.WriteLine("\n Thank you for using the NutriTracker, adios!\n");
+                    System.Environment.Exit(0);
+                    break;
+                case 1:
+                    Back(myProgram);
+                    break;
+            }
         }
     }
 }

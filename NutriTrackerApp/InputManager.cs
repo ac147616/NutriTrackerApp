@@ -8,10 +8,9 @@ namespace NutriTrackerApp //This class manages how to make the input look like a
 {
     class InputManager
     {
-        public static List<string> GetInput(string[] labels)
+        public static List<string> GetInput(string[] labels, Program myProgram)
         {
             //This is creates an empty list with the same amount of empty values as number of responses expected. It will store responses.
-            Program myProgram = new Program();
             List<string> collectedResponses = new List<string>();
             for (int i = 0; i < labels.Length; i++)
                 collectedResponses.Add("");
@@ -57,25 +56,20 @@ namespace NutriTrackerApp //This class manages how to make the input look like a
                 Console.SetCursorPosition(inputLeftPadding + collectedResponses[currentField].Length, inputTopPadding); //Move cursor to end of the line
 
                 ConsoleKeyInfo key = Console.ReadKey(true);  // Get what kind of key they pressed
-                if ((key.Modifiers & ConsoleModifiers.Control) != 0)
+                if (key.Key == ConsoleKey.B)
                 {
-                    if (key.Key == ConsoleKey.B)
-                    {
-                        myProgram.Back();  // or call a delegate like OnBackPressed()
-                        return null;   // cancel form input if necessary
-                    }
-                    else if (key.Key == ConsoleKey.H)
-                    {
-                        myProgram.GetHelp();
-                        // optionally: continue; if you want them to resume filling the form
-                    }
-                    else if (key.Key == ConsoleKey.E)
-                    {
-                        myProgram.Exit();
-                        return null;   // stop the form and exit
-                    }
+                    Back(myProgram);
+                    return null;
                 }
-
+                else if (key.Key == ConsoleKey.H)
+                {
+                    GetHelp(myProgram);
+                }
+                else if (key.Key == ConsoleKey.E)
+                {
+                    Exit(myProgram);
+                    return null;
+                }
 
                 // Navigate down or move to next field
                 if (key.Key == ConsoleKey.Enter || key.Key == ConsoleKey.DownArrow)
@@ -101,9 +95,51 @@ namespace NutriTrackerApp //This class manages how to make the input look like a
                 // Submit form if Ctrl+Enter is pressed
                 if (key.Key == ConsoleKey.Enter && (key.Modifiers & ConsoleModifiers.Control) != 0)
                     break;
-            } 
+            }
 
             return collectedResponses;  // Return the input collected from user
         }
+        public static void Back(Program myProgram)
+        {
+            if (myProgram.userType == "admin")
+            {
+                myProgram.AdminHomePage();
+            }
+            else if (myProgram.userType == "user")
+            {
+                myProgram.UserHomePage();
+            }
+            else
+            {
+                myProgram.RunUserTypeMenu2();
+            }
+        }
+        public static void GetHelp(Program myProgram)
+        {
+            ConsoleView view = new ConsoleView();
+            view.Help();
+            Console.ReadKey(true);
+            Back(myProgram);
+        }
+        public static void Exit(Program myProgram)
+        {
+            ConsoleView view = new ConsoleView();
+            view.Clear("Exit");
+            Menu mainMenu = new Menu("\nAre you sure you want to exit the application?\n", ["yes", "no"]);
+            int SelectedIndex = mainMenu.Run(" ", myProgram.userType, myProgram);
+
+            switch (SelectedIndex)
+            {
+                case 0:
+                    view.Clear("Exit");
+                    Console.WriteLine("\n Thank you for using the NutriTracker, adios!\n");
+                    System.Environment.Exit(0);
+                    break;
+                case 1:
+                    Back(myProgram);
+                    break;
+            }
+        }
+
     }
 }

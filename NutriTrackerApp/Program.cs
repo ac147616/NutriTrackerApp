@@ -9,7 +9,7 @@ namespace NutriTrackerApp
     {
         private static StorageManager storageManager;
         private static ConsoleView view;
-        public string userType = "";
+        public string userType = " ";
         public int TheID = 0;
         static void Main(string[] args)
         {
@@ -32,7 +32,30 @@ namespace NutriTrackerApp
             string[] options = { "New User", "Existing User", "Admin"};
             Menu mainMenu = new Menu(prompt, options);
             Program myProgram = new Program();
-            int SelectedIndex = mainMenu.Run("Welcome!");
+            int SelectedIndex = mainMenu.Run("Welcome!","", myProgram);
+
+            switch (SelectedIndex)
+            {
+                case 0:
+                    myProgram.InsertNewUser();
+                    break;
+                case 1:
+                    myProgram.ExistingUserLogIn();
+                    break;
+                case 2:
+                    myProgram.AdminLogIn();
+                    break;
+            }
+
+        }
+        public void RunUserTypeMenu2()
+        {
+            view.Clear("Welcome!");
+            string prompt = "";
+            string[] options = { "New User", "Existing User", "Admin" };
+            Menu mainMenu = new Menu(prompt, options);
+            Program myProgram = new Program();
+            int SelectedIndex = mainMenu.Run("Welcome!", "", this);
 
             switch (SelectedIndex)
             {
@@ -53,7 +76,7 @@ namespace NutriTrackerApp
             string prompt = "";
             string[] options = { "Settings", "Allergies", "Food", "Diet Plans", "Goals", "Daily Log"};
             Menu mainMenu = new Menu(prompt, options);
-            int SelectedIndex = mainMenu.Run("User Home Page");
+            int SelectedIndex = mainMenu.Run("User Home Page", userType, this);
             view.Clear("User Home Page");
 
             switch (SelectedIndex)
@@ -84,7 +107,7 @@ namespace NutriTrackerApp
             string prompt = "";
             string[] options = { "Users", "Admins", "Foods", "Diet Plans"};
             Menu mainMenu = new Menu(prompt, options);
-            int SelectedIndex = mainMenu.Run("Admin Home Page");
+            int SelectedIndex = mainMenu.Run("Admin Home Page", userType, this);
             view.Clear("Admin Hone Page");
 
             switch (SelectedIndex)
@@ -125,7 +148,7 @@ namespace NutriTrackerApp
                 "Gender (e.g female or male)",
                 "Weight e.g 45",
                 "Height e.g 172",
-                });
+                }, this);
 
                 if (collectedResponses[0] == "" || collectedResponses[1] == "" || collectedResponses[2] == "" || collectedResponses[3] == "" || collectedResponses[4] == "")
                 {
@@ -189,7 +212,7 @@ namespace NutriTrackerApp
             "Email Address",
             "Password",
             "Confirm Password"
-                });
+                }, this);
 
                 // Basic validation
                 if (collectedResponses[0] == "" || collectedResponses[1] == "" ||
@@ -239,7 +262,7 @@ namespace NutriTrackerApp
                 List<string> collectedResponses = InputManager.GetInput(new string[]
                 {
             "Allergy (e.g. Peanuts, Dairy)"
-                });
+                }, this);
 
                 if (string.IsNullOrWhiteSpace(collectedResponses[0]))
                 {
@@ -286,7 +309,7 @@ namespace NutriTrackerApp
                 {
                 "User ID",
                 "Password",
-                });
+                }, this);
 
                 try
                 {
@@ -330,7 +353,7 @@ namespace NutriTrackerApp
                 {
                 "Admin ID",
                 "Password",
-                });
+                }, this);
 
                 try
                 {
@@ -388,7 +411,7 @@ namespace NutriTrackerApp
             "Gender (female or male)",
             "Weight (e.g 45)",
             "Height (e.g 172)"
-                });
+                }, this);
 
                 if (collectedResponses[0] == "" || collectedResponses[1] == "" || collectedResponses[2] == "" || collectedResponses[3] == "" || collectedResponses[4] == "")
                 {
@@ -451,7 +474,7 @@ namespace NutriTrackerApp
             "Email Address",
             "Password",
             "Confirm Password"
-                });
+                }, this);
 
                 if (collectedResponses[0] == "" || collectedResponses[1] == "" || collectedResponses[2] == "" || collectedResponses[3] == "" || collectedResponses[4] == "")
                 {
@@ -498,7 +521,7 @@ namespace NutriTrackerApp
                 confirmDelete = new Menu("\nAre you sure you want to delete your account?\n", new string[] { "Yes", "No" });
             }
             
-            int selectedIndex = confirmDelete.Run("Delete Account");
+            int selectedIndex = confirmDelete.Run("Delete Account", userType, this);
 
             switch (selectedIndex)
             {
@@ -529,7 +552,7 @@ namespace NutriTrackerApp
             view.Clear("Delete Admin");
             Menu confirmDelete = new Menu("\nAre you sure you want to delete this admin account?\n", new string[] { "Yes", "No" });
 
-            int selectedIndex = confirmDelete.Run("Delete Admin");
+            int selectedIndex = confirmDelete.Run("Delete Admin", userType, this);
 
             switch (selectedIndex)
             {
@@ -565,7 +588,7 @@ namespace NutriTrackerApp
             Menu confirmDelete = new Menu("\nAre you sure you want to delete this allergy?\n", new string[] { "Yes", "No" });
 
             view.Clear("Delete Allergy");
-            int selectedIndex = confirmDelete.Run("Delete Allergy");
+            int selectedIndex = confirmDelete.Run("Delete Allergy", userType, this);
 
             switch (selectedIndex)
             {
@@ -604,7 +627,7 @@ namespace NutriTrackerApp
                 string prompt = "";
                 string[] options = { "View you details", "Update your details", "Delete account" };
                 Menu mainMenu = new Menu(prompt, options);
-                int SelectedIndex = mainMenu.Run("Settings");
+                int SelectedIndex = mainMenu.Run("Settings", userType, this);
                 view.Clear("Settings");
 
                 switch (SelectedIndex)
@@ -630,7 +653,7 @@ namespace NutriTrackerApp
                 string prompt = "";
                 string[] options = { "View all users", "Insert new user", "Update existing user details", "Delete a user" };
                 Menu mainMenu = new Menu(prompt, options);
-                int SelectedIndex = mainMenu.Run("Manage Users");
+                int SelectedIndex = mainMenu.Run("Manage Users", userType, this);
                 view.Clear("Manage Users");
 
                 switch (SelectedIndex)
@@ -689,7 +712,7 @@ namespace NutriTrackerApp
             string prompt = "";
             string[] options = { "View all admins", "Insert new admin", "Update existing admin", "Delete an admin"};
             Menu mainMenu = new Menu(prompt, options);
-            int SelectedIndex = mainMenu.Run("Manage Admins");
+            int SelectedIndex = mainMenu.Run("Manage Admins", userType, this);
             view.Clear("Manage Admins");
 
             switch (SelectedIndex)
@@ -747,7 +770,7 @@ namespace NutriTrackerApp
             string prompt = "";
             string[] options = { "View all allergies", "Insert new allergy",  "Delete an allergy"};
             Menu mainMenu = new Menu(prompt, options);
-            int SelectedIndex = mainMenu.Run("Manage Allergies");
+            int SelectedIndex = mainMenu.Run("Manage Allergies ", userType, this);
             view.Clear("Manage Allergies");
 
             switch (SelectedIndex)
@@ -790,7 +813,7 @@ namespace NutriTrackerApp
                 string prompt = "\nView Foods, choose an option using the arrow keys and pressing enter to select\n";
                 string[] options = { "View all foods"};
                 Menu mainMenu = new Menu(prompt, options);
-                int SelectedIndex = mainMenu.Run("");
+                int SelectedIndex = mainMenu.Run("", userType, this);
                 view.Clear("");
 
                 switch (SelectedIndex)
@@ -807,7 +830,7 @@ namespace NutriTrackerApp
                 string prompt = "\nManage Foods, choose an option using the arrow keys and pressing enter to select\n";
                 string[] options = { "View all foods", "Insert new food", "Update existing food", "Delete a food"};
                 Menu mainMenu = new Menu(prompt, options);
-                int SelectedIndex = mainMenu.Run("");
+                int SelectedIndex = mainMenu.Run("", userType, this);
                 view.Clear("");
 
                 switch (SelectedIndex)
@@ -836,8 +859,6 @@ namespace NutriTrackerApp
                         AdminHomePage();
                         break;
                     case 5:
-                        GetHelp();
-
                         view.Clear("");
                         FoodOptions();
                         break;
@@ -851,7 +872,7 @@ namespace NutriTrackerApp
                 string prompt = "\nView Diet Plans, choose an option using the arrow keys and pressing enter to select\n";
                 string[] options = { "View all diet plans"};
                 Menu mainMenu = new Menu(prompt, options);
-                int SelectedIndex = mainMenu.Run("");
+                int SelectedIndex = mainMenu.Run("", userType, this);
                 view.Clear("");
 
                 switch (SelectedIndex)
@@ -868,7 +889,7 @@ namespace NutriTrackerApp
                 string prompt = "\nManage Diet Plans, choose an option using the arrow keys and pressing enter to select\n";
                 string[] options = { "View all diet plans", "Insert new diet plan", "Update existing diet plan", "Delete a diet plan"};
                 Menu mainMenu = new Menu(prompt, options);
-                int SelectedIndex = mainMenu.Run("");
+                int SelectedIndex = mainMenu.Run("", userType, this);
                 view.Clear("");
 
                 switch (SelectedIndex)
@@ -897,8 +918,6 @@ namespace NutriTrackerApp
                         AdminHomePage();
                         break;
                     case 5:
-                        GetHelp();
-
                         view.Clear("");
                         DietPlansOptions();
                         break;
@@ -912,35 +931,6 @@ namespace NutriTrackerApp
         public void DailyLogOptions()
         {
 
-        }
-        public void Exit()
-        {
-            view.Clear("Exit");
-            Menu mainMenu = new Menu("\nAre you sure you want to exit the application?\n", ["yes", "no"]);
-            int SelectedIndex = mainMenu.Run("");
-
-            switch (SelectedIndex)
-            {
-                case 0:
-                    view.Clear("Exit");
-                    Console.WriteLine("\n Thank you for using the NutriTracker, adios!\n");
-                    System.Environment.Exit(0);
-                    break;
-                case 1:                    
-                    if (userType == "")
-                    {
-                        RunUserTypeMenu();
-                    }
-                    else if (userType == "user")
-                    {
-                        UserHomePage();
-                    }
-                    else
-                    {
-                        AdminHomePage();
-                    }
-                        break;
-            }
         }
         public void ShowMessage(string message, int labelsLength)
         {
@@ -963,40 +953,6 @@ namespace NutriTrackerApp
                 Console.WriteLine(message);
                 Console.ResetColor();
                 Console.ReadKey(true);
-            }
-        }
-        public void GetHelp()
-        {
-            view.Help();
-            Console.WriteLine("\nPress any key to go back...");
-            ConsoleKeyInfo key = Console.ReadKey(true);
-
-            if (userType == "")
-            {
-                RunUserTypeMenu();
-            }
-            else if (userType == "user")
-            {
-                UserHomePage();
-            }
-            else
-            {
-                AdminHomePage();
-            }
-        }
-        public void Back()
-        {
-            if (userType == "")
-            {
-                RunUserTypeMenu(); ;
-            }
-            else if (userType == "admin")
-            {
-                AdminHomePage();
-            }
-            else
-            {
-                UserHomePage();
             }
         }
     }
