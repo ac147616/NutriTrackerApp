@@ -911,7 +911,7 @@ namespace NutriTrackerApp
             switch (SelectedIndex)
             {
                 case 0:
-                    storageManager.ViewAllDialyLogs();
+                    storageManager.ViewAllDailyLogs(TheID);
                     DailyLogOptions();
                     break;
                 case 1:

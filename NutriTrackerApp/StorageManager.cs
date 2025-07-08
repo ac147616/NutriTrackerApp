@@ -709,8 +709,7 @@ public class StorageManager
         string pad = new string(' ', leftPad);
 
         Console.WriteLine(pad + new string('-', tableWidth));
-        Console.BackgroundColor = ConsoleColor.White;
-        Console.ForegroundColor = ConsoleColor.Black;
+        Console.ForegroundColor = ConsoleColor.Cyan;
         Console.Write(pad);
         Console.WriteLine(columnHeader);
         Console.ResetColor();
@@ -730,6 +729,81 @@ public class StorageManager
                     g.DietPlanID,
                     g.DateStarted,
                     g.DateEnded);
+                Console.WriteLine(pad + line);
+            }
+        }
+
+        Console.WriteLine(pad + new string('-', tableWidth));
+        Console.ForegroundColor = ConsoleColor.DarkRed;
+        Console.WriteLine(pad + "Press any key to return...");
+        Console.ResetColor();
+        Console.ReadKey(true);
+    }
+    public void ViewAllDailyLogs(int userID)
+    {
+        ConsoleView view = new ConsoleView();
+        List<DailyLog> logList = new List<DailyLog>();
+
+        string query = "SELECT logID, userID, foodID, mealTime, dateLogged FROM users.tblDailyLog WHERE userID = @UserID";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@UserID", userID);
+
+            using (SqlDataReader reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    DailyLog log = new DailyLog(
+                        reader.GetInt32(0),
+                        reader.GetInt32(1),
+                        reader.GetInt32(2),
+                        reader.GetString(3),
+                        reader.GetString(4)
+                    );
+                    logList.Add(log);
+                }
+            }
+        }
+
+        view.Clear("View Daily Logs");
+
+        var headers = new[]
+        {
+        ("ID", 4),
+        ("FoodID", 7),
+        ("Meal", 10),
+        ("Date", 12)
+    };
+
+        string columnHeader = string.Format("{0,-4}    {1,-7}    {2,-10}    {3,-12}",
+            headers[0].Item1, headers[1].Item1, headers[2].Item1, headers[3].Item1);
+
+        int tableWidth = columnHeader.Length;
+        int consoleWidth = Console.WindowWidth;
+        int leftPad = Math.Max(0, (consoleWidth - tableWidth) / 2);
+        string pad = new string(' ', leftPad);
+
+        Console.WriteLine(pad + new string('-', tableWidth));
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.Write(pad);
+        Console.WriteLine(columnHeader);
+        Console.ResetColor();
+        Console.WriteLine(pad + new string('-', tableWidth));
+
+        if (logList.Count == 0)
+        {
+            Console.WriteLine(pad + "No logs recorded.");
+        }
+        else
+        {
+            foreach (var log in logList)
+            {
+                string line = string.Format("{0,-4}    {1,-7}    {2,-10}    {3,-12}",
+                    log.LogID,
+                    log.FoodID,
+                    Truncate(log.MealTime, 10),
+                    log.DateLogged);
                 Console.WriteLine(pad + line);
             }
         }
