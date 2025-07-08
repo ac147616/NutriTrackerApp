@@ -515,11 +515,11 @@ namespace NutriTrackerApp
             view.Clear("Delete User");
             if (userType == "admin")
             {
-                confirmDelete = new Menu("\nAre you sure you want to delete this account?\n", new string[] { "Yes", "No" });
+                confirmDelete = new Menu("Are you sure you want to delete this account?", new string[] { "Yes", "No" });
             }
             else
             {
-                confirmDelete = new Menu("\nAre you sure you want to delete your account?\n", new string[] { "Yes", "No" });
+                confirmDelete = new Menu("Are you sure you want to delete your account?", new string[] { "Yes", "No" });
             }
             
             int selectedIndex = confirmDelete.Run("Delete Account", userType, this);
@@ -657,7 +657,6 @@ namespace NutriTrackerApp
                 {
                     case 0:
                         storageManager.ViewAllUserDetails(userType, TheID);
-                        Console.ForegroundColor = ConsoleColor.Red;
                         UserOptions();
                         break;
                     case 1:

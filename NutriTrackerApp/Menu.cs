@@ -21,7 +21,10 @@ namespace NutriTrackerApp
         }
         private void DisplayOptions()
         {
-            Console.WriteLine(Prompt);
+            Console.WriteLine();
+            Console.WriteLine(new string(' ', Math.Max(0, (Console.WindowWidth - Prompt.Length) / 2)) + Prompt);
+            Console.WriteLine();
+
             for (int i = 0; i < Options.Length; i++)
             {
                 string currentOption = Options[i];
