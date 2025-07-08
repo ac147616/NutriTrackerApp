@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NutriTrackerApp
 {
-    class DietPlans
+    public class DietPlans
     {
         public int DietPlanID { get; set; }
         public string DietPlan { get; set; }

@@ -106,6 +106,26 @@ public class StorageManager
             return Convert.ToInt32(cmd.ExecuteScalar());
         }
     }
+    public int InsertDietPlan(DietPlans plan)
+    {
+        string query = @"
+        INSERT INTO admins.tblDietPlans 
+        (dietPlan, caloriesTarget, proteinsTarget, carbohydratesTarget, fatsTarget) 
+        VALUES 
+        (@DietPlan, @CaloriesTarget, @ProteinsTarget, @CarbohydratesTarget, @FatsTarget);
+        SELECT SCOPE_IDENTITY();";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@DietPlan", plan.DietPlan);
+            cmd.Parameters.AddWithValue("@CaloriesTarget", plan.CaloriesTarget);
+            cmd.Parameters.AddWithValue("@ProteinsTarget", plan.ProteinsTarget);
+            cmd.Parameters.AddWithValue("@CarbohydratesTarget", plan.CarbohydratesTarget);
+            cmd.Parameters.AddWithValue("@FatsTarget", plan.FatsTarget);
+
+            return Convert.ToInt32(cmd.ExecuteScalar());
+        }
+    }
     public void UpdateUser(UserDetails user1)
     {
         string query = @"UPDATE users.tblUserDetails 

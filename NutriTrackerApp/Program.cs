@@ -309,15 +309,17 @@ namespace NutriTrackerApp
                 List<string> collectedResponses = InputManager.GetInput(new string[]
                 {
             "Food Name",
-            "Category (e.g Fruit, Dairy, Grains)",
-            "Calories per serving (e.g 210.5)",
+            "Category",
+            "Calories per serving",
             "Carbohydrates (g)",
             "Proteins (g)",
             "Fats (g)",
-            "Serving Size (g or mL)"
+            "Serving Size (g/mL)"
                 }, this);
 
-                if (collectedResponses.Any(s => string.IsNullOrWhiteSpace(s)))
+                if (collectedResponses[0] == "" || collectedResponses[1] == "" ||
+                    collectedResponses[2] == "" || collectedResponses[3] == "" ||
+                    collectedResponses[4] == "" || collectedResponses[5] == "" || collectedResponses[6] == "")
                 {
                     ShowMessage("All fields are required. Press any key to fill again.", 9);
                 }
@@ -325,7 +327,7 @@ namespace NutriTrackerApp
                 {
                     try
                     {
-                        string foodName = collectedResponses[0];
+                        string name = collectedResponses[0];
                         string category = collectedResponses[1];
                         decimal calories = Convert.ToDecimal(collectedResponses[2]);
                         decimal carbs = Convert.ToDecimal(collectedResponses[3]);
@@ -333,7 +335,7 @@ namespace NutriTrackerApp
                         decimal fats = Convert.ToDecimal(collectedResponses[5]);
                         decimal servingSize = Convert.ToDecimal(collectedResponses[6]);
 
-                        Foods food = new Foods(0, foodName, category, calories, carbs, proteins, fats, servingSize);
+                        Foods food = new Foods(0, name, category, calories, carbs, proteins, fats, servingSize);
                         int foodID = storageManager.InsertFood(food);
 
                         ShowMessage($"New food item added with ID: {foodID}. Press any key to continue.", 9);
@@ -341,12 +343,62 @@ namespace NutriTrackerApp
                     }
                     catch
                     {
-                        ShowMessage("Invalid format. Nutritional values must be numbers. Press any key to fill again.", 9);
+                        ShowMessage("Invalid input. Nutrition values must be numbers. Press any key to fill again.", 9);
                     }
                 }
             }
 
-            FoodOptions(); // Replace with your navigation method
+            FoodOptions();
+        }
+        public void InsertNewDietPlan()
+        {
+            while (true)
+            {
+                view.Clear("Add New Diet Plan");
+                Console.WriteLine();
+                Console.SetCursorPosition(50, Console.CursorTop);
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("(press ctrl + enter to submit form)\n");
+                Console.ResetColor();
+
+                List<string> collectedResponses = InputManager.GetInput(new string[]
+                {
+            "Diet Plan Name",
+            "Target Calories",
+            "Target Proteins (g)",
+            "Target Carbohydrates (g)",
+            "Target Fats (g)"
+                }, this);
+
+                if (collectedResponses[0] == "" || collectedResponses[1] == "" ||
+                    collectedResponses[2] == "" || collectedResponses[3] == "" || collectedResponses[4] == "")
+                {
+                    ShowMessage("All fields are required. Press any key to fill again.", 9);
+                }
+                else
+                {
+                    try
+                    {
+                        string planName = collectedResponses[0];
+                        int calories = Convert.ToInt32(collectedResponses[1]);
+                        int proteins = Convert.ToInt32(collectedResponses[2]);
+                        int carbs = Convert.ToInt32(collectedResponses[3]);
+                        int fats = Convert.ToInt32(collectedResponses[4]);
+
+                        DietPlans plan = new DietPlans(0, planName, calories, proteins, carbs, fats);
+                        int planID = storageManager.InsertDietPlan(plan);
+
+                        ShowMessage($"New diet plan added with ID: {planID}. Press any key to continue.", 9);
+                        break;
+                    }
+                    catch
+                    {
+                        ShowMessage("Invalid input. Targets must be whole numbers. Press any key to fill again.", 9);
+                    }
+                }
+            }
+
+            DietPlansOptions();
         }
         public void ExistingUserLogIn()
         {
@@ -1090,9 +1142,7 @@ namespace NutriTrackerApp
                         DietPlansOptions();
                         break;
                     case 1:
-                        Console.WriteLine("Insert new diet plan COMING SOON...Press any key to go back");
-                        ConsoleKeyInfo key1 = Console.ReadKey(true);
-                        DietPlansOptions();
+                        InsertNewDietPlan();
                         break;
                     case 2:
                         Console.WriteLine("update existing diet plan...Press any key to go back");
