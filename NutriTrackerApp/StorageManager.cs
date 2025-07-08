@@ -150,6 +150,25 @@ public class StorageManager
             return Convert.ToInt32(cmd.ExecuteScalar());
         }
     }
+    public int InsertDailyLog(DailyLog log) 
+    {
+        string query = @"
+    INSERT INTO users.tblDailyLog 
+    (userID, foodID, mealTime, dateLogged) 
+    VALUES 
+    (@UserID, @FoodID, @MealTime, @DateLogged);
+    SELECT SCOPE_IDENTITY();";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@UserID", log.UserID);
+            cmd.Parameters.AddWithValue("@FoodID", log.FoodID);
+            cmd.Parameters.AddWithValue("@MealTime", log.MealTime);
+            cmd.Parameters.AddWithValue("@DateLogged", log.DateLogged);
+
+            return Convert.ToInt32(cmd.ExecuteScalar());
+        }
+    }
     public void UpdateUser(UserDetails user1)
     {
         string query = @"UPDATE users.tblUserDetails 
@@ -825,7 +844,7 @@ public class StorageManager
                         reader.GetInt32(1),
                         reader.GetInt32(2),
                         reader.GetString(3),
-                        reader.GetString(4)
+                        reader.GetDateTime(4).ToString("yyyy-MM-dd")
                     );
                     logList.Add(log);
                 }
@@ -842,7 +861,7 @@ public class StorageManager
         ("Date", 12)
     };
 
-        string columnHeader = string.Format("{0,-4}    {1,-7}    {2,-10}    {3,-12}",
+        string columnHeader = string.Format("{0,-4}     {1,-7}    {2,-10}    {3,-12}",
             headers[0].Item1, headers[1].Item1, headers[2].Item1, headers[3].Item1);
 
         int tableWidth = columnHeader.Length;

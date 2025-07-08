@@ -445,6 +445,50 @@ namespace NutriTrackerApp
 
             GoalsOptions();
         }
+        public void InsertNewDailyLog()
+        {
+            while (true)
+            {
+                view.Clear("New Daily Log");
+                Console.WriteLine();
+                Console.SetCursorPosition(50, Console.CursorTop);
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("(press ctrl + enter to submit form)\n");
+                Console.ResetColor();
+
+                List<string> collectedResponses = InputManager.GetInput(new string[]
+                {
+            "Food ID",
+            "Meal Time (e.g. Breakfast, Lunch)"
+                }, this);
+
+                if (collectedResponses[0] == "" || collectedResponses[1] == "")
+                {
+                    ShowMessage("All fields are required. Press any key to fill again.", 2);
+                }
+                else
+                {
+                    try
+                    {
+                        int foodID = Convert.ToInt32(collectedResponses[0]);
+                        string mealTime = collectedResponses[1];
+                        string dateLogged = DateTime.Now.ToString("yyyy-MM-dd");
+
+                        DailyLog log = new DailyLog(0, TheID, foodID, mealTime, dateLogged);
+                        int logID = storageManager.InsertDailyLog(log);
+
+                        ShowMessage($"New log added with ID: {logID}. Press any key to continue.", 2);
+                        break;
+                    }
+                    catch
+                    {
+                        ShowMessage("Invalid input. Food ID must be a number. Press any key to fill again.", 2);
+                    }
+                }
+            }
+
+            DailyLogOptions();
+        }
         public void ExistingUserLogIn()
         {
             while (true)
@@ -1281,6 +1325,7 @@ namespace NutriTrackerApp
                     DailyLogOptions();
                     break;
                 case 1:
+                    InsertNewDailyLog();
                     break;
                 case 2:
                     break;
