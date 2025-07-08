@@ -558,6 +558,109 @@ public class StorageManager
             }
         }
     }
+    public void ViewAllDietPlans()
+    {
+        ConsoleView view = new ConsoleView();
+        List<DietPlans> planList = new List<DietPlans>();
+
+        string query = "SELECT dietPlanID, dietPlan, caloriesTarget, proteinsTarget, carbohydratesTarget, fatsTarget FROM admins.tblDietPlans";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                DietPlans plan = new DietPlans(
+                    reader.GetInt32(0),
+                    reader.GetString(1),
+                    reader.GetInt32(2),
+                    reader.GetInt32(3),
+                    reader.GetInt32(4),
+                    reader.GetInt32(5)
+                );
+                planList.Add(plan);
+            }
+        }
+
+        int pageSize = 20;
+        int currentPage = 0;
+        int consoleWidth = Console.WindowWidth;
+
+        var headers = new[]
+        {
+        ("ID", 4),
+        ("Plan Name", 20),
+        ("Cal Target (g)", 15),
+        ("Protein Target (g)", 18),
+        ("Carbs Target (g)", 17),
+        ("Fats Target (g)", 16)
+    };
+
+        while (true)
+        {
+            view.Clear("View All Diet Plans");
+
+            // Build header string dynamically based on widths
+            string columnHeader = string.Join("    ", headers.Select(h => cut(h.Item1, h.Item2)));
+            int tableWidth = columnHeader.Length;
+            int leftPad = Math.Max(0, (consoleWidth - tableWidth) / 2);
+            string pad = new string(' ', leftPad);
+
+            Console.WriteLine(pad + new string('-', tableWidth));
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write(pad);
+            Console.WriteLine(columnHeader);
+            Console.ResetColor();
+            Console.WriteLine(pad + new string('-', tableWidth));
+
+            int totalPages = (int)Math.Ceiling((double)planList.Count / pageSize);
+            int startIndex = currentPage * pageSize;
+            int endIndex = Math.Min(startIndex + pageSize, planList.Count);
+
+            if (planList.Count == 0)
+            {
+                Console.WriteLine(pad + "No diet plans available.");
+            }
+            else
+            {
+                for (int i = startIndex; i < endIndex; i++)
+                {
+                    var p = planList[i];
+                    string line = string.Format("{0,-4}    {1,-20}    {2,-15}    {3,-18}    {4,-17}    {5,-16}",
+                        p.DietPlanID,
+                        Truncate(p.DietPlan, 20),
+                        p.CaloriesTarget,
+                        p.ProteinsTarget,
+                        p.CarbohydratesTarget,
+                        p.FatsTarget
+                    );
+
+                    Console.WriteLine(pad + line);
+                }
+
+                Console.WriteLine(pad + new string('-', tableWidth));
+                Console.WriteLine(pad + $"Page {currentPage + 1} of {Math.Max(totalPages, 1)}. Use ← or → to scroll.");
+            }
+
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine(pad + "Press any other key to go back");
+            Console.ResetColor();
+
+            var key = Console.ReadKey(true);
+            if (key.Key == ConsoleKey.LeftArrow && totalPages > 1 && currentPage > 0)
+            {
+                currentPage--;
+            }
+            else if (key.Key == ConsoleKey.RightArrow && totalPages > 1 && currentPage < totalPages - 1)
+            {
+                currentPage++;
+            }
+            else if (key.Key != ConsoleKey.LeftArrow && key.Key != ConsoleKey.RightArrow)
+            {
+                break;
+            }
+        }
+    }
     private string Truncate(string text, int maxLength)
     {
         if (text.Length <= maxLength)

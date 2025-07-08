@@ -791,7 +791,7 @@ namespace NutriTrackerApp
             if (userType == "user")
             {               
                 storageManager.ViewAllFoods();
-                FoodOptions();
+                UserHomePage();
             }
             else
             {
@@ -836,23 +836,12 @@ namespace NutriTrackerApp
         {
             if (userType == "user")
             {
-                string prompt = "\nView Diet Plans, choose an option using the arrow keys and pressing enter to select\n";
-                string[] options = { "View all diet plans"};
-                Menu mainMenu = new Menu(prompt, options);
-                int SelectedIndex = mainMenu.Run("", userType, this);
-                view.Clear("");
-
-                switch (SelectedIndex)
-                {
-                    case 0:
-                        //storageManager.ViewAllDietPlans();
-                        DietPlansOptions();
-                        break;
-                }
+                storageManager.ViewAllDietPlans();
+                UserHomePage();
             }
             else
             {
-                string prompt = "\nManage Diet Plans, choose an option using the arrow keys and pressing enter to select\n";
+                string prompt = "";
                 string[] options = { "View all diet plans", "Insert new diet plan", "Update existing diet plan", "Delete a diet plan"};
                 Menu mainMenu = new Menu(prompt, options);
                 int SelectedIndex = mainMenu.Run("", userType, this);
@@ -861,7 +850,7 @@ namespace NutriTrackerApp
                 switch (SelectedIndex)
                 {
                     case 0:
-                        //storageManager.ViewAllDietPlans();
+                        storageManager.ViewAllDietPlans();
                         DietPlansOptions();
                         break;
                     case 1:
