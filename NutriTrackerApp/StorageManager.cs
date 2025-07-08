@@ -132,69 +132,7 @@ public class StorageManager
             cmd.ExecuteNonQuery();
         }
     }
-    public void PrintUserDetails2(string userType, int? TheID)
-    {
-        Console.WriteLine();
-        string query = (userType == "admin")
-            ? "SELECT firstName, lastName, emailID, age, gender, userWeight, userHeight, signUpDate FROM users.tblUserDetails"
-            : "SELECT firstName, lastName, emailID, age, gender, userWeight, userHeight, signUpDate FROM users.tblUserDetails WHERE userID = @UserID";
-
-        using (SqlCommand cmd = new SqlCommand(query, conn))
-        {
-            if (userType != "admin" && TheID.HasValue)
-            {
-                cmd.Parameters.AddWithValue("@UserID", TheID.Value);
-            }
-
-            using (SqlDataReader reader = cmd.ExecuteReader())
-            {
-                if (!reader.HasRows)
-                {
-                    Console.WriteLine("No records found.");
-                    return;
-                }
-
-                var headers = new[]
-                {
-                ("First Name", 11),
-                ("Last Name", 11),
-                ("Email", 20),
-                ("Age", 3),
-                ("Gender", 6),
-                ("Weight", 6),
-                ("Height", 6),
-                ("Date", 10)
-            };
-
-                foreach (var (title, width) in headers)
-                {
-                    Console.Write(cut(title, width) + " | ");
-                }
-                Console.WriteLine();
-                int totalWidth = 11 + 11 + 20 + 3 + 6 + 6 + 6 + 10 + (3 * 8);
-                Console.WriteLine(new string('-', totalWidth)); // separator
-
-                int rowCount = 0;
-
-                // Print each row
-                while (reader.Read() && rowCount < 100)
-                {
-                    Console.Write(cut(reader.GetString(0), 11) + " | "); // First Name
-                    Console.Write(cut(reader.GetString(1), 11) + " | "); // Last Name
-                    Console.Write(cut(reader.GetString(2), 20) + " | "); // Email
-                    Console.Write(cut(reader.GetInt32(3).ToString(), 3) + " | "); // Age
-                    Console.Write(cut(reader.GetString(4), 6) + " | "); // Gender
-                    Console.Write(cut(Math.Round(reader.GetDecimal(5)).ToString(), 6) + " | "); // Weight
-                    Console.Write(cut(Math.Round(reader.GetDecimal(6)).ToString(), 6) + " | "); // Height
-                    Console.Write(cut(Convert.ToDateTime(reader.GetDateTime(7)).ToString("yyyy-MM-dd"), 10));
-                    Console.WriteLine();
-
-                    rowCount++;
-                }
-            }
-        }
-    }
-    public void PrintUserDetails(string userType, int? TheID)
+    public void ViewAllUserDetails(string userType, int? TheID)
     {
         ConsoleView view = new ConsoleView();
         List<string[]> userList = new List<string[]>();
@@ -506,6 +444,118 @@ public class StorageManager
             }
             // If it's an arrow but page cannot move, do nothing (stay on same page)
 
+        }
+    }
+    public void ViewAllFoods()
+    {
+        ConsoleView view = new ConsoleView();
+        List<Foods> foodList = new List<Foods>();
+
+        string query = "SELECT foodID, foodName, category, calories, carbohydrates, proteins, fats, servingSize FROM admins.tblFoods";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                Foods food = new Foods(
+                    reader.GetInt32(0),
+                    reader.GetString(1),
+                    reader.GetString(2),
+                    reader.GetDecimal(3),
+                    reader.GetDecimal(4),
+                    reader.GetDecimal(5),
+                    reader.GetDecimal(6),
+                    reader.GetDecimal(7)
+                );
+                foodList.Add(food);
+            }
+        }
+
+        int pageSize = 20;
+        int currentPage = 0;
+        int consoleWidth = Console.WindowWidth;
+
+        var headers = new[]
+        {
+        ("ID", 4),
+        ("Name", 20),
+        ("Category", 15),
+        ("Cal (g)", 5),
+        ("Carbs (g)", 6),
+        ("Prot (g)", 6),
+        ("Fats (g)", 6),
+        ("Size (g)", 6)
+    };
+
+        while (true)
+        {
+            view.Clear("View All Foods");
+
+            // Header formatting
+            string columnHeader = string.Format("{0,-4}    {1,-20}    {2,-15}    {3,-5}    {4,-6}    {5,-6}    {6,-6}    {7,-6}",
+                headers[0].Item1, headers[1].Item1, headers[2].Item1, headers[3].Item1,
+                headers[4].Item1, headers[5].Item1, headers[6].Item1, headers[7].Item1);
+
+            int tableWidth = columnHeader.Length;
+            int leftPad = Math.Max(0, (consoleWidth - tableWidth) / 2);
+            string pad = new string(' ', leftPad);
+
+            Console.WriteLine(pad + new string('-', tableWidth));
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write(pad);
+            Console.WriteLine(columnHeader);
+            Console.ResetColor();
+            Console.WriteLine(pad + new string('-', tableWidth));
+
+            // Paging logic
+            int totalPages = (int)Math.Ceiling((double)foodList.Count / pageSize);
+            int startIndex = currentPage * pageSize;
+            int endIndex = Math.Min(startIndex + pageSize, foodList.Count);
+
+            if (foodList.Count == 0)
+            {
+                Console.WriteLine(pad + "No foods available.");
+            }
+            else
+            {
+                for (int i = startIndex; i < endIndex; i++)
+                {
+                    var f = foodList[i];
+                    string line = string.Format("{0,-4}    {1,-20}    {2,-15}    {3,-5}    {4,-6}    {5,-6}    {6,-6}    {7,-6}",
+                        f.FoodID,
+                        Truncate(f.FoodName, 20),
+                        Truncate(f.Category, 15),
+                        Math.Round(f.Calories),
+                        Math.Round(f.Carbohydrates),
+                        Math.Round(f.Proteins),
+                        Math.Round(f.Fats),
+                        Math.Round(f.ServingSize));
+
+                    Console.WriteLine(pad + line);
+                }
+
+                Console.WriteLine(pad + new string('-', tableWidth));
+                Console.WriteLine(pad + $"Page {currentPage + 1} of {Math.Max(totalPages, 1)}. Use ← or → to scroll.");
+            }
+
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine(pad + "Press any other key to go back");
+            Console.ResetColor();
+
+            var key = Console.ReadKey(true);
+            if (key.Key == ConsoleKey.LeftArrow && totalPages > 1 && currentPage > 0)
+            {
+                currentPage--;
+            }
+            else if (key.Key == ConsoleKey.RightArrow && totalPages > 1 && currentPage < totalPages - 1)
+            {
+                currentPage++;
+            }
+            else if (key.Key != ConsoleKey.LeftArrow && key.Key != ConsoleKey.RightArrow)
+            {
+                break;
+            }
         }
     }
     private string Truncate(string text, int maxLength)

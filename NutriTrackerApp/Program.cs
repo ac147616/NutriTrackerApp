@@ -634,7 +634,7 @@ namespace NutriTrackerApp
                 switch (SelectedIndex)
                 {
                     case 0:
-                        storageManager.PrintUserDetails(userType, TheID);
+                        storageManager.ViewAllUserDetails(userType, TheID);
                         UserOptions();
                         break;
                     case 1:
@@ -656,7 +656,7 @@ namespace NutriTrackerApp
                 switch (SelectedIndex)
                 {
                     case 0:
-                        storageManager.PrintUserDetails(userType, TheID);
+                        storageManager.ViewAllUserDetails(userType, TheID);
                         Console.ForegroundColor = ConsoleColor.Red;
                         UserOptions();
                         break;
@@ -789,24 +789,9 @@ namespace NutriTrackerApp
         public void FoodOptions()
         {
             if (userType == "user")
-            {
-                string prompt = "";
-                string[] options = {"View all foods"};
-                Menu mainMenu = new Menu(prompt, options);
-                int SelectedIndex = mainMenu.Run("", userType, this);
-                view.Clear("");
-
-                switch (SelectedIndex)
-                {
-                    case 0:
-                        storageManager.PrintAllergiesByUserID(TheID);
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("\nPress any key to go back");
-                        Console.ResetColor();
-                        ConsoleKeyInfo key = Console.ReadKey(true);
-                        FoodOptions();
-                        break;
-                }
+            {               
+                storageManager.ViewAllFoods();
+                FoodOptions();
             }
             else
             {
@@ -819,8 +804,7 @@ namespace NutriTrackerApp
                 switch (SelectedIndex)
                 {
                     case 0:
-                        Console.WriteLine("VIEW All food DETAILS COMING SOON...Press any key to go back");
-                        ConsoleKeyInfo key = Console.ReadKey(true);
+                        storageManager.ViewAllFoods();
                         FoodOptions();
                         break;
                     case 1:
@@ -861,8 +845,7 @@ namespace NutriTrackerApp
                 switch (SelectedIndex)
                 {
                     case 0:
-                        Console.WriteLine("VIEW All diet plans DETAILS COMING SOON...Press any key to go back");
-                        ConsoleKeyInfo key = Console.ReadKey(true);
+                        //storageManager.ViewAllDietPlans();
                         DietPlansOptions();
                         break;
                 }
@@ -878,8 +861,7 @@ namespace NutriTrackerApp
                 switch (SelectedIndex)
                 {
                     case 0:
-                        Console.WriteLine("VIEW All diet plans DETAILS COMING SOON...Press any key to go back");
-                        ConsoleKeyInfo key = Console.ReadKey(true);
+                        //storageManager.ViewAllDietPlans();
                         DietPlansOptions();
                         break;
                     case 1:
