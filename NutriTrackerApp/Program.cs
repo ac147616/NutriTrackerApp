@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel.Design;
 using System.Net.Http;
+using static StorageManager;
 
 namespace NutriTrackerApp
 {
@@ -634,10 +635,6 @@ namespace NutriTrackerApp
                 {
                     case 0:
                         storageManager.PrintUserDetails(userType, TheID);
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("\n\nPress any key to go back");
-                        Console.ResetColor();
-                        ConsoleKeyInfo key = Console.ReadKey(true);
                         UserOptions();
                         break;
                     case 1:
@@ -659,14 +656,8 @@ namespace NutriTrackerApp
                 switch (SelectedIndex)
                 {
                     case 0:
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("Can only show top 100 users");
-                        Console.ResetColor();
                         storageManager.PrintUserDetails(userType, TheID);
                         Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("\n\nPress any key to go back");
-                        Console.ResetColor();
-                        ConsoleKeyInfo key = Console.ReadKey(true);
                         UserOptions();
                         break;
                     case 1:
@@ -718,15 +709,8 @@ namespace NutriTrackerApp
             switch (SelectedIndex)
             {
                 case 0:
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Can only show a 100 results");
-                    Console.ResetColor();
-                    storageManager.PrintAdminDetails();
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("\n\nPress any key to go back");
-                    Console.ResetColor();
-                    ConsoleKeyInfo key = Console.ReadKey(true);
-                    UserOptions();
+                    storageManager.ViewAllAdmins();
+                    AdminOptions();
                     break;
                 case 1:
                     InsertNewAdmin();
@@ -776,11 +760,7 @@ namespace NutriTrackerApp
             switch (SelectedIndex)
             {
                 case 0:
-                    storageManager.PrintAllergiesByUserID(TheID);
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("\nPress any key to go back");
-                    Console.ResetColor();
-                    ConsoleKeyInfo key = Console.ReadKey(true);
+                    storageManager.ViewAllAllergies(TheID);
                     AllergiesOptions();
                     break;
                 case 1:
@@ -810,8 +790,8 @@ namespace NutriTrackerApp
         {
             if (userType == "user")
             {
-                string prompt = "\nView Foods, choose an option using the arrow keys and pressing enter to select\n";
-                string[] options = { "View all foods"};
+                string prompt = "";
+                string[] options = {"View all foods"};
                 Menu mainMenu = new Menu(prompt, options);
                 int SelectedIndex = mainMenu.Run("", userType, this);
                 view.Clear("");
@@ -819,7 +799,10 @@ namespace NutriTrackerApp
                 switch (SelectedIndex)
                 {
                     case 0:
-                        Console.WriteLine("VIEW All foods DETAILS COMING SOON...Press any key to go back");
+                        storageManager.PrintAllergiesByUserID(TheID);
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("\nPress any key to go back");
+                        Console.ResetColor();
                         ConsoleKeyInfo key = Console.ReadKey(true);
                         FoodOptions();
                         break;
@@ -926,11 +909,49 @@ namespace NutriTrackerApp
         }
         public void GoalsOptions()
         {
+            string prompt = "";
+            string[] options = { "View all goals", "Insert new goal", "Update existing goal", "Delete a goal" };
+            Menu mainMenu = new Menu(prompt, options);
+            int SelectedIndex = mainMenu.Run("", userType, this);
+            view.Clear("");
 
+            switch (SelectedIndex)
+            {
+                case 0:
+                    Console.WriteLine("VIEW All diet plans DETAILS COMING SOON...Press any key to go back");
+                    ConsoleKeyInfo key = Console.ReadKey(true);
+                    DietPlansOptions();
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+            }
         }
         public void DailyLogOptions()
         {
+            string prompt = "";
+            string[] options = { "View all goals", "Insert new goal", "Update existing goal", "Delete a goal" };
+            Menu mainMenu = new Menu(prompt, options);
+            int SelectedIndex = mainMenu.Run("", userType, this);
+            view.Clear("");
 
+            switch (SelectedIndex)
+            {
+                case 0:
+                    Console.WriteLine("VIEW All diet plans DETAILS COMING SOON...Press any key to go back");
+                    ConsoleKeyInfo key = Console.ReadKey(true);
+                    DietPlansOptions();
+                    break;
+                case 1:
+                    break;
+                case 2:
+                    break;
+                case 3:
+                    break;
+            }
         }
         public void ShowMessage(string message, int labelsLength)
         {

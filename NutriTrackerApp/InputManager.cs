@@ -56,19 +56,22 @@ namespace NutriTrackerApp //This class manages how to make the input look like a
                 Console.SetCursorPosition(inputLeftPadding + collectedResponses[currentField].Length, inputTopPadding); //Move cursor to end of the line
 
                 ConsoleKeyInfo key = Console.ReadKey(true);  // Get what kind of key they pressed
-                if (key.Key == ConsoleKey.B)
+                if ((key.Modifiers & ConsoleModifiers.Control) != 0)
                 {
-                    Back(myProgram);
-                    return null;
-                }
-                else if (key.Key == ConsoleKey.H)
-                {
-                    GetHelp(myProgram);
-                }
-                else if (key.Key == ConsoleKey.E)
-                {
-                    Exit(myProgram);
-                    return null;
+                    if (key.Key == ConsoleKey.B)
+                    {
+                        Back(myProgram);
+                        return null;
+                    }
+                    else if (key.Key == ConsoleKey.H)
+                    {
+                        GetHelp(myProgram);
+                    }
+                    else if (key.Key == ConsoleKey.E)
+                    {
+                        Exit(myProgram);
+                        return null;
+                    }
                 }
 
                 // Navigate down or move to next field

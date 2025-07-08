@@ -7,30 +7,30 @@ using System.Reflection;
 
 public class StorageManager
 {
-	private SqlConnection conn;
-	public StorageManager(string connectionString)
-	{
-		try
-		{
-			conn = new SqlConnection(connectionString);
-			conn.Open();
-			Console.WriteLine("Your connection was successful!");
+    public SqlConnection conn;
+    public StorageManager(string connectionString)
+    {
+        try
+        {
+            conn = new SqlConnection(connectionString);
+            conn.Open();
+            Console.WriteLine("Your connection was successful!");
             System.Threading.Thread.Sleep(1000);
             Console.WriteLine("\nLoading interface...");
         }
-		catch (SqlException e)
-		{
-			Console.WriteLine("Your connection was unsuccessful...\n");
-			Console.WriteLine(e.Message);
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine("An error occurred...");
-			Console.WriteLine(ex.Message);
-		}
-	}
-	public int InsertUser(UserDetails user1)
-	{
+        catch (SqlException e)
+        {
+            Console.WriteLine("Your connection was unsuccessful...\n");
+            Console.WriteLine(e.Message);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("An error occurred...");
+            Console.WriteLine(ex.Message);
+        }
+    }
+    public int InsertUser(UserDetails user1)
+    {
         string query = "INSERT INTO users.tblUserDetails (firstName, lastName, emailID, passwordKey, age, gender, userWeight, userHeight, signUpDate) VALUES (@FirstName, @LastName, @EmailID, @PasswordKey, @Age, @Gender, @UserWeight, @UserHeight, @SignUpDate); SELECT SCOPE_IDENTITY();";
 
         using (SqlCommand cmd = new SqlCommand(query, conn))
@@ -132,7 +132,7 @@ public class StorageManager
             cmd.ExecuteNonQuery();
         }
     }
-    public void PrintUserDetails(string userType, int? TheID)
+    public void PrintUserDetails2(string userType, int? TheID)
     {
         Console.WriteLine();
         string query = (userType == "admin")
@@ -194,51 +194,325 @@ public class StorageManager
             }
         }
     }
-    public void PrintAdminDetails()
+    public void PrintUserDetails(string userType, int? TheID)
     {
-        Console.WriteLine();
-        string query = "SELECT TOP 100 firstName, lastName, emailID FROM admins.tblAdminDetails";
+        ConsoleView view = new ConsoleView();
+        List<string[]> userList = new List<string[]>();
 
+        string query = (userType == "admin")
+            ? "SELECT firstName, lastName, emailID, age, gender, userWeight, userHeight, signUpDate FROM users.tblUserDetails"
+            : "SELECT firstName, lastName, emailID, age, gender, userWeight, userHeight, signUpDate FROM users.tblUserDetails WHERE userID = @UserID";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            if (userType != "admin" && TheID.HasValue)
+            {
+                cmd.Parameters.AddWithValue("@UserID", TheID.Value);
+            }
+
+            using (SqlDataReader reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    string[] row = new string[8];
+                    row[0] = reader.GetString(0); // First Name
+                    row[1] = reader.GetString(1); // Last Name
+                    row[2] = reader.GetString(2); // Email
+                    row[3] = reader.GetInt32(3).ToString(); // Age
+                    row[4] = reader.GetString(4); // Gender
+                    row[5] = Math.Round(reader.GetDecimal(5)).ToString(); // Weight
+                    row[6] = Math.Round(reader.GetDecimal(6)).ToString(); // Height
+                    row[7] = reader.GetDateTime(7).ToString("yyyy-MM-dd"); // Date
+                    userList.Add(row);
+                }
+            }
+        }
+
+        if (userList.Count == 0)
+        {
+            Console.WriteLine("No records found.");
+            return;
+        }
+
+        var headers = new[]
+        {
+        ("First Name", 11),
+        ("Last Name", 11),
+        ("Email", 20),
+        ("Age", 3),
+        ("Gender", 6),
+        ("Weight", 6),
+        ("Height", 6),
+        ("Date", 10)
+    };
+
+        int pageSize = 20;
+        int currentPage = 0;
+        int consoleWidth = Console.WindowWidth;
+
+        while (true)
+        {
+            view.Clear("View User Details"); // Optional title parameter omitted since no heading is needed
+
+            // Prepare header
+            string columnHeader = string.Join(" | ", headers.Select(h => cut(h.Item1, h.Item2)));
+            int tableWidth = columnHeader.Length;
+            int leftPad = Math.Max(0, (consoleWidth - tableWidth) / 2);
+            string pad = new string(' ', leftPad);
+
+            Console.WriteLine(pad + new string('-', tableWidth));
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write(pad);
+            Console.WriteLine(columnHeader);
+            Console.ResetColor();
+            Console.WriteLine(pad + new string('-', tableWidth));
+
+            // Calculate paging
+            int totalPages = (int)Math.Ceiling((double)userList.Count / pageSize);
+            int startIndex = currentPage * pageSize;
+            int endIndex = Math.Min(startIndex + pageSize, userList.Count);
+
+            for (int i = startIndex; i < endIndex; i++)
+            {
+                string line = string.Join(" | ", new[]
+                {
+                cut(userList[i][0], 11),
+                cut(userList[i][1], 11),
+                cut(userList[i][2], 20),
+                cut(userList[i][3], 3),
+                cut(userList[i][4], 6),
+                cut(userList[i][5], 6),
+                cut(userList[i][6], 6),
+                cut(userList[i][7], 10)
+            });
+
+                Console.WriteLine(pad + line);
+            }
+
+            Console.WriteLine(pad + new string('-', tableWidth));
+
+            // For admin: show page info + scroll logic
+            if (userType == "admin")
+            {
+                Console.WriteLine(pad + $"Page {currentPage + 1} of {Math.Max(totalPages, 1)}. Use ← or → to scroll.");
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine(pad + "Press any other key to go back");
+                Console.ResetColor();
+
+                var key = Console.ReadKey(true);
+                if (key.Key == ConsoleKey.LeftArrow && totalPages > 1 && currentPage > 0)
+                {
+                    currentPage--;
+                }
+                else if (key.Key == ConsoleKey.RightArrow && totalPages > 1 && currentPage < totalPages - 1)
+                {
+                    currentPage++;
+                }
+                else if (key.Key != ConsoleKey.LeftArrow && key.Key != ConsoleKey.RightArrow)
+                {
+                    break;
+                }
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine(pad + "Press any other key to go back");
+                Console.ResetColor();
+                Console.ReadKey(true);
+                break;
+            }
+        }
+    }
+    public void ViewAllAdmins()
+    {
+        ConsoleView view = new ConsoleView();
+        List<AdminDetails> adminList = new List<AdminDetails>();
+
+        string query = "SELECT adminID, firstName, lastName, emailID, passwordkey FROM admins.tblAdminDetails";
         using (SqlCommand cmd = new SqlCommand(query, conn))
         using (SqlDataReader reader = cmd.ExecuteReader())
         {
-            if (!reader.HasRows)
+            while (reader.Read())
             {
-                Console.WriteLine("No admin records found.");
-                return;
-            }
-
-            var headers = new[]
-            {
-            ("First Name", 11),
-            ("Last Name", 11),
-            ("Email", 20)
-        };
-
-            // Print header row
-            foreach (var (title, width) in headers)
-            {
-                Console.Write(cut(title, width) + " | ");
-            }
-            Console.WriteLine();
-
-            int totalWidth = 11 + 11 + 20 + (3 * 3); // column widths + 3 separators
-                                                     // total width + separators
-            Console.WriteLine(new string('-', totalWidth));
-
-            int rowCount = 0;
-
-            // Print each record row
-            while (reader.Read() && rowCount < 100)
-            {
-                Console.Write(cut(reader.GetString(0), 11) + " | "); // First Name
-                Console.Write(cut(reader.GetString(1), 11) + " | "); // Last Name
-                Console.Write(cut(reader.GetString(2), 20));         // Email
-                Console.WriteLine();
-
-                rowCount++;
+                AdminDetails admin = new AdminDetails(
+                    reader.GetInt32(0),
+                    reader.GetString(1),
+                    reader.GetString(2),
+                    reader.GetString(3),
+                    reader.GetString(4)
+                );
+                adminList.Add(admin);
             }
         }
+
+        int pageSize = 20;
+        int currentPage = 0;
+        int consoleWidth = Console.WindowWidth;
+
+        while (true)
+        {
+            view.Clear("View All Admins");
+            Console.WriteLine();
+
+            string columnHeader = string.Format("{0,-6}    {1,-15}    {2,-15}    {3,-25}", "ID", "First Name", "Last Name", "Email");
+            int tableWidth = columnHeader.Length;
+            int leftPad = Math.Max(0, (consoleWidth - tableWidth) / 2);
+            string pad = new string(' ', leftPad);
+
+            Console.WriteLine(pad + new string('-', tableWidth));
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write(pad); // apply color to padding too
+            Console.WriteLine(columnHeader);
+            Console.ResetColor();
+            Console.WriteLine(pad + new string('-', tableWidth));
+
+            int totalPages = (int)Math.Ceiling((double)adminList.Count / pageSize);
+            int startIndex = currentPage * pageSize;
+            int endIndex = Math.Min(startIndex + pageSize, adminList.Count);
+
+            if (adminList.Count == 0)
+            {
+                Console.WriteLine(pad + "No admin records found.");
+            }
+            else
+            {
+                for (int i = startIndex; i < endIndex; i++)
+                {
+                    AdminDetails admin = adminList[i];
+                    string line = string.Format("{0,-6}    {1,-15}    {2,-15}    {3,-25}",
+                        admin.AdminID,
+                        Truncate(admin.FirstName, 15),
+                        Truncate(admin.LastName, 15),
+                        Truncate(admin.EmailID, 25)
+                    );
+                    Console.WriteLine(pad + line);
+                }
+
+                Console.WriteLine(pad + new string('-', tableWidth));
+                Console.WriteLine(pad + $"Page {currentPage + 1} of {Math.Max(totalPages, 1)}. Use ← or → to scroll.");
+            }
+
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine(pad + "Press any other key to go back");
+            Console.ResetColor();
+
+            var key = Console.ReadKey(true);
+
+            if (key.Key == ConsoleKey.LeftArrow && totalPages > 1 && currentPage > 0)
+            {
+                currentPage--;
+            }
+            else if (key.Key == ConsoleKey.RightArrow && totalPages > 1 && currentPage < totalPages - 1)
+            {
+                currentPage++;
+            }
+            else if (key.Key != ConsoleKey.LeftArrow && key.Key != ConsoleKey.RightArrow)
+            {
+                break;
+            }
+            // If left/right pressed but not valid → stay on same page
+        }
+    }
+    public void ViewAllAllergies(int userID)
+    {
+        ConsoleView view = new ConsoleView();
+        List<(string Allergy, int AllergyID)> allergyList = new List<(string, int)>();
+
+        string query = "SELECT allergy, allergyID FROM users.tblAllergies WHERE userID = @UserID";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@UserID", userID);
+
+            using (SqlDataReader reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    string allergy = reader.GetString(0);
+                    int allergyID = reader.GetInt32(1);
+                    allergyList.Add((allergy, allergyID));
+                }
+            }
+        }
+
+        int pageSize = 20;
+        int currentPage = 0;
+        int consoleWidth = Console.WindowWidth;
+
+        while (true)
+        {
+            view.Clear("View All Alergies");
+
+            // Center the heading
+            string heading = $"Allergies for User ID: {userID}";
+            int headingPad = Math.Max(0, (consoleWidth - heading.Length) / 2);
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(new string(' ', headingPad) + heading);
+            Console.ResetColor();
+            Console.WriteLine();
+
+            // Header
+            string columnHeader = string.Format("{0,-5}    {1,-30}", "ID", "Allergy"); // 4 spaces
+            int tableWidth = columnHeader.Length;
+            int leftPad = Math.Max(0, (consoleWidth - tableWidth) / 2);
+
+            Console.WriteLine(new string(' ', leftPad) + new string('-', tableWidth));
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write(new string(' ', leftPad)); // Set color before writing padding
+            Console.WriteLine(columnHeader);
+            Console.ResetColor();
+            Console.WriteLine(new string(' ', leftPad) + new string('-', tableWidth));
+
+            // Paging
+            int totalPages = (int)Math.Ceiling((double)allergyList.Count / pageSize);
+            int startIndex = currentPage * pageSize;
+            int endIndex = Math.Min(startIndex + pageSize, allergyList.Count);
+
+            if (allergyList.Count == 0)
+            {
+                Console.WriteLine(new string(' ', leftPad) + "No allergies recorded.");
+            }
+            else
+            {
+                for (int i = startIndex; i < endIndex; i++)
+                {
+                    var allergy = allergyList[i];
+                    string line = string.Format("{0,-5}    {1,-30}", allergy.AllergyID, Truncate(allergy.Allergy, 30));
+                    Console.WriteLine(new string(' ', leftPad) + line);
+                }
+
+                Console.WriteLine(new string(' ', leftPad) + new string('-', tableWidth));
+                Console.WriteLine(new string(' ', leftPad) + $"Page {currentPage + 1} of {Math.Max(totalPages, 1)}. Use ← or → to scroll.");
+            }
+
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine();
+            Console.WriteLine(new string(' ', leftPad) + "Press any other key to go back");
+            Console.ResetColor();
+
+            var key = Console.ReadKey(true);
+
+            if (key.Key == ConsoleKey.LeftArrow && totalPages > 1 && currentPage > 0)
+            {
+                currentPage--;
+            }
+            else if (key.Key == ConsoleKey.RightArrow && totalPages > 1 && currentPage < totalPages - 1)
+            {
+                currentPage++;
+            }
+            else if (key.Key != ConsoleKey.LeftArrow && key.Key != ConsoleKey.RightArrow)
+            {
+                break; // Any other key breaks regardless of page count
+            }
+            // If it's an arrow but page cannot move, do nothing (stay on same page)
+
+        }
+    }
+    private string Truncate(string text, int maxLength)
+    {
+        if (text.Length <= maxLength)
+            return text;
+        return text.Substring(0, maxLength - 1) + "…";
     }
     public void PrintAllergiesByUserID(int userID)
     {
@@ -274,7 +548,7 @@ public class StorageManager
                 Console.WriteLine(new string('-', 40));
             }
         }
-    }  
+    }
     private string cut(string value, int width)
     {
         if (value.Length < width)
