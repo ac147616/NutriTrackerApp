@@ -661,6 +661,85 @@ public class StorageManager
             }
         }
     }
+    public void ViewAllGoals(int userID)
+    {
+        ConsoleView view = new ConsoleView();
+        List<Goals> goalsList = new List<Goals>();
+
+        string query = "SELECT goalID, userID, dietPlanID, goal, dateStarted, dateEnded FROM users.tblGoals WHERE userID = @UserID";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@UserID", userID);
+
+            using (SqlDataReader reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    Goals g = new Goals(
+                        reader.GetInt32(0),
+                        reader.GetInt32(1),
+                        reader.GetInt32(2),
+                        reader.GetString(3),
+                        reader.GetString(4),
+                        reader.GetString(5)
+                    );
+                    goalsList.Add(g);
+                }
+            }
+        }
+
+        view.Clear("View Goals");
+
+        var headers = new[]
+        {
+        ("ID", 4),
+        ("Goal", 25),
+        ("PlanID", 7),
+        ("Start Date", 12),
+        ("End Date", 12)
+    };
+
+        string columnHeader = string.Format("{0,-4}    {1,-25}    {2,-7}    {3,-12}    {4,-12}",
+            headers[0].Item1, headers[1].Item1, headers[2].Item1, headers[3].Item1, headers[4].Item1);
+
+        int tableWidth = columnHeader.Length;
+        int consoleWidth = Console.WindowWidth;
+        int leftPad = Math.Max(0, (consoleWidth - tableWidth) / 2);
+        string pad = new string(' ', leftPad);
+
+        Console.WriteLine(pad + new string('-', tableWidth));
+        Console.BackgroundColor = ConsoleColor.White;
+        Console.ForegroundColor = ConsoleColor.Black;
+        Console.Write(pad);
+        Console.WriteLine(columnHeader);
+        Console.ResetColor();
+        Console.WriteLine(pad + new string('-', tableWidth));
+
+        if (goalsList.Count == 0)
+        {
+            Console.WriteLine(pad + "No goals recorded.");
+        }
+        else
+        {
+            foreach (var g in goalsList)
+            {
+                string line = string.Format("{0,-4}    {1,-25}    {2,-7}    {3,-12}    {4,-12}",
+                    g.GoalID,
+                    Truncate(g.Goal, 25),
+                    g.DietPlanID,
+                    g.DateStarted,
+                    g.DateEnded);
+                Console.WriteLine(pad + line);
+            }
+        }
+
+        Console.WriteLine(pad + new string('-', tableWidth));
+        Console.ForegroundColor = ConsoleColor.DarkRed;
+        Console.WriteLine(pad + "Press any key to return...");
+        Console.ResetColor();
+        Console.ReadKey(true);
+    }
     private string Truncate(string text, int maxLength)
     {
         if (text.Length <= maxLength)

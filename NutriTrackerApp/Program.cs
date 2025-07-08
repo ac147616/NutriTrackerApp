@@ -889,9 +889,8 @@ namespace NutriTrackerApp
             switch (SelectedIndex)
             {
                 case 0:
-                    Console.WriteLine("VIEW All diet plans DETAILS COMING SOON...Press any key to go back");
-                    ConsoleKeyInfo key = Console.ReadKey(true);
-                    DietPlansOptions();
+                    storageManager.ViewAllGoals(TheID);
+                    GoalsOptions();
                     break;
                 case 1:
                     break;
@@ -912,9 +911,8 @@ namespace NutriTrackerApp
             switch (SelectedIndex)
             {
                 case 0:
-                    Console.WriteLine("VIEW All diet plans DETAILS COMING SOON...Press any key to go back");
-                    ConsoleKeyInfo key = Console.ReadKey(true);
-                    DietPlansOptions();
+                    storageManager.ViewAllDialyLogs();
+                    DailyLogOptions();
                     break;
                 case 1:
                     break;
