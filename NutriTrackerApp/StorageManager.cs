@@ -126,6 +126,30 @@ public class StorageManager
             return Convert.ToInt32(cmd.ExecuteScalar());
         }
     }
+    public int InsertGoal(Goals goal)
+    {
+        string query = @"
+        INSERT INTO users.tblGoals 
+        (userID, dietPlanID, goal, dateStarted, dateEnded) 
+        VALUES 
+        (@UserID, @DietPlanID, @Goal, @DateStarted, @DateEnded);
+        SELECT SCOPE_IDENTITY();";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@UserID", goal.UserID);
+            cmd.Parameters.AddWithValue("@DietPlanID", goal.DietPlanID);
+            cmd.Parameters.AddWithValue("@Goal", goal.Goal);
+            cmd.Parameters.AddWithValue("@DateStarted", goal.DateStarted);
+
+            if (goal.DateEnded == null)
+                cmd.Parameters.AddWithValue("@DateEnded", DBNull.Value);
+            else
+                cmd.Parameters.AddWithValue("@DateEnded", goal.DateEnded);
+
+            return Convert.ToInt32(cmd.ExecuteScalar());
+        }
+    }
     public void UpdateUser(UserDetails user1)
     {
         string query = @"UPDATE users.tblUserDetails 
@@ -723,8 +747,8 @@ public class StorageManager
                         reader.GetInt32(1),
                         reader.GetInt32(2),
                         reader.GetString(3),
-                        reader.GetString(4),
-                        reader.GetString(5)
+                        reader.GetDateTime(4).ToString("yyyy-MM-dd"),
+                        reader.IsDBNull(5) ? null : reader.GetDateTime(5).ToString("yyyy-MM-dd")
                     );
                     goalsList.Add(g);
                 }

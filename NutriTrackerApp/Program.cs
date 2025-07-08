@@ -400,6 +400,51 @@ namespace NutriTrackerApp
 
             DietPlansOptions();
         }
+        public void InsertNewGoal()
+        {
+            while (true)
+            {
+                view.Clear("Add New Goal");
+                Console.WriteLine();
+                Console.SetCursorPosition(50, Console.CursorTop);
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("(press ctrl + enter to submit form)\n");
+                Console.ResetColor();
+
+                List<string> collectedResponses = InputManager.GetInput(new string[]
+                {
+            "Diet Plan ID",
+            "Goal"
+                }, this);
+
+                if (collectedResponses[0] == "" || collectedResponses[1] == "")
+                {
+                    ShowMessage("All fields are required. Press any key to fill again.", 2);
+                }
+                else
+                {
+                    try
+                    {
+                        int dietPlanID = Convert.ToInt32(collectedResponses[0]);
+                        string goalText = collectedResponses[1];
+                        string dateStarted = DateTime.Now.ToString("yyyy-MM-dd");
+                        string dateEnded = null;
+
+                        Goals goal = new Goals(0, TheID, dietPlanID, goalText, dateStarted, dateEnded);
+                        int goalID = storageManager.InsertGoal(goal);
+
+                        ShowMessage($"New goal added with ID: {goalID}. Press any key to continue.", 2);
+                        break;
+                    }
+                    catch
+                    {
+                        ShowMessage("Invalid input. Diet Plan ID must be a number. Press any key to fill again.", 2);
+                    }
+                }
+            }
+
+            GoalsOptions();
+        }
         public void ExistingUserLogIn()
         {
             while (true)
@@ -1191,6 +1236,7 @@ namespace NutriTrackerApp
                     GoalsOptions();
                     break;
                 case 1:
+                    InsertNewGoal();
                     break;
                 case 2:
                     break;
