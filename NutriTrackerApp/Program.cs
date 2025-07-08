@@ -663,20 +663,28 @@ namespace NutriTrackerApp
                         InsertNewUser();
                         break;
                     case 2:
-                        view.Clear("Edit User Details");
-                        Console.Write("\nUserID to edit: ");
-                        try
+                        while (true)
                         {
-                            int usersID = Convert.ToInt32(Console.ReadLine());
-                            UpdateUser(usersID);
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.SetCursorPosition(50, Console.CursorTop);
+                            Console.WriteLine("(press ctrl + enter to submit form)\n");
+                            Console.ResetColor();
+                            List<string> collectedResponses = InputManager.GetInput(new string[]
+                    {
+            "User ID to update: "
+                    }, this);
+                            try
+                            {
+                                int usersID = Convert.ToInt32(collectedResponses[0]);
+                                UpdateUser(usersID);
+                            }
+                            catch (Exception ex)
+                            {
+                                ShowMessage("ID must be a number and cannot be null, press any key to go back", 2);
+                                Console.ReadKey(true);
+                                view.Clear("Update User");
+                            }
                         }
-                        catch (Exception ex)
-                        {
-                            ShowMessage("ID must be a number and cannot be null, press any key to go back", 2);
-                            Console.ReadKey(true);
-                            UserOptions();
-                        }
-                        break;
                     case 3:
                         view.Clear("Delete User");
                         Console.Write("\nUserID to delete: ");

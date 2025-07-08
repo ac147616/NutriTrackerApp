@@ -21,32 +21,39 @@ namespace NutriTrackerApp
         }
         private void DisplayOptions()
         {
-            Console.WriteLine();
-            Console.WriteLine(new string(' ', Math.Max(0, (Console.WindowWidth - Prompt.Length) / 2)) + Prompt);
-            Console.WriteLine();
-
-            for (int i = 0; i < Options.Length; i++)
+            if (Prompt != "")
             {
-                string currentOption = Options[i];
-
-                if (i == SelectedIndex)
-                {
-                    Console.ForegroundColor = ConsoleColor.Black;
-                    Console.BackgroundColor = ConsoleColor.White;
-                }
-                else
-                {
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.BackgroundColor = ConsoleColor.Black;
-                }
-
-                string menuItem = $"<< {currentOption} >>";
-                int windowWidth = Console.WindowWidth;
-                int x = Math.Max(0, (windowWidth - menuItem.Length) / 2);
-                int y = Console.CursorTop;
-                Console.SetCursorPosition(x, y);
-                Console.WriteLine(menuItem);
+                Console.WriteLine();
+                Console.WriteLine(new string(' ', Math.Max(0, (Console.WindowWidth - Prompt.Length) / 2)) + Prompt);
+                Console.WriteLine();
             }
+            else
+            {
+                Console.WriteLine();
+            }
+
+                for (int i = 0; i < Options.Length; i++)
+                {
+                    string currentOption = Options[i];
+
+                    if (i == SelectedIndex)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.BackgroundColor = ConsoleColor.White;
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.BackgroundColor = ConsoleColor.Black;
+                    }
+
+                    string menuItem = $"<< {currentOption} >>";
+                    int windowWidth = Console.WindowWidth;
+                    int x = Math.Max(0, (windowWidth - menuItem.Length) / 2);
+                    int y = Console.CursorTop;
+                    Console.SetCursorPosition(x, y);
+                    Console.WriteLine(menuItem);
+                }
 
             Console.ResetColor();
         }
