@@ -586,7 +586,7 @@ namespace NutriTrackerApp
         }
         public void DeleteAllergy(int allergyID)
         {
-            Menu confirmDelete = new Menu("\nAre you sure you want to delete this allergy?\n", new string[] { "Yes", "No" });
+            Menu confirmDelete = new Menu("Are you sure you want to delete this allergy?", new string[] { "Yes", "No" });
 
             view.Clear("Delete Allergy");
             int selectedIndex = confirmDelete.Run("Delete Allergy", userType, this);
@@ -794,23 +794,28 @@ namespace NutriTrackerApp
                     InsertNewAllergy();
                     break;
                 case 2:
-                    view.Clear("Delete Allergy");
-                    Console.Write("\nAllergyID to delete: ");
-                    try
+                    while (true)
                     {
-                        int allergyID = Convert.ToInt32(Console.ReadLine());
-                        DeleteAllergy(allergyID);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("ID must be a number and cannot be null, press any key to go back", 2);
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.SetCursorPosition(50, Console.CursorTop);
+                        Console.WriteLine("(press ctrl + enter to submit form)\n");
                         Console.ResetColor();
-                        Console.ReadKey(true);
-                        AllergiesOptions();
-                    }
-                    break;
-                    
+                        List<string> collectedResponses = InputManager.GetInput(new string[]
+                {
+            "Allergy ID to delete: "
+                }, this);
+                        try
+                        {
+                            int allergyID = Convert.ToInt32(collectedResponses[0]);
+                            DeleteAllergy(allergyID);
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowMessage("ID must be a number and cannot be null, press any key to go back", 2);
+                            Console.ReadKey(true);
+                            view.Clear("Delete Allergy");
+                        }
+                    }                    
             }
         }
         public void FoodOptions()
