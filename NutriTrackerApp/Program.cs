@@ -686,22 +686,28 @@ namespace NutriTrackerApp
                             }
                         }
                     case 3:
-                        view.Clear("Delete User");
-                        Console.Write("\nUserID to delete: ");
-                        try
+                        while (true)
                         {
-                            int usersID = Convert.ToInt32(Console.ReadLine());
-                            DeleteUser(usersID);
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.ForegroundColor = ConsoleColor.Red;
-                            Console.WriteLine("ID must be a number and cannot be null, press any key to go back", 2);
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.SetCursorPosition(50, Console.CursorTop);
+                            Console.WriteLine("(press ctrl + enter to submit form)\n");
                             Console.ResetColor();
-                            Console.ReadKey(true);
-                            UserOptions();
+                            List<string> collectedResponses = InputManager.GetInput(new string[]
+                    {
+            "User ID to delete: "
+                    }, this);
+                            try
+                            {
+                                int usersID = Convert.ToInt32(collectedResponses[0]);
+                                DeleteUser(usersID);
+                            }
+                            catch (Exception ex)
+                            {
+                                ShowMessage("ID must be a number and cannot be null, press any key to go back", 2);
+                                Console.ReadKey(true);
+                                view.Clear("Delete User");
+                            }
                         }
-                        break;
                 }
             }
         }
