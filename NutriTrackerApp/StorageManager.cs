@@ -896,12 +896,26 @@ public class StorageManager
     }
     public bool DeleteGoalByID(int goalID, int userID)
     {
-        string query = @"DELETE FROM nutrition.tblGoals 
+        string query = @"DELETE FROM users.tblGoals 
                      WHERE goalID = @GoalID AND userID = @UserID";
 
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
             cmd.Parameters.AddWithValue("@GoalID", goalID);
+            cmd.Parameters.AddWithValue("@UserID", userID);
+
+            int rowsAffected = cmd.ExecuteNonQuery();
+            return rowsAffected > 0;
+        }
+    }
+    public bool DeleteDailyLogByID(int logID, int userID)
+    {
+        string query = @"DELETE FROM users.tblDailyLog 
+                     WHERE logID = @LogID AND userID = @UserID";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@LogID", logID);
             cmd.Parameters.AddWithValue("@UserID", userID);
 
             int rowsAffected = cmd.ExecuteNonQuery();
