@@ -821,6 +821,61 @@ namespace NutriTrackerApp
 
             DietPlansOptions();
         }
+        public void UpdateDailyLog(int logID)
+        {
+            ConsoleView view = new ConsoleView();
+            DailyLog log = storageManager.GetDailyLogByID(logID, TheID);
+
+            while (true)
+            {
+                if (log == null)
+                {
+                    ShowMessage("Log not found or you are not authorized.", 2);
+                    return;
+                }
+
+                view.Clear("Update Daily Log");
+                Console.WriteLine();
+                Console.SetCursorPosition(50, Console.CursorTop);
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("(press ctrl + enter to submit form)\n");
+                Console.ResetColor();
+
+                List<string> collectedResponses = InputManager.GetInput(new string[]
+                {
+            "Food ID",
+            "Meal Time (e.g. breakfast, lunch, dinner)"
+                }, this);
+
+                if (collectedResponses[0] == "" || collectedResponses[1] == "")
+                {
+                    ShowMessage("All fields are required. Press any key to fill again.", 2);
+                }
+                else
+                {
+                    try
+                    {
+                        int foodID = Convert.ToInt32(collectedResponses[0]);
+                        string mealTime = collectedResponses[1];
+                        string dateLogged = DateTime.Now.ToString("yyyy-MM-dd");
+
+                        log.FoodID = foodID;
+                        log.MealTime = mealTime;
+                        log.DateLogged = dateLogged;
+
+                        storageManager.UpdateDailyLog(log);
+                        ShowMessage("Daily log updated successfully. Press any key to continue.", 2);
+                        break;
+                    }
+                    catch
+                    {
+                        ShowMessage("Invalid input format. Please try again.", 2);
+                    }
+                }
+            }
+
+            DailyLogOptions();
+        }
         public void UpdateGoal(int TheID)
         {
             ConsoleView view = new ConsoleView();
@@ -1573,7 +1628,29 @@ namespace NutriTrackerApp
                     InsertNewDailyLog();
                     break;
                 case 2:
-                    break;
+                    while (true)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine();
+                        Console.SetCursorPosition(50, Console.CursorTop);
+                        Console.WriteLine("(press ctrl + enter to submit form)\n");
+                        Console.ResetColor();
+                        List<string> collectedResponses = InputManager.GetInput(new string[]
+                {
+            "Daily Log ID to update"
+                }, this);
+                        try
+                        {
+                            int logID = Convert.ToInt32(collectedResponses[0]);
+                            UpdateDailyLog(logID);
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowMessage("ID must be a number and cannot be null, press any key to go back", 2);
+                            Console.ReadKey(true);
+                            view.Clear("Update Daily Log");
+                        }
+                    }
                 case 3:
                     while (true)
                     {

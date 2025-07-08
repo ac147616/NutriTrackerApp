@@ -294,6 +294,25 @@ public class StorageManager
             cmd.ExecuteNonQuery();
         }
     }
+    public void UpdateDailyLog(DailyLog log)
+    {
+        string query = @"UPDATE users.tblDailyLog 
+                     SET foodID = @FoodID, 
+                         mealTime = @MealTime, 
+                         dateLogged = @DateLogged 
+                     WHERE logID = @LogID AND userID = @UserID";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@FoodID", log.FoodID);
+            cmd.Parameters.AddWithValue("@MealTime", log.MealTime);
+            cmd.Parameters.AddWithValue("@DateLogged", log.DateLogged);
+            cmd.Parameters.AddWithValue("@LogID", log.LogID);
+            cmd.Parameters.AddWithValue("@UserID", log.UserID);
+
+            cmd.ExecuteNonQuery();
+        }
+    }
     public void ViewAllUserDetails(string userType, int? TheID)
     {
         ConsoleView view = new ConsoleView();
@@ -1218,6 +1237,32 @@ public class StorageManager
                         reader.GetString(3), // goal
                         reader.GetDateTime(4).ToString("yyyy-MM-dd"), // dateStarted
                         reader.IsDBNull(5) ? "" : reader.GetDateTime(5).ToString("yyyy-MM-dd") // dateEnded
+                    );
+                }
+            }
+        }
+
+        return null;
+    }
+    public DailyLog GetDailyLogByID(int logID, int userID)
+    {
+        string query = "SELECT * FROM users.tblDailyLog WHERE logID = @LogID AND userID = @UserID";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@LogID", logID);
+            cmd.Parameters.AddWithValue("@UserID", userID);
+
+            using (SqlDataReader reader = cmd.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    return new DailyLog(
+                        reader.GetInt32(0),
+                        reader.GetInt32(1),
+                        reader.GetInt32(2),
+                        reader.GetString(3),
+                        reader.GetDateTime(4).ToString("yyyy-MM-dd")
                     );
                 }
             }
