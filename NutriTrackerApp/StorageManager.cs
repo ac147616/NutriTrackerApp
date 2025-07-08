@@ -894,6 +894,20 @@ public class StorageManager
             return rowsAffected > 0;
         }
     }
+    public bool DeleteGoalByID(int goalID, int userID)
+    {
+        string query = @"DELETE FROM nutrition.tblGoals 
+                     WHERE goalID = @GoalID AND userID = @UserID";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@GoalID", goalID);
+            cmd.Parameters.AddWithValue("@UserID", userID);
+
+            int rowsAffected = cmd.ExecuteNonQuery();
+            return rowsAffected > 0;
+        }
+    }
     public UserDetails GetUserByID(int id)
     {
         string query = "SELECT * FROM users.tblUserDetails WHERE userID = @UserID";

@@ -685,6 +685,43 @@ namespace NutriTrackerApp
                     break;
             }
         }
+        public void DeleteGoal(int goalID)
+        {
+            Menu confirmDelete = new Menu("Are you sure you want to delete this goal?", new string[] { "Yes", "No" });
+
+            view.Clear("Delete Goal");
+            int selectedIndex = confirmDelete.Run("Delete Goal", userType, this);
+
+            switch (selectedIndex)
+            {
+                case 0: // Yes selected
+                    bool success = storageManager.DeleteGoalByID(goalID, TheID);
+                    view.Clear("Delete Goal");
+
+                    if (success)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("The goal has been successfully deleted.");
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Failed to delete the goal. It may not exist or you are not authorized.");
+                    }
+
+                    Console.ResetColor();
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine("\nPress any key to go back...");
+                    Console.ResetColor();
+                    Console.ReadKey(true);
+                    GoalsOptions(); // replace with your actual menu for goals
+                    break;
+
+                case 1: // No selected
+                    GoalsOptions();
+                    break;
+            }
+        }
         public void UserOptions()
         {
             if (userType == "user")
@@ -1015,7 +1052,28 @@ namespace NutriTrackerApp
                 case 2:
                     break;
                 case 3:
-                    break;
+                    while (true)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.SetCursorPosition(50, Console.CursorTop);
+                        Console.WriteLine("\n(press ctrl + enter to submit form)\n");
+                        Console.ResetColor();
+                        List<string> collectedResponses = InputManager.GetInput(new string[]
+                {
+            "Goal ID to delete: "
+                }, this);
+                        try
+                        {
+                            int goalID = Convert.ToInt32(collectedResponses[0]);
+                            DeleteGoal(goalID);
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowMessage("ID must be a number and cannot be null, press any key to go back", 2);
+                            Console.ReadKey(true);
+                            view.Clear("Delete Goal");
+                        }
+                    }
             }
         }
         public void DailyLogOptions()
