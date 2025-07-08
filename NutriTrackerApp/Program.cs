@@ -621,6 +621,38 @@ namespace NutriTrackerApp
                     break;
             }
         }
+        public void DeleteFood(int foodID)
+        {
+            view.Clear("Delete Food");
+
+            Menu confirmDelete = new Menu("Are you sure you want to delete this food item?", new string[] { "Yes", "No" });
+            int selectedIndex = confirmDelete.Run("Delete Food", userType, this);
+
+            switch (selectedIndex)
+            {
+                case 0:
+                    bool success = storageManager.DeleteFoodByID(foodID);
+                    view.Clear("Delete Food");
+
+                    if (success)
+                    {
+                        Console.WriteLine("This food item has been successfully deleted.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("An error occurred. The food item could not be deleted. It may not exist.");
+                    }
+
+                    Console.WriteLine("Press any key to go back...");
+                    Console.ReadKey(true);
+                    FoodOptions(); // your food menu or return point
+                    break;
+
+                case 1:
+                    FoodOptions();
+                    break;
+            }
+        }
         public void UserOptions()
         {
             if (userType == "user")
@@ -827,7 +859,7 @@ namespace NutriTrackerApp
             }
             else
             {
-                string prompt = "\nManage Foods, choose an option using the arrow keys and pressing enter to select\n";
+                string prompt = "";
                 string[] options = { "View all foods", "Insert new food", "Update existing food", "Delete a food"};
                 Menu mainMenu = new Menu(prompt, options);
                 int SelectedIndex = mainMenu.Run("", userType, this);
@@ -850,17 +882,28 @@ namespace NutriTrackerApp
                         FoodOptions();
                         break;
                     case 3:
-                        Console.WriteLine("delete a food Press any key to go back");
-                        ConsoleKeyInfo key3 = Console.ReadKey(true);
-                        FoodOptions();
-                        break;
-                    case 4:
-                        AdminHomePage();
-                        break;
-                    case 5:
-                        view.Clear("");
-                        FoodOptions();
-                        break;
+                        while (true)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.SetCursorPosition(50, Console.CursorTop);
+                            Console.WriteLine("(press ctrl + enter to submit form)\n");
+                            Console.ResetColor();
+                            List<string> collectedResponses = InputManager.GetInput(new string[]
+                    {
+            "Food ID to delete: "
+                    }, this);
+                            try
+                            {
+                                int foodID = Convert.ToInt32(collectedResponses[0]);
+                                DeleteAllergy(foodID);
+                            }
+                            catch (Exception ex)
+                            {
+                                ShowMessage("ID must be a number and cannot be null, press any key to go back", 2);
+                                Console.ReadKey(true);
+                                view.Clear("Delete Food");
+                            }
+                        }
                 }
             }
         }

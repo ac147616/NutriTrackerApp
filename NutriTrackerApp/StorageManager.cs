@@ -820,41 +820,6 @@ public class StorageManager
             return text;
         return text.Substring(0, maxLength - 1) + "…";
     }
-    public void PrintAllergiesByUserID(int userID)
-    {
-        string query = "SELECT allergy, allergyID FROM users.tblAllergies WHERE userID = @UserID";
-
-        using (SqlCommand cmd = new SqlCommand(query, conn))
-        {
-            cmd.Parameters.AddWithValue("@UserID", userID);
-
-            using (SqlDataReader reader = cmd.ExecuteReader())
-            {
-                Console.WriteLine();
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine($"Allergies for User ID: {userID}");
-                Console.ResetColor();
-                Console.WriteLine(new string('-', 40));
-
-                int count = 0;
-
-                while (reader.Read())
-                {
-                    string allergy = reader.GetString(0);
-                    string allergyID = Convert.ToString(reader.GetInt32(1));
-                    Console.WriteLine($"- {allergy} (ID: {allergyID})");
-                    count++;
-                }
-
-                if (count == 0)
-                {
-                    Console.WriteLine("No allergies recorded.");
-                }
-
-                Console.WriteLine(new string('-', 40));
-            }
-        }
-    }
     private string cut(string value, int width)
     {
         if (value.Length < width)
@@ -903,6 +868,17 @@ public class StorageManager
             cmd.Parameters.AddWithValue("@AllergyID", allergyID);
             cmd.Parameters.AddWithValue("@UserID", userID);
 
+            int rowsAffected = cmd.ExecuteNonQuery();
+            return rowsAffected > 0;
+        }
+    }
+    public bool DeleteFoodByID(int foodID)
+    {
+        string query = "DELETE FROM admins.tblFoods WHERE foodID = @FoodID";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@FoodID", foodID);
             int rowsAffected = cmd.ExecuteNonQuery();
             return rowsAffected > 0;
         }
