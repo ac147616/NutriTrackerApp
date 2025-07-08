@@ -702,6 +702,72 @@ namespace NutriTrackerApp
 
             AdminOptions();
         }
+        public void UpdateFood(int foodID)
+        {
+            ConsoleView view = new ConsoleView();
+            Foods food = storageManager.GetFoodByID(foodID);
+
+            if (food == null)
+            {
+                ShowMessage("Food not found. Press any key to return.", 4);
+                FoodOptions();
+                return;
+            }
+
+            while (true)
+            {
+                view.Clear("Update Food Item");
+                Console.WriteLine();
+                Console.SetCursorPosition(50, Console.CursorTop);
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("(press ctrl + enter to submit form)\n");
+                Console.ResetColor();
+
+                List<string> collectedResponses = InputManager.GetInput(new string[]
+                {
+            "Food Name",
+            "Category",
+            "Calories (e.g 200.5)",
+            "Carbohydrates (g)",
+            "Proteins (g)",
+            "Fats (g)",
+            "Serving Size (g)"
+                }, this);
+
+                if (collectedResponses.Any(s => string.IsNullOrWhiteSpace(s)))
+                {
+                    ShowMessage("All fields are required. Press any key to try again.", 4);
+                }
+                else
+                {
+                    try
+                    {
+                        food.FoodName = collectedResponses[0];
+                        food.Category = collectedResponses[1];
+                        food.Calories = Convert.ToDecimal(collectedResponses[2]);
+                        food.Carbohydrates = Convert.ToDecimal(collectedResponses[3]);
+                        food.Proteins = Convert.ToDecimal(collectedResponses[4]);
+                        food.Fats = Convert.ToDecimal(collectedResponses[5]);
+                        food.ServingSize = Convert.ToDecimal(collectedResponses[6]);
+
+                        bool success = storageManager.UpdateFood(food);
+
+                        if (success)
+                            ShowMessage("Food item updated successfully. Press any key to continue.", 4);
+                        else
+                            ShowMessage("Update failed. Press any key to return.", 4);
+
+                        break;
+                    }
+                    catch
+                    {
+                        ShowMessage("Invalid input format. Ensure numeric fields are valid numbers. Press any key to try again.", 4);
+                    }
+                }
+            }
+
+            FoodOptions();
+        }
         public void DeleteUser(int userID)
         {
             Menu confirmDelete;
@@ -1178,17 +1244,36 @@ namespace NutriTrackerApp
                         InsertNewFood();
                         break;
                     case 2:
-                        Console.WriteLine("update existing food...Press any key to go back");
-                        ConsoleKeyInfo key2 = Console.ReadKey(true);
-                        FoodOptions();
-                        break;
+                        while (true)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.WriteLine();
+                            Console.SetCursorPosition(50, Console.CursorTop);
+                            Console.WriteLine("(press ctrl + enter to submit form)\n");
+                            Console.ResetColor();
+                            List<string> collectedResponses = InputManager.GetInput(new string[]
+                    {
+            "Food ID to update"
+                    }, this);
+                            try
+                            {
+                                int foodID = Convert.ToInt32(collectedResponses[0]);
+                                UpdateFood(foodID);
+                            }
+                            catch (Exception ex)
+                            {
+                                ShowMessage("ID must be a number and cannot be null, press any key to go back", 2);
+                                Console.ReadKey(true);
+                                view.Clear("Update Food");
+                            }
+                        }
                     case 3:
                         while (true)
                         {
                             Console.ForegroundColor = ConsoleColor.Yellow;
                             Console.WriteLine();
                             Console.SetCursorPosition(50, Console.CursorTop);
-                            Console.WriteLine("\n(press ctrl + enter to submit form)\n");
+                            Console.WriteLine("(press ctrl + enter to submit form)\n");
                             Console.ResetColor();
                             List<string> collectedResponses = InputManager.GetInput(new string[]
                     {

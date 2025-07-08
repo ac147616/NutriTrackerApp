@@ -217,6 +217,33 @@ public class StorageManager
             cmd.ExecuteNonQuery();
         }
     }
+    public bool UpdateFood(Foods food)
+    {
+        string query = @"UPDATE admins.tblFoods 
+                     SET foodName = @FoodName, 
+                         category = @Category, 
+                         calories = @Calories, 
+                         carbohydrates = @Carbohydrates, 
+                         proteins = @Proteins, 
+                         fats = @Fats, 
+                         servingSize = @ServingSize 
+                     WHERE foodID = @FoodID";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@FoodName", food.FoodName);
+            cmd.Parameters.AddWithValue("@Category", food.Category);
+            cmd.Parameters.AddWithValue("@Calories", food.Calories);
+            cmd.Parameters.AddWithValue("@Carbohydrates", food.Carbohydrates);
+            cmd.Parameters.AddWithValue("@Proteins", food.Proteins);
+            cmd.Parameters.AddWithValue("@Fats", food.Fats);
+            cmd.Parameters.AddWithValue("@ServingSize", food.ServingSize);
+            cmd.Parameters.AddWithValue("@FoodID", food.FoodID);
+
+            int rowsAffected = cmd.ExecuteNonQuery();
+            return rowsAffected > 0;
+        }
+    }
     public void ViewAllUserDetails(string userType, int? TheID)
     {
         ConsoleView view = new ConsoleView();
@@ -607,7 +634,7 @@ public class StorageManager
                 for (int i = startIndex; i < endIndex; i++)
                 {
                     var f = foodList[i];
-                    string line = string.Format("{0,-4}    {1,-20}    {2,-15}    {3,-5}    {4,-6}    {5,-6}    {6,-6}    {7,-6}",
+                    string line = string.Format("{0,-4}    {1,-20}    {2,-15}    {3,-5}      {4,-6}       {5,-6}      {6,-6}      {7,-6}",
                         f.FoodID,
                         Truncate(f.FoodName, 20),
                         Truncate(f.Category, 15),
@@ -1054,6 +1081,33 @@ public class StorageManager
                         reader.GetString(2), // LastName
                         reader.GetString(3), // EmailID
                         reader.GetString(4)  // PasswordKey
+                    );
+                }
+            }
+        }
+        return null;
+    }
+    public Foods GetFoodByID(int id)
+    {
+        string query = "SELECT * FROM admins.tblFoods WHERE foodID = @FoodID";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@FoodID", id);
+
+            using (SqlDataReader reader = cmd.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    return new Foods(
+                        id,
+                        reader.GetString(1),  // FoodName
+                        reader.GetString(2),  // Category
+                        reader.GetDecimal(3), // Calories
+                        reader.GetDecimal(4), // Carbohydrates
+                        reader.GetDecimal(5), // Proteins
+                        reader.GetDecimal(6), // Fats
+                        reader.GetDecimal(7)  // ServingSize
                     );
                 }
             }
