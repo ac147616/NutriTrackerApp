@@ -551,7 +551,7 @@ namespace NutriTrackerApp
         public void DeleteAdmin(int adminID)
         {
             view.Clear("Delete Admin");
-            Menu confirmDelete = new Menu("\nAre you sure you want to delete this admin account?\n", new string[] { "Yes", "No" });
+            Menu confirmDelete = new Menu("Are you sure you want to delete this admin account?", new string[] { "Yes", "No" });
 
             int selectedIndex = confirmDelete.Run("Delete Admin", userType, this);
 
@@ -729,37 +729,51 @@ namespace NutriTrackerApp
                     InsertNewAdmin();
                     break;
                 case 2:
-                    view.Clear("Edit User Details");
-                    Console.Write("\nAdminID to edit: ");
-                    try
+                    while (true)
                     {
-                        int usersID = Convert.ToInt32(Console.ReadLine());
-                        UpdateAdmin(usersID);
-                    }
-                    catch (Exception ex)
-                    {
-                        ShowMessage("ID must be a number and cannot be null, press any key to go back", 2);
-                        Console.ReadKey(true);
-                        AdminOptions();
-                    }
-                    break;
-                case 3:
-                    view.Clear("Delete Admin");
-                    Console.Write("\nAdminID to delete: ");
-                    try
-                    {
-                        int adminsID = Convert.ToInt32(Console.ReadLine());
-                        DeleteAdmin(adminsID);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("ID must be a number and cannot be null, press any key to go back", 2);
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.SetCursorPosition(50, Console.CursorTop);
+                        Console.WriteLine("(press ctrl + enter to submit form)\n");
                         Console.ResetColor();
-                        Console.ReadKey(true);
-                        AdminOptions();
+                        List<string> collectedResponses = InputManager.GetInput(new string[]
+                {
+            "Admin ID to update: "
+                }, this);
+                        try
+                        {
+                            int adminsID = Convert.ToInt32(collectedResponses[0]);
+                            UpdateAdmin(adminsID);
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowMessage("ID must be a number and cannot be null, press any key to go back", 2);
+                            Console.ReadKey(true);
+                            view.Clear("Update Admin");
+                        }
                     }
-                    break;
+                case 3:
+                    while (true)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.SetCursorPosition(50, Console.CursorTop);
+                        Console.WriteLine("(press ctrl + enter to submit form)\n");
+                        Console.ResetColor();
+                        List<string> collectedResponses = InputManager.GetInput(new string[]
+                {
+            "Admin ID to delete: "
+                }, this);
+                        try
+                        {
+                            int adminsID = Convert.ToInt32(collectedResponses[0]);
+                            DeleteAdmin(adminsID);
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowMessage("ID must be a number and cannot be null, press any key to go back", 2);
+                            Console.ReadKey(true);
+                            view.Clear("Delete Admin");
+                        }
+                    }
             }
         }
         public void AllergiesOptions()
