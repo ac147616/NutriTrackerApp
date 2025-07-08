@@ -84,6 +84,28 @@ public class StorageManager
             }
         }
     }
+    public int InsertFood(Foods food)
+    {
+        string query = @"
+        INSERT INTO admins.tblFoods 
+        (foodName, category, calories, carbohydrates, proteins, fats, servingSize) 
+        VALUES 
+        (@FoodName, @Category, @Calories, @Carbohydrates, @Proteins, @Fats, @ServingSize);
+        SELECT SCOPE_IDENTITY();";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@FoodName", food.FoodName);
+            cmd.Parameters.AddWithValue("@Category", food.Category);
+            cmd.Parameters.AddWithValue("@Calories", food.Calories);
+            cmd.Parameters.AddWithValue("@Carbohydrates", food.Carbohydrates);
+            cmd.Parameters.AddWithValue("@Proteins", food.Proteins);
+            cmd.Parameters.AddWithValue("@Fats", food.Fats);
+            cmd.Parameters.AddWithValue("@ServingSize", food.ServingSize);
+
+            return Convert.ToInt32(cmd.ExecuteScalar());
+        }
+    }
     public void UpdateUser(UserDetails user1)
     {
         string query = @"UPDATE users.tblUserDetails 

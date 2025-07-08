@@ -295,6 +295,59 @@ namespace NutriTrackerApp
 
             AllergiesOptions();
         }
+        public void InsertNewFood()
+        {
+            while (true)
+            {
+                view.Clear("Add New Food");
+                Console.WriteLine();
+                Console.SetCursorPosition(50, Console.CursorTop);
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("(press ctrl + enter to submit form)\n");
+                Console.ResetColor();
+
+                List<string> collectedResponses = InputManager.GetInput(new string[]
+                {
+            "Food Name",
+            "Category (e.g Fruit, Dairy, Grains)",
+            "Calories per serving (e.g 210.5)",
+            "Carbohydrates (g)",
+            "Proteins (g)",
+            "Fats (g)",
+            "Serving Size (g or mL)"
+                }, this);
+
+                if (collectedResponses.Any(s => string.IsNullOrWhiteSpace(s)))
+                {
+                    ShowMessage("All fields are required. Press any key to fill again.", 9);
+                }
+                else
+                {
+                    try
+                    {
+                        string foodName = collectedResponses[0];
+                        string category = collectedResponses[1];
+                        decimal calories = Convert.ToDecimal(collectedResponses[2]);
+                        decimal carbs = Convert.ToDecimal(collectedResponses[3]);
+                        decimal proteins = Convert.ToDecimal(collectedResponses[4]);
+                        decimal fats = Convert.ToDecimal(collectedResponses[5]);
+                        decimal servingSize = Convert.ToDecimal(collectedResponses[6]);
+
+                        Foods food = new Foods(0, foodName, category, calories, carbs, proteins, fats, servingSize);
+                        int foodID = storageManager.InsertFood(food);
+
+                        ShowMessage($"New food item added with ID: {foodID}. Press any key to continue.", 9);
+                        break;
+                    }
+                    catch
+                    {
+                        ShowMessage("Invalid format. Nutritional values must be numbers. Press any key to fill again.", 9);
+                    }
+                }
+            }
+
+            FoodOptions(); // Replace with your navigation method
+        }
         public void ExistingUserLogIn()
         {
             while (true)
@@ -827,6 +880,7 @@ namespace NutriTrackerApp
                         while (true)
                         {
                             Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.WriteLine();
                             Console.SetCursorPosition(50, Console.CursorTop);
                             Console.WriteLine("(press ctrl + enter to submit form)\n");
                             Console.ResetColor();
@@ -893,8 +947,9 @@ namespace NutriTrackerApp
                     while (true)
                     {
                         Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine();
                         Console.SetCursorPosition(50, Console.CursorTop);
-                        Console.WriteLine("\n(press ctrl + enter to submit form)\n");
+                        Console.WriteLine("(press ctrl + enter to submit form)\n");
                         Console.ResetColor();
                         List<string> collectedResponses = InputManager.GetInput(new string[]
                 {
@@ -935,8 +990,9 @@ namespace NutriTrackerApp
                     while (true)
                     {
                         Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine();
                         Console.SetCursorPosition(50, Console.CursorTop);
-                        Console.WriteLine("\n(press ctrl + enter to submit form)\n");
+                        Console.WriteLine("(press ctrl + enter to submit form)\n");
                         Console.ResetColor();
                         List<string> collectedResponses = InputManager.GetInput(new string[]
                 {
@@ -978,9 +1034,7 @@ namespace NutriTrackerApp
                         FoodOptions();
                         break;
                     case 1:
-                        Console.WriteLine("Insert new food COMING SOON...Press any key to go back");
-                        ConsoleKeyInfo key1 = Console.ReadKey(true);
-                        FoodOptions();
+                        InsertNewFood();
                         break;
                     case 2:
                         Console.WriteLine("update existing food...Press any key to go back");
@@ -991,12 +1045,13 @@ namespace NutriTrackerApp
                         while (true)
                         {
                             Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.WriteLine();
                             Console.SetCursorPosition(50, Console.CursorTop);
                             Console.WriteLine("\n(press ctrl + enter to submit form)\n");
                             Console.ResetColor();
                             List<string> collectedResponses = InputManager.GetInput(new string[]
                     {
-            "Food ID to delete: "
+            "Food ID to delete"
                     }, this);
                             try
                             {
@@ -1048,12 +1103,13 @@ namespace NutriTrackerApp
                         while (true)
                         {
                             Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.WriteLine();
                             Console.SetCursorPosition(50, Console.CursorTop);
-                            Console.WriteLine("\n(press ctrl + enter to submit form)\n");
+                            Console.WriteLine("(press ctrl + enter to submit form)\n");
                             Console.ResetColor();
                             List<string> collectedResponses = InputManager.GetInput(new string[]
                     {
-            "Diet Plan ID to delete: "
+            "Diet Plan ID to delete"
                     }, this);
                             try
                             {
@@ -1092,12 +1148,13 @@ namespace NutriTrackerApp
                     while (true)
                     {
                         Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine();
                         Console.SetCursorPosition(50, Console.CursorTop);
-                        Console.WriteLine("\n(press ctrl + enter to submit form)\n");
+                        Console.WriteLine("(press ctrl + enter to submit form)\n");
                         Console.ResetColor();
                         List<string> collectedResponses = InputManager.GetInput(new string[]
                 {
-            "Goal ID to delete: "
+            "Goal ID to delete"
                 }, this);
                         try
                         {
@@ -1135,12 +1192,13 @@ namespace NutriTrackerApp
                     while (true)
                     {
                         Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine();
                         Console.SetCursorPosition(50, Console.CursorTop);
-                        Console.WriteLine("\n(press ctrl + enter to submit form)\n");
+                        Console.WriteLine("(press ctrl + enter to submit form)\n");
                         Console.ResetColor();
                         List<string> collectedResponses = InputManager.GetInput(new string[]
                 {
-            "Daily Log ID to delete: "
+            "Daily Log ID to delete"
                 }, this);
                         try
                         {
