@@ -244,6 +244,28 @@ public class StorageManager
             return rowsAffected > 0;
         }
     }
+    public void UpdateDietPlan(DietPlans plan)
+    {
+        string query = @"UPDATE admins.tblDietPlans
+                     SET dietPlan = @DietPlan,
+                         caloriesTarget = @CaloriesTarget,
+                         proteinsTarget = @ProteinsTarget,
+                         carbohydratesTarget = @CarbohydratesTarget,
+                         fatsTarget = @FatsTarget
+                     WHERE dietPlanID = @DietPlanID";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@DietPlan", plan.DietPlan);
+            cmd.Parameters.AddWithValue("@CaloriesTarget", plan.CaloriesTarget);
+            cmd.Parameters.AddWithValue("@ProteinsTarget", plan.ProteinsTarget);
+            cmd.Parameters.AddWithValue("@CarbohydratesTarget", plan.CarbohydratesTarget);
+            cmd.Parameters.AddWithValue("@FatsTarget", plan.FatsTarget);
+            cmd.Parameters.AddWithValue("@DietPlanID", plan.DietPlanID);
+
+            cmd.ExecuteNonQuery();
+        }
+    }
     public void ViewAllUserDetails(string userType, int? TheID)
     {
         ConsoleView view = new ConsoleView();
@@ -713,7 +735,15 @@ public class StorageManager
             view.Clear("View All Diet Plans");
 
             // Build header string dynamically based on widths
-            string columnHeader = string.Join("    ", headers.Select(h => cut(h.Item1, h.Item2)));
+            string columnHeader = string.Format("{0,-4}    {1,-25}  {2,-7}    {3,-12}    {4,-12}    {5,-12}",
+    headers[0].Item1,  
+    headers[1].Item1,
+    headers[2].Item1,
+    headers[3].Item1,
+    headers[4].Item1,
+    headers[5].Item1
+);
+
             int tableWidth = columnHeader.Length;
             int leftPad = Math.Max(0, (consoleWidth - tableWidth) / 2);
             string pad = new string(' ', leftPad);
@@ -738,7 +768,7 @@ public class StorageManager
                 for (int i = startIndex; i < endIndex; i++)
                 {
                     var p = planList[i];
-                    string line = string.Format("{0,-4}    {1,-20}    {2,-15}    {3,-18}    {4,-17}    {5,-16}",
+                    string line = string.Format("{0,-4}    {1,-20}       {2,-15}   {3,-18}    {4,-17}   {5,-16}",
                         p.DietPlanID,
                         Truncate(p.DietPlan, 20),
                         p.CaloriesTarget,
@@ -747,7 +777,7 @@ public class StorageManager
                         p.FatsTarget
                     );
 
-                    Console.WriteLine(pad + line);
+                   Console.WriteLine(pad + line);
                 }
 
                 Console.WriteLine(pad + new string('-', tableWidth));
@@ -757,7 +787,7 @@ public class StorageManager
             Console.ForegroundColor = ConsoleColor.DarkRed;
             Console.WriteLine(pad + "Press any other key to go back");
             Console.ResetColor();
-
+            
             var key = Console.ReadKey(true);
             if (key.Key == ConsoleKey.LeftArrow && totalPages > 1 && currentPage > 0)
             {
@@ -1113,6 +1143,32 @@ public class StorageManager
             }
         }
         return null;
+    }
+    public DietPlans GetDietPlanByID(int id)
+    {
+        string query = "SELECT * FROM admins.tblDietPlans WHERE dietPlanID = @DietPlanID";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@DietPlanID", id);
+
+            using (SqlDataReader reader = cmd.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    return new DietPlans(
+                        id,
+                        reader.GetString(1),         // dietPlan
+                        reader.GetInt32(2),          // caloriesTarget
+                        reader.GetInt32(3),          // proteinsTarget
+                        reader.GetInt32(4),          // carbohydratesTarget
+                        reader.GetInt32(5)           // fatsTarget
+                    );
+                }
+            }
+        }
+
+        return null; // Not found
     }
     public int GetUserID(int userID, string passwordkey)
     {

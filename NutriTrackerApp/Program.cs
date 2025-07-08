@@ -707,16 +707,15 @@ namespace NutriTrackerApp
             ConsoleView view = new ConsoleView();
             Foods food = storageManager.GetFoodByID(foodID);
 
-            if (food == null)
-            {
-                ShowMessage("Food not found. Press any key to return.", 4);
-                FoodOptions();
-                return;
-            }
-
             while (true)
             {
-                view.Clear("Update Food Item");
+                if (food == null)
+                {
+                    Console.WriteLine("Food item not found.");
+                    return;
+                }
+
+                view.Clear("Update Food");
                 Console.WriteLine();
                 Console.SetCursorPosition(50, Console.CursorTop);
                 Console.ForegroundColor = ConsoleColor.Yellow;
@@ -727,16 +726,18 @@ namespace NutriTrackerApp
                 {
             "Food Name",
             "Category",
-            "Calories (e.g 200.5)",
+            "Calories (g)",
             "Carbohydrates (g)",
             "Proteins (g)",
             "Fats (g)",
             "Serving Size (g)"
                 }, this);
 
-                if (collectedResponses.Any(s => string.IsNullOrWhiteSpace(s)))
+                if (collectedResponses[0] == "" || collectedResponses[1] == "" || collectedResponses[2] == "" ||
+                    collectedResponses[3] == "" || collectedResponses[4] == "" || collectedResponses[5] == "" ||
+                    collectedResponses[6] == "")
                 {
-                    ShowMessage("All fields are required. Press any key to try again.", 4);
+                    ShowMessage("All fields are required. Press any key to fill again.", 9);
                 }
                 else
                 {
@@ -750,23 +751,75 @@ namespace NutriTrackerApp
                         food.Fats = Convert.ToDecimal(collectedResponses[5]);
                         food.ServingSize = Convert.ToDecimal(collectedResponses[6]);
 
-                        bool success = storageManager.UpdateFood(food);
-
-                        if (success)
-                            ShowMessage("Food item updated successfully. Press any key to continue.", 4);
-                        else
-                            ShowMessage("Update failed. Press any key to return.", 4);
-
+                        storageManager.UpdateFood(food);
+                        ShowMessage("Food item updated successfully. Press any key to continue.", 9);
                         break;
                     }
                     catch
                     {
-                        ShowMessage("Invalid input format. Ensure numeric fields are valid numbers. Press any key to try again.", 4);
+                        ShowMessage("Invalid input format. Use numeric values where required. Press any key to fill again.", 9);
                     }
                 }
             }
 
             FoodOptions();
+        }
+        public void UpdateDietPlan(int dietPlanID)
+        {
+            ConsoleView view = new ConsoleView();
+            DietPlans plan = storageManager.GetDietPlanByID(dietPlanID);
+
+            while (true)
+            {
+                if (plan == null)
+                {
+                    Console.WriteLine("Diet plan not found.");
+                    return;
+                }
+
+                view.Clear("Update Diet Plan");
+                Console.WriteLine();
+                Console.SetCursorPosition(50, Console.CursorTop);
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("(press ctrl + enter to submit form)\n");
+                Console.ResetColor();
+
+                List<string> collectedResponses = InputManager.GetInput(new string[]
+                {
+            "Diet Plan Name",
+            "Calorie Target (g)",
+            "Protein Target (g)",
+            "Carbohydrate Target (g)",
+            "Fat Target (g)"
+                }, this);
+
+                if (collectedResponses[0] == "" || collectedResponses[1] == "" || collectedResponses[2] == "" ||
+                    collectedResponses[3] == "" || collectedResponses[4] == "")
+                {
+                    ShowMessage("Required fields cannot be empty, press any key to fill again", 9);
+                }
+                else
+                {
+                    try
+                    {
+                        plan.DietPlan = collectedResponses[0];
+                        plan.CaloriesTarget = Convert.ToInt32(collectedResponses[1]);
+                        plan.ProteinsTarget = Convert.ToInt32(collectedResponses[2]);
+                        plan.CarbohydratesTarget = Convert.ToInt32(collectedResponses[3]);
+                        plan.FatsTarget = Convert.ToInt32(collectedResponses[4]);
+
+                        storageManager.UpdateDietPlan(plan);
+                        ShowMessage("Diet plan updated successfully. Press any key to continue.", 9);
+                        break;
+                    }
+                    catch
+                    {
+                        ShowMessage("Invalid input format. Please enter valid numbers. Press any key to fill again.", 9);
+                    }
+                }
+            }
+
+            DietPlansOptions();
         }
         public void DeleteUser(int userID)
         {
@@ -1319,10 +1372,29 @@ namespace NutriTrackerApp
                         InsertNewDietPlan();
                         break;
                     case 2:
-                        Console.WriteLine("update existing diet plan...Press any key to go back");
-                        ConsoleKeyInfo key2 = Console.ReadKey(true);
-                        DietPlansOptions();
-                        break;
+                        while (true)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.WriteLine();
+                            Console.SetCursorPosition(50, Console.CursorTop);
+                            Console.WriteLine("(press ctrl + enter to submit form)\n");
+                            Console.ResetColor();
+                            List<string> collectedResponses = InputManager.GetInput(new string[]
+                    {
+            "Diet Plan ID to update"
+                    }, this);
+                            try
+                            {
+                                int dietPlanID = Convert.ToInt32(collectedResponses[0]);
+                                UpdateDietPlan(dietPlanID);
+                            }
+                            catch (Exception ex)
+                            {
+                                ShowMessage("ID must be a number and cannot be null, press any key to go back", 2);
+                                Console.ReadKey(true);
+                                view.Clear("Update Diet Plan");
+                            }
+                        }
                     case 3:
                         while (true)
                         {
