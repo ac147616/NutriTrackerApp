@@ -883,6 +883,17 @@ public class StorageManager
             return rowsAffected > 0;
         }
     }
+    public bool DeleteDietPlanByID(int dietPlanID)
+    {
+        string query = "DELETE FROM admins.tblDietPlans WHERE dietPlanID = @DietPlanID";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@DietPlanID", dietPlanID);
+            int rowsAffected = cmd.ExecuteNonQuery();
+            return rowsAffected > 0;
+        }
+    }
     public UserDetails GetUserByID(int id)
     {
         string query = "SELECT * FROM users.tblUserDetails WHERE userID = @UserID";

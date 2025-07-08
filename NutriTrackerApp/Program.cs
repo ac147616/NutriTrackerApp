@@ -653,6 +653,38 @@ namespace NutriTrackerApp
                     break;
             }
         }
+        public void DeleteDietPlan(int dietPlanID)
+        {
+            view.Clear("Delete Diet Plan");
+
+            Menu confirmDelete = new Menu("Are you sure you want to delete this diet plan?", new string[] { "Yes", "No" });
+            int selectedIndex = confirmDelete.Run("Delete Diet Plan", userType, this);
+
+            switch (selectedIndex)
+            {
+                case 0:
+                    bool success = storageManager.DeleteDietPlanByID(dietPlanID);
+                    view.Clear("Delete Diet Plan");
+
+                    if (success)
+                    {
+                        Console.WriteLine("The diet plan has been successfully deleted.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("An error occurred. The diet plan could not be deleted. It may not exist.");
+                    }
+
+                    Console.WriteLine("Press any key to go back...");
+                    Console.ReadKey(true);
+                    DietPlansOptions();
+                    break;
+
+                case 1:
+                    DietPlansOptions();
+                    break;
+            }
+        }
         public void UserOptions()
         {
             if (userType == "user")
@@ -699,7 +731,7 @@ namespace NutriTrackerApp
                         {
                             Console.ForegroundColor = ConsoleColor.Yellow;
                             Console.SetCursorPosition(50, Console.CursorTop);
-                            Console.WriteLine("(press ctrl + enter to submit form)\n");
+                            Console.WriteLine("\n(press ctrl + enter to submit form)\n");
                             Console.ResetColor();
                             List<string> collectedResponses = InputManager.GetInput(new string[]
                     {
@@ -788,7 +820,7 @@ namespace NutriTrackerApp
                     {
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.SetCursorPosition(50, Console.CursorTop);
-                        Console.WriteLine("(press ctrl + enter to submit form)\n");
+                        Console.WriteLine("\n(press ctrl + enter to submit form)\n");
                         Console.ResetColor();
                         List<string> collectedResponses = InputManager.GetInput(new string[]
                 {
@@ -830,7 +862,7 @@ namespace NutriTrackerApp
                     {
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.SetCursorPosition(50, Console.CursorTop);
-                        Console.WriteLine("(press ctrl + enter to submit form)\n");
+                        Console.WriteLine("\n(press ctrl + enter to submit form)\n");
                         Console.ResetColor();
                         List<string> collectedResponses = InputManager.GetInput(new string[]
                 {
@@ -886,7 +918,7 @@ namespace NutriTrackerApp
                         {
                             Console.ForegroundColor = ConsoleColor.Yellow;
                             Console.SetCursorPosition(50, Console.CursorTop);
-                            Console.WriteLine("(press ctrl + enter to submit form)\n");
+                            Console.WriteLine("\n(press ctrl + enter to submit form)\n");
                             Console.ResetColor();
                             List<string> collectedResponses = InputManager.GetInput(new string[]
                     {
@@ -895,7 +927,7 @@ namespace NutriTrackerApp
                             try
                             {
                                 int foodID = Convert.ToInt32(collectedResponses[0]);
-                                DeleteAllergy(foodID);
+                                DeleteFood(foodID);
                             }
                             catch (Exception ex)
                             {
@@ -939,17 +971,28 @@ namespace NutriTrackerApp
                         DietPlansOptions();
                         break;
                     case 3:
-                        Console.WriteLine("delete a diet plan Press any key to go back");
-                        ConsoleKeyInfo key3 = Console.ReadKey(true);
-                        DietPlansOptions();
-                        break;
-                    case 4:
-                        AdminHomePage();
-                        break;
-                    case 5:
-                        view.Clear("");
-                        DietPlansOptions();
-                        break;
+                        while (true)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.SetCursorPosition(50, Console.CursorTop);
+                            Console.WriteLine("\n(press ctrl + enter to submit form)\n");
+                            Console.ResetColor();
+                            List<string> collectedResponses = InputManager.GetInput(new string[]
+                    {
+            "Diet Plan ID to delete: "
+                    }, this);
+                            try
+                            {
+                                int dietPlanID = Convert.ToInt32(collectedResponses[0]);
+                                DeleteDietPlan(dietPlanID);
+                            }
+                            catch (Exception ex)
+                            {
+                                ShowMessage("ID must be a number and cannot be null, press any key to go back", 2);
+                                Console.ReadKey(true);
+                                view.Clear("Delete Diet Plan");
+                            }
+                        }
                 }
             }
         }
