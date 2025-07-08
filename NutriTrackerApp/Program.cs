@@ -821,6 +821,72 @@ namespace NutriTrackerApp
 
             DietPlansOptions();
         }
+        public void UpdateGoal(int TheID)
+        {
+            ConsoleView view = new ConsoleView();
+            Goals goal = storageManager.GetGoalByID(TheID, this.TheID); // restrict by user ID
+
+            while (true)
+            {
+                if (goal == null)
+                {
+                    ShowMessage("Goal not found or access denied. Press any key to try again", 3);
+                    Console.ReadKey(true);
+                    GoalsOptions();
+                    return;
+                }
+
+                view.Clear("Update Goal");
+                Console.WriteLine();
+                Console.SetCursorPosition(50, Console.CursorTop);
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("(press ctrl + enter to submit form)\n");
+                Console.ResetColor();
+
+                List<string> collectedResponses = InputManager.GetInput(new string[]
+                {
+            "Diet Plan ID",
+            "Goal",
+            "Date Ended (yyyy-MM-dd or leave blank)"
+                }, this);
+
+                if (collectedResponses[0] == "" || collectedResponses[1] == "")
+                {
+                    ShowMessage("Required fields cannot be empty. Press any key to fill again.", 3);
+                }
+                else
+                {
+                    try
+                    {
+                        goal.DietPlanID = Convert.ToInt32(collectedResponses[0]);
+                        goal.Goal = collectedResponses[1];
+                        goal.DietPlanID = Convert.ToInt32(collectedResponses[0]);
+                        goal.Goal = collectedResponses[1];
+
+                        // Only set DateEnded if the user provided input
+                        if (!string.IsNullOrWhiteSpace(collectedResponses[2]))
+                        {
+                            goal.DateEnded = DateTime.Parse(collectedResponses[2]).ToString("yyyy-MM-dd");
+                        }
+                        else
+                        {
+                            goal.DateEnded = "";
+                        }
+
+                        storageManager.UpdateGoal(goal);
+
+                        ShowMessage("Goal updated successfully. Press any key to continue.", 3);
+                        break;
+                    }
+                    catch
+                    {
+                        ShowMessage("Invalid input format. Diet Plan ID must be a number.", 3);
+                    }
+                }
+            }
+
+            GoalsOptions();
+        }
         public void DeleteUser(int userID)
         {
             Menu confirmDelete;
@@ -1440,7 +1506,29 @@ namespace NutriTrackerApp
                     InsertNewGoal();
                     break;
                 case 2:
-                    break;
+                    while (true)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine();
+                        Console.SetCursorPosition(50, Console.CursorTop);
+                        Console.WriteLine("(press ctrl + enter to submit form)\n");
+                        Console.ResetColor();
+                        List<string> collectedResponses = InputManager.GetInput(new string[]
+                {
+            "Gaol ID to update"
+                }, this);
+                        try
+                        {
+                            int goalID = Convert.ToInt32(collectedResponses[0]);
+                            UpdateGoal(goalID);
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowMessage("ID must be a number and cannot be null, press any key to go back", 2);
+                            Console.ReadKey(true);
+                            view.Clear("Update Goal");
+                        }
+                    }
                 case 3:
                     while (true)
                     {

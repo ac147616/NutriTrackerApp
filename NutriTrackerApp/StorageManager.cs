@@ -266,6 +266,34 @@ public class StorageManager
             cmd.ExecuteNonQuery();
         }
     }
+    public void UpdateGoal(Goals goal)
+    {
+        string query = @"UPDATE users.tblGoals 
+                     SET dietPlanID = @DietPlanID, 
+                         goal = @Goal,
+                         dateEnded = @DateEnded
+                     WHERE goalID = @GoalID AND userID = @UserID";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@DietPlanID", goal.DietPlanID);
+            cmd.Parameters.AddWithValue("@Goal", goal.Goal);
+            cmd.Parameters.AddWithValue("@GoalID", goal.GoalID);
+            cmd.Parameters.AddWithValue("@UserID", goal.UserID);
+
+            // handle optional DateEnded
+            if (string.IsNullOrWhiteSpace(goal.DateEnded))
+            {
+                cmd.Parameters.AddWithValue("@DateEnded", DBNull.Value);
+            }
+            else
+            {
+                cmd.Parameters.AddWithValue("@DateEnded", goal.DateEnded);
+            }
+
+            cmd.ExecuteNonQuery();
+        }
+    }
     public void ViewAllUserDetails(string userType, int? TheID)
     {
         ConsoleView view = new ConsoleView();
@@ -1169,6 +1197,33 @@ public class StorageManager
         }
 
         return null; // Not found
+    }
+    public Goals GetGoalByID(int goalID, int userID)
+    {
+        string query = "SELECT * FROM users.tblGoals WHERE goalID = @GoalID AND userID = @UserID";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@GoalID", goalID);
+            cmd.Parameters.AddWithValue("@UserID", userID);
+
+            using (SqlDataReader reader = cmd.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    return new Goals(
+                        reader.GetInt32(0), // goalID
+                        reader.GetInt32(1), // userID
+                        reader.GetInt32(2), // dietPlanID
+                        reader.GetString(3), // goal
+                        reader.GetDateTime(4).ToString("yyyy-MM-dd"), // dateStarted
+                        reader.IsDBNull(5) ? "" : reader.GetDateTime(5).ToString("yyyy-MM-dd") // dateEnded
+                    );
+                }
+            }
+        }
+
+        return null;
     }
     public int GetUserID(int userID, string passwordkey)
     {
