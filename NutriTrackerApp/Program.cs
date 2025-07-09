@@ -75,7 +75,7 @@ namespace NutriTrackerApp
         public void UserHomePage()
         {
             string prompt = "";
-            string[] options = { "Settings", "Allergies", "Food", "Diet Plans", "Goals", "Daily Log"};
+            string[] options = { "Settings", "Allergies", "Food", "Diet Plans", "Goals", "Daily Log", "Reports"};
             Menu mainMenu = new Menu(prompt, options);
             int SelectedIndex = mainMenu.Run("User Home Page", userType, this);
             view.Clear("User Home Page");
@@ -100,13 +100,16 @@ namespace NutriTrackerApp
                 case 5:
                     DailyLogOptions();
                     break;
+                case 6:
+                    QueryOptions();
+                    break;
             }
 
         }
         public void AdminHomePage()
         {
             string prompt = "";
-            string[] options = { "Users", "Admins", "Foods", "Diet Plans"};
+            string[] options = { "Users", "Admins", "Foods", "Diet Plans", "Reports"};
             Menu mainMenu = new Menu(prompt, options);
             int SelectedIndex = mainMenu.Run("Admin Home Page", userType, this);
             view.Clear("Admin Hone Page");
@@ -124,6 +127,9 @@ namespace NutriTrackerApp
                     break;
                 case 3:
                     DietPlansOptions();
+                    break;
+                case 4:
+                    QueryOptions();
                     break;
             }
         }
@@ -1676,6 +1682,10 @@ namespace NutriTrackerApp
                         }
                     }
             }
+        }
+        public void QueryOptions()
+        {
+
         }
         public void ShowMessage(string message, int labelsLength)
         {
