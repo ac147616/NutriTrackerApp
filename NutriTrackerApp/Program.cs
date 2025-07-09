@@ -951,7 +951,7 @@ namespace NutriTrackerApp
         public void DeleteUser(int userID)
         {
             Menu confirmDelete;
-            
+
             view.Clear("Delete User");
             if (userType == "admin")
             {
@@ -1685,7 +1685,44 @@ namespace NutriTrackerApp
         }
         public void QueryOptions()
         {
+            if (userType == "user")
+            {
+                string prompt = "";
+                string[] options = { "Calculate BMI", "View goals", "Detailed user info", "Food by calories", "Top 10 foods", "Diet plan targets", "User allergies", "Popular diet goal combos" };
+                Menu mainMenu = new Menu(prompt, options);
+                int SelectedIndex = mainMenu.Run("View Reports", userType, this);
+                view.Clear("View Reports");
 
+                switch (SelectedIndex)
+                {
+                    case 0:
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        break;
+                }
+            }
+            else
+            {
+                string prompt = "";
+                string[] options = { "Average user calories", "Top 25 users", "User demographic", "Detailed user info", "Average goal durations", "Average meal time calories", "Meal times logged" };
+                Menu mainMenu = new Menu(prompt, options);
+                int SelectedIndex = mainMenu.Run("View Reports", userType, this);
+                view.Clear("View Reports");
+
+                switch (SelectedIndex)
+                {
+                    case 0:
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        break;
+                }
+            }
         }
         public void ShowMessage(string message, int labelsLength)
         {
