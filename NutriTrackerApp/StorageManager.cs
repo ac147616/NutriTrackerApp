@@ -1304,6 +1304,183 @@ public class StorageManager
             }
         }
     }
+    public void CalculateBMI()
+    {
+        ConsoleView view = new ConsoleView();
+        List<(string FullName, decimal BMI, string Status)> bmiList = new List<(string, decimal, string)>();
+
+        string query = @"
+        SELECT 
+            (D.firstName + ' ' + D.lastName) AS [User], 
+            CONVERT(DECIMAL(10,2), D.userWeight/((D.userHeight/100) * (D.userHeight/100))) AS [BMI],
+            CASE
+                WHEN D.userWeight / ((D.userHeight/100) * (D.userHeight/100)) < 18.5 THEN 'Underweight'
+                WHEN D.userWeight / ((D.userHeight/100) * (D.userHeight/100)) BETWEEN 18.5 AND 24.9 THEN 'Normal weight'
+                WHEN D.userWeight / ((D.userHeight/100) * (D.userHeight/100)) BETWEEN 25.0 AND 29.9 THEN 'Overweight'
+                ELSE 'Obese'
+            END AS [Status]
+        FROM users.tblUserDetails D";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                string name = reader.GetString(0);
+                decimal bmi = reader.GetDecimal(1);
+                string status = reader.GetString(2);
+                bmiList.Add((name, bmi, status));
+            }
+        }
+
+        int pageSize = 20;
+        int currentPage = 0;
+        int totalPages = (int)Math.Ceiling((double)bmiList.Count / pageSize);
+        int consoleWidth = Console.WindowWidth;
+
+        while (true)
+        {
+            view.Clear("User BMI Overview");
+
+            string header = string.Format("{0,-25}    {1,-6}    {2,-15}", "User", "BMI", "Status");
+            int tableWidth = header.Length;
+            string pad = new string(' ', Math.Max(0, (consoleWidth - tableWidth) / 2));
+
+            Console.WriteLine(pad + new string('-', tableWidth));
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(pad + header);
+            Console.ResetColor();
+            Console.WriteLine(pad + new string('-', tableWidth));
+
+            int startIndex = currentPage * pageSize;
+            int endIndex = Math.Min(startIndex + pageSize, bmiList.Count);
+
+            if (bmiList.Count == 0)
+            {
+                Console.WriteLine(pad + "No data found.");
+            }
+            else
+            {
+                for (int i = startIndex; i < endIndex; i++)
+                {
+                    var entry = bmiList[i];
+                    string line = string.Format("{0,-25}    {1,-6}    {2,-15}",
+                        Truncate(entry.FullName, 25),
+                        entry.BMI,
+                        Truncate(entry.Status, 15));
+                    Console.WriteLine(pad + line);
+                }
+
+                Console.WriteLine(pad + new string('-', tableWidth));
+                Console.WriteLine(pad + $"Page {currentPage + 1} of {Math.Max(totalPages, 1)}. Use ← or → to scroll.");
+            }
+
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine(pad + "Press any other key to return...");
+            Console.ResetColor();
+
+            var key = Console.ReadKey(true);
+            if (key.Key == ConsoleKey.LeftArrow && totalPages > 1 && currentPage > 0)
+            {
+                currentPage--;
+            }
+            else if (key.Key == ConsoleKey.RightArrow && totalPages > 1 && currentPage < totalPages - 1)
+            {
+                currentPage++;
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+    public void Top25Users()
+    {
+        ConsoleView view = new ConsoleView();
+        List<(string Name, decimal AvgCalories, int TotalLogs)> resultList = new List<(string, decimal, int)>();
+
+        string query = @"
+        SELECT TOP 25
+            D.firstName + ' ' + D.lastName AS [Name],
+            CONVERT(DECIMAL(10,2), ROUND(AVG(F.calories), 2)) AS [Avg Calories (g)],
+            COUNT(*) AS [Total Logs]
+        FROM users.tblUserDetails D, users.tblDailyLog L, admins.tblFoods F
+        WHERE D.userID = L.userID AND F.foodID = L.foodID
+        GROUP BY D.firstName + ' ' + D.lastName
+        ORDER BY [Total Logs] DESC;";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                string name = reader.GetString(0);
+                decimal avgCalories = reader.GetDecimal(1);
+                int totalLogs = reader.GetInt32(2);
+                resultList.Add((name, avgCalories, totalLogs));
+            }
+        }
+
+        int pageSize = 20;
+        int currentPage = 0;
+        int totalPages = (int)Math.Ceiling((double)resultList.Count / pageSize);
+        int consoleWidth = Console.WindowWidth;
+
+        while (true)
+        {
+            view.Clear("Top 25 Users by Logs");
+
+            string columnHeader = string.Format("{0,-25}    {1,-18}    {2,-12}",
+                "Name", "Avg Calories (g)", "Total Logs");
+            int tableWidth = columnHeader.Length;
+            string pad = new string(' ', Math.Max(0, (consoleWidth - tableWidth) / 2));
+
+            Console.WriteLine(pad + new string('-', tableWidth));
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(pad + columnHeader);
+            Console.ResetColor();
+            Console.WriteLine(pad + new string('-', tableWidth));
+
+            int startIndex = currentPage * pageSize;
+            int endIndex = Math.Min(startIndex + pageSize, resultList.Count);
+
+            if (resultList.Count == 0)
+            {
+                Console.WriteLine(pad + "No data available.");
+            }
+            else
+            {
+                for (int i = startIndex; i < endIndex; i++)
+                {
+                    var item = resultList[i];
+                    string line = string.Format("{0,-25}    {1,-18}    {2,-12}",
+                        Truncate(item.Name, 25), item.AvgCalories, item.TotalLogs);
+                    Console.WriteLine(pad + line);
+                }
+
+                Console.WriteLine(pad + new string('-', tableWidth));
+                Console.WriteLine(pad + $"Page {currentPage + 1} of {Math.Max(totalPages, 1)}. Use ← or → to scroll.");
+            }
+
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine(pad + "Press any other key to go back");
+            Console.ResetColor();
+
+            var key = Console.ReadKey(true);
+            if (key.Key == ConsoleKey.LeftArrow && totalPages > 1 && currentPage > 0)
+            {
+                currentPage--;
+            }
+            else if (key.Key == ConsoleKey.RightArrow && totalPages > 1 && currentPage < totalPages - 1)
+            {
+                currentPage++;
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
     public void CloseConnection()
     {
         if (conn != null && conn.State == ConnectionState.Open)

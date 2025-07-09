@@ -1696,6 +1696,7 @@ namespace NutriTrackerApp
                 switch (SelectedIndex)
                 {
                     case 0:
+                        
                         break;
                     case 1:
                         break;
@@ -1706,7 +1707,7 @@ namespace NutriTrackerApp
             else
             {
                 string prompt = "";
-                string[] options = { "Average user calories", "Top 25 users", "User demographic", "Detailed user info", "Average goal durations", "Average meal time calories", "Meal times logged" };
+                string[] options = { "Calculate user BMI", "Top 25 users", "User demographic", "Detailed user info", "Average goal durations", "Average meal time calories", "Meal times logged", "Average user calories" };
                 Menu mainMenu = new Menu(prompt, options);
                 int SelectedIndex = mainMenu.Run("View Reports", userType, this);
                 view.Clear("View Reports");
@@ -1714,8 +1715,12 @@ namespace NutriTrackerApp
                 switch (SelectedIndex)
                 {
                     case 0:
+                        storageManager.CalculateBMI();
+                        QueryOptions();
                         break;
                     case 1:
+                        storageManager.Top25Users();
+                        QueryOptions();
                         break;
                     case 2:
                         break;
