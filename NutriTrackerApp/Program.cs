@@ -1723,6 +1723,8 @@ namespace NutriTrackerApp
                         QueryOptions();
                         break;
                     case 2:
+                        storageManager.UserDemographic();
+                        QueryOptions();
                         break;
                     case 3:
                         break;

@@ -1481,6 +1481,121 @@ public class StorageManager
             }
         }
     }
+    public void UserDemographic()
+    {
+        ConsoleView view = new ConsoleView();
+        List<(string AgeGroup, int Male, int Female, int NotSpecified, int Total)> resultList = new List<(string, int, int, int, int)>();
+
+        string query = @"
+        SELECT
+        CASE
+        WHEN D.age < 18 THEN 'Under 18'
+        WHEN D.age BETWEEN 18 AND 35 THEN '18–35'
+        WHEN D.age BETWEEN 36 AND 60 THEN '36–60'
+        ELSE 'Over 60'
+        END AS [ ],
+        COUNT(CASE WHEN D.gender = 'MALE' THEN 1 END) AS [Male],
+        COUNT(CASE WHEN D.gender = 'FEMALE' THEN 1 END) AS [Female],
+        COUNT(CASE WHEN D.gender = 'NULL' THEN 1 END) AS [Not Specified],
+        COUNT(*) AS [Total]
+    FROM
+        users.tblUserDetails D
+    GROUP BY
+        CASE
+        WHEN age < 18 THEN 'Under 18'
+        WHEN age BETWEEN 18 AND 35 THEN '18–35'
+        WHEN age BETWEEN 36 AND 60 THEN '36–60'
+        ELSE 'Over 60'
+        END,
+        CASE
+        WHEN D.age < 18 THEN 1
+        WHEN D.age BETWEEN 18 AND 35 THEN 2
+        WHEN D.age BETWEEN 36 AND 60 THEN 3
+        ELSE 4
+        END
+    ORDER BY
+        CASE
+        WHEN age < 18 THEN 1
+        WHEN age BETWEEN 18 AND 35 THEN 2
+        WHEN age BETWEEN 36 AND 60 THEN 3
+        ELSE 4
+        END;";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                string ageGroup = reader.GetString(0);
+                int male = reader.GetInt32(1);
+                int female = reader.GetInt32(2);
+                int notSpecified = reader.GetInt32(3);
+                int total = reader.GetInt32(4);
+                resultList.Add((ageGroup, male, female, notSpecified, total));
+            }
+        }
+
+        int pageSize = 20;
+        int currentPage = 0;
+        int totalPages = (int)Math.Ceiling(resultList.Count / (double)pageSize);
+        int consoleWidth = Console.WindowWidth;
+
+        while (true)
+        {
+            view.Clear("Age and Gender Breakdown");
+
+            string columnHeader = string.Format("{0,-15}    {1,-6}    {2,-6}    {3,-14}    {4,-6}",
+                "Age Group", "Male", "Female", "Not Specified", "Total");
+
+            int tableWidth = columnHeader.Length;
+            int leftPad = Math.Max(0, (consoleWidth - tableWidth) / 2);
+            string pad = new string(' ', leftPad);
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(pad + columnHeader);
+            Console.ResetColor();
+            Console.WriteLine(pad + new string('-', tableWidth));
+
+            int start = currentPage * pageSize;
+            int end = Math.Min(start + pageSize, resultList.Count);
+
+            if (resultList.Count == 0)
+            {
+                Console.WriteLine(pad + "No records found.");
+            }
+            else
+            {
+                for (int i = start; i < end; i++)
+                {
+                    var record = resultList[i];
+                    string line = string.Format("{0,-15}    {1,-6}    {2,-6}    {3,-14}    {4,-6}",
+                        record.AgeGroup, record.Male, record.Female, record.NotSpecified, record.Total);
+                    Console.WriteLine(pad + line);
+                }
+
+                Console.WriteLine(pad + new string('-', tableWidth));
+                Console.WriteLine(pad + $"Page {currentPage + 1} of {totalPages}");
+            }
+
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine(pad + "Press any other key to return...");
+            Console.ResetColor();
+
+            ConsoleKeyInfo key = Console.ReadKey(true);
+            if (key.Key == ConsoleKey.LeftArrow && currentPage > 0)
+            {
+                currentPage--;
+            }
+            else if (key.Key == ConsoleKey.RightArrow && currentPage < totalPages - 1)
+            {
+                currentPage++;
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
     public void CloseConnection()
     {
         if (conn != null && conn.State == ConnectionState.Open)
