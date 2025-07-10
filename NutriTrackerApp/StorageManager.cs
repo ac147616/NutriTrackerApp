@@ -1596,6 +1596,125 @@ public class StorageManager
             }
         }
     }
+    public void DetailedUserInfo(int TheID, string userType)
+    {
+        ConsoleView view = new ConsoleView();
+        List<string[]> rows = new List<string[]>();
+
+        string query = @"
+        SELECT 
+            U.userID AS [ID], 
+            U.firstName AS [First Name], 
+            U.lastName AS [Last Name], 
+            U.emailID AS [Email], 
+            U.passwordkey AS [Password], 
+            U.age AS [Age], 
+            U.gender AS [Gender], 
+            CAST(ROUND(U.userWeight, 0) AS INT) AS [Weight (kg)],
+            CAST(ROUND(U.userHeight, 0) AS INT) AS [Height (cm)],
+            CONVERT(varchar(10), U.signUpDate, 111) AS [Date Joined (yyyy/mm/dd)]
+        FROM users.tblUserDetails U
+        WHERE @userID = 0 OR U.userID = @userID;";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            if (userType.ToLower() == "admin")
+            {
+                TheID = 0;
+            }
+            cmd.Parameters.AddWithValue("@UserID", TheID);
+
+            using (SqlDataReader reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    string[] row = new string[10];
+                    for (int i = 0; i < row.Length; i++)
+                    {
+                        row[i] = reader[i].ToString();
+                    }
+                    rows.Add(row);
+                }
+            }
+        }
+
+        string[] headers = { "ID", "First", "Last", "Email", "Password", "Age", "Gender", "Weight", "Height", "Joined" };
+        int[] widths = { 4, 8, 8, 20, 10, 4, 5, 5, 5, 10 };
+
+        int pageSize = 20;
+        int currentPage = 0;
+        int totalPages = (int)Math.Ceiling((double)rows.Count / pageSize);
+        int consoleWidth = Console.WindowWidth;
+
+        while (true)
+        {
+            view.Clear("User Details");
+
+            int totalWidth = widths.Sum() + (3 * (headers.Length - 1));
+            int leftPad = Math.Max(0, (consoleWidth - totalWidth) / 2);
+            string pad = new string(' ', leftPad);
+
+            Console.WriteLine(pad + new string('-', totalWidth));
+            Console.ForegroundColor = ConsoleColor.Cyan;
+
+            for (int i = 0; i < headers.Length; i++)
+            {
+                Console.Write(pad + headers[i].PadRight(widths[i]) + "   ");
+                pad = ""; // prevent double padding
+            }
+
+            Console.ResetColor();
+            Console.WriteLine();
+            Console.WriteLine(new string(' ', leftPad) + new string('-', totalWidth));
+
+           
+            if (rows.Count == 0)
+            {
+                Console.WriteLine(new string(' ', leftPad) + "No user records found.");
+            }
+            else
+            {
+                int startIndex = currentPage * pageSize;
+                int endIndex = Math.Min(startIndex + pageSize, rows.Count);
+
+                for (int i = startIndex; i < endIndex; i++)
+                {
+                    string line = "";
+                    for (int j = 0; j < headers.Length; j++)
+                    {
+                        string cell = Truncate(rows[i][j], widths[j]);
+                        line += cell.PadRight(widths[j]) + "   ";
+                    }
+                    Console.WriteLine(new string(' ', leftPad) + line);
+                }
+
+
+                Console.WriteLine(new string(' ', leftPad) + new string('-', totalWidth));
+                if (userType == "admin")
+                {
+                    Console.WriteLine(new string(' ', leftPad) + $"Page {currentPage + 1} of {Math.Max(totalPages, 1)}. Use ← or → to scroll.");
+                }
+            }
+
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine(new string(' ', leftPad) + "Press any other key to go back");
+            Console.ResetColor();
+
+            var key = Console.ReadKey(true);
+            if (key.Key == ConsoleKey.LeftArrow && totalPages > 1 && currentPage > 0)
+            {
+                currentPage--;
+            }
+            else if (key.Key == ConsoleKey.RightArrow && totalPages > 1 && currentPage < totalPages - 1)
+            {
+                currentPage++;
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
     public void CloseConnection()
     {
         if (conn != null && conn.State == ConnectionState.Open)

@@ -1701,6 +1701,8 @@ namespace NutriTrackerApp
                     case 1:
                         break;
                     case 2:
+                        storageManager.DetailedUserInfo(TheID, userType);
+                        QueryOptions();
                         break;
                 }
             }
@@ -1727,6 +1729,8 @@ namespace NutriTrackerApp
                         QueryOptions();
                         break;
                     case 3:
+                        storageManager.DetailedUserInfo(TheID, userType);
+                        QueryOptions();
                         break;
                 }
             }
