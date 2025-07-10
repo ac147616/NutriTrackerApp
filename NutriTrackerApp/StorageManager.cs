@@ -1882,6 +1882,198 @@ public class StorageManager
         Console.ResetColor();
         Console.ReadKey(true);
     }
+    public void MealTimesLogged()
+    {
+        ConsoleView view = new ConsoleView();
+        List<string[]> results = new List<string[]>();
+
+        string query = @"
+    -- Row 1: Total logs per meal
+    SELECT
+      'Total Logs' AS [ ],
+      CAST(COUNT(CASE WHEN L.mealTime = 'BREAKFAST' THEN 1 END) AS VARCHAR) AS [Breakfast],
+      CAST(COUNT(CASE WHEN L.mealTime = 'LUNCH' THEN 1 END) AS VARCHAR) AS [Lunch],
+      CAST(COUNT(CASE WHEN L.mealTime = 'DINNER' THEN 1 END) AS VARCHAR) AS [Dinner],
+      CAST(COUNT(*) AS VARCHAR) AS [Total]
+    FROM admins.tblFoods F
+    JOIN users.tblDailyLog L ON F.foodID = L.foodID
+
+    UNION ALL
+
+    SELECT
+      'Most Logged Food' AS [ ],
+      MAX(CASE WHEN mealTime = 'BREAKFAST' THEN foodName END) AS [Breakfast],
+      MAX(CASE WHEN mealTime = 'LUNCH' THEN foodName END) AS [Lunch],
+      MAX(CASE WHEN mealTime = 'DINNER' THEN foodName END) AS [Dinner],
+      ' ' AS [Total]
+    FROM (
+      SELECT
+        L.mealTime,
+        F.foodName,
+        COUNT(*) AS occurrences,
+        ROW_NUMBER() OVER (PARTITION BY L.mealTime ORDER BY COUNT(*) DESC) AS rowNo
+      FROM users.tblDailyLog L
+      JOIN admins.tblFoods F ON F.foodID = L.foodID
+      GROUP BY L.mealTime, F.foodName
+    ) AS RankedFoods
+    WHERE rowNo = 1;";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                string[] row = new string[5];
+                for (int i = 0; i < 5; i++)
+                {
+                    row[i] = reader[i].ToString();
+                }
+                results.Add(row);
+            }
+        }
+
+        view.Clear("Meal Log Summary");
+
+        string[] headers = { "", "Breakfast", "Lunch", "Dinner", "Total" };
+        int[] widths = { 20, 20, 20, 20, 10 };
+        int totalWidth = widths.Sum() + (headers.Length - 1) * 3;
+        int consoleWidth = Console.WindowWidth;
+        int leftPad = Math.Max(0, (consoleWidth - totalWidth) / 2);
+        string pad = new string(' ', leftPad);
+
+        Console.WriteLine(pad + new string('-', totalWidth));
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        string headerLine = string.Format("{0,-20}   {1,-20}   {2,-20}   {3,-20}   {4,-10}",
+            headers[0], headers[1], headers[2], headers[3], headers[4]);
+        Console.WriteLine(pad + headerLine);
+        Console.ResetColor();
+        Console.WriteLine(pad + new string('-', totalWidth));
+
+        foreach (var row in results)
+        {
+            string line = string.Format("{0,-20}   {1,-20}   {2,-20}   {3,-20}   {4,-10}",
+                Truncate(row[0], 20),
+                Truncate(row[1], 20),
+                Truncate(row[2], 20),
+                Truncate(row[3], 20),
+                Truncate(row[4], 10));
+            Console.WriteLine(pad + line);
+        }
+
+        Console.WriteLine(pad + new string('-', totalWidth));
+        Console.ForegroundColor = ConsoleColor.DarkRed;
+        Console.WriteLine(pad + "Press any key to return...");
+        Console.ResetColor();
+        Console.ReadKey(true);
+    }
+    public void UserAverageCalories()
+    {
+        ConsoleView view = new ConsoleView();
+        List<(int ID, string Name, int TotalLogs, int TotalCalories, double AvgCalories)> resultList = new List<(int, string, int, int, double)>();
+
+        string query = @"
+    SELECT
+      D.userID AS [ID],
+      (D.firstName + ' ' + D.lastName) AS [Name],
+      COUNT(*) AS [Total Logs],
+      SUM(F.calories) AS [Total Calories (g)],
+      CONVERT(DECIMAL(10,2), AVG(F.calories)) AS [Avg Calories Per log (g)]
+    FROM
+      users.tblDailyLog L, admins.tblFoods F, users.tblUserDetails D
+    WHERE
+      L.foodID = F.foodID
+      and D.userID = L.userID
+    GROUP BY
+      D.userID, 
+      D.firstName + ' ' + D.lastName
+    ORDER BY
+      [Avg Calories Per log (g)];";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                int id = reader.GetInt32(0);
+                string name = reader.GetString(1);
+                int totalLogs = reader.GetInt32(2);
+                int totalCalories = Convert.ToInt32(reader.GetDecimal(3));
+                int avgCalories = Convert.ToInt32(reader.GetDecimal(4));
+
+                resultList.Add((id, name, totalLogs, totalCalories, avgCalories));
+            }
+        }
+
+        string[] headers = { "ID", "Name", "Logs", "Total Cal", "Avg Cal/Log" };
+        int[] widths = { 5, 20, 10, 12, 15 };
+        int totalWidth = widths.Sum() + (3 * (headers.Length - 1));
+        int leftPad = Math.Max(0, (Console.WindowWidth - totalWidth) / 2);
+        string pad = new string(' ', leftPad);
+
+        int pageSize = 20;
+        int currentPage = 0;
+        int totalPages = (int)Math.Ceiling((double)resultList.Count / pageSize);
+
+        while (true)
+        {
+            view.Clear("Calories Per User");
+
+            Console.WriteLine(pad + new string('-', totalWidth));
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write(pad);
+            for (int i = 0; i < headers.Length; i++)
+            {
+                Console.Write(headers[i].PadRight(widths[i]) + "   ");
+            }
+            Console.ResetColor();
+            Console.WriteLine();
+
+            Console.WriteLine(pad + new string('-', totalWidth));
+
+            if (resultList.Count == 0)
+            {
+                Console.WriteLine(pad + "No user logs found.");
+            }
+            else
+            {
+                int startIndex = currentPage * pageSize;
+                int endIndex = Math.Min(startIndex + pageSize, resultList.Count);
+
+                for (int i = startIndex; i < endIndex; i++)
+                {
+                    var row = resultList[i];
+                    string line = string.Format("{0,-5}   {1,-20}   {2,-10}   {3,-12}   {4,-15}",
+                        row.ID,
+                        Truncate(row.Name, 20),
+                        row.TotalLogs,
+                        row.TotalCalories,
+                        Math.Round(row.AvgCalories, 2));
+                    Console.WriteLine(pad + line);
+                }
+
+                Console.WriteLine(pad + new string('-', totalWidth));
+                Console.WriteLine(pad + $"Page {currentPage + 1} of {Math.Max(totalPages, 1)}. Use ← or → to scroll.");
+            }
+
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine(pad + "Press any other key to return...");
+            Console.ResetColor();
+
+            var key = Console.ReadKey(true);
+            if (key.Key == ConsoleKey.LeftArrow && totalPages > 1 && currentPage > 0)
+            {
+                currentPage--;
+            }
+            else if (key.Key == ConsoleKey.RightArrow && totalPages > 1 && currentPage < totalPages - 1)
+            {
+                currentPage++;
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
     public void CloseConnection()
     {
         if (conn != null && conn.State == ConnectionState.Open)
