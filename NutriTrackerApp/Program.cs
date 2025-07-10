@@ -1688,7 +1688,7 @@ namespace NutriTrackerApp
             if (userType == "user")
             {
                 string prompt = "";
-                string[] options = { "Calculate BMI", "View goals", "Detailed user info", "Food by calories", "Top 10 foods", "Diet plan targets", "User allergies", "Popular diet goal combos" };
+                string[] options = { "Food by category", "View goals", "Detailed user info", "Food by calories", "Top 10 foods", "Diet plan targets", "User allergies", "Popular diet goal combos" };
                 Menu mainMenu = new Menu(prompt, options);
                 int SelectedIndex = mainMenu.Run("View Reports", userType, this);
                 view.Clear("View Reports");
@@ -1696,12 +1696,28 @@ namespace NutriTrackerApp
                 switch (SelectedIndex)
                 {
                     case 0:
-                        
+                        QueryOptions();
                         break;
                     case 1:
+                        QueryOptions();
                         break;
                     case 2:
                         storageManager.DetailedUserInfo(TheID, userType);
+                        QueryOptions();
+                        break;
+                    case 3:
+                        QueryOptions();
+                        break;
+                    case 4:
+                        QueryOptions();
+                        break;
+                    case 5:
+                        QueryOptions();
+                        break;
+                    case 6:
+                        QueryOptions();
+                        break;
+                    case 7:
                         QueryOptions();
                         break;
                 }
@@ -1730,6 +1746,19 @@ namespace NutriTrackerApp
                         break;
                     case 3:
                         storageManager.DetailedUserInfo(TheID, userType);
+                        QueryOptions();
+                        break;
+                    case 4:
+                        storageManager.AverageGoalDurations();
+                        QueryOptions();
+                        break;
+                    case 5:
+                        QueryOptions();
+                        break;
+                    case 6:
+                        QueryOptions();
+                        break;
+                    case 7:
                         QueryOptions();
                         break;
                 }

@@ -1715,6 +1715,109 @@ public class StorageManager
             }
         }
     }
+    public void AverageGoalDurations()
+    {
+        ConsoleView view = new ConsoleView();
+        List<(int ID, string Goal, int AvgDuration)> resultList = new List<(int, string, int)>();
+
+        string query = @"
+    SELECT
+        G.goalID AS [ID],
+        G.goal AS [Goal],
+        AVG(DATEDIFF(DAY, G.dateStarted, G.dateEnded)) AS [Avg Duration (days)]
+    FROM
+        users.tblGoals G
+    WHERE
+        G.dateStarted IS NOT NULL 
+        AND G.dateEnded IS NOT NULL AND G.dateEnded <> ''
+    GROUP BY
+        G.goal,
+        G.goalID
+    ORDER BY
+        [Avg Duration (days)];";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                int goalID = reader.GetInt32(0);
+                string goal = reader.GetString(1);
+                int avgDays = reader.IsDBNull(2) ? 0 : reader.GetInt32(2);
+
+                resultList.Add((goalID, goal, avgDays));
+            }
+        }
+
+        // Pagination settings
+        int pageSize = 20;
+        int currentPage = 0;
+        int totalPages = (int)Math.Ceiling((double)resultList.Count / pageSize);
+
+        string[] headers = { "ID", "Goal", "Avg Duration (days)" };
+        int[] widths = { 5, 30, 20 };
+        int totalWidth = widths.Sum() + (3 * (headers.Length - 1));
+        int consoleWidth = Console.WindowWidth;
+        int leftPad = Math.Max(0, (consoleWidth - totalWidth) / 2);
+        string pad = new string(' ', leftPad);
+
+        while (true)
+        {
+            view.Clear("Goal Duration Summary");
+
+            // Print header
+            Console.WriteLine(pad + new string('-', totalWidth));
+            Console.ForegroundColor = ConsoleColor.Cyan;
+
+            string headerLine = string.Format("{0,-5}   {1,-30}   {2,-20}",
+                headers[0], headers[1], headers[2]);
+            Console.WriteLine(pad + headerLine);
+            Console.ResetColor();
+            Console.WriteLine(pad + new string('-', totalWidth));
+
+            // No data case
+            if (resultList.Count == 0)
+            {
+                Console.WriteLine(pad + "No completed goals to calculate duration.");
+            }
+            else
+            {
+                int startIndex = currentPage * pageSize;
+                int endIndex = Math.Min(startIndex + pageSize, resultList.Count);
+
+                for (int i = startIndex; i < endIndex; i++)
+                {
+                    var row = resultList[i];
+                    string line = string.Format("{0,-5}   {1,-30}   {2,-20}",
+                        row.ID,
+                        Truncate(row.Goal, 30),
+                        row.AvgDuration.ToString());
+                    Console.WriteLine(pad + line);
+                }
+
+                Console.WriteLine(pad + new string('-', totalWidth));
+                Console.WriteLine(pad + $"Page {currentPage + 1} of {Math.Max(totalPages, 1)}. Use ← or → to scroll.");
+            }
+
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine(pad + "Press any other key to return");
+            Console.ResetColor();
+
+            var key = Console.ReadKey(true);
+            if (key.Key == ConsoleKey.LeftArrow && totalPages > 1 && currentPage > 0)
+            {
+                currentPage--;
+            }
+            else if (key.Key == ConsoleKey.RightArrow && totalPages > 1 && currentPage < totalPages - 1)
+            {
+                currentPage++;
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
     public void CloseConnection()
     {
         if (conn != null && conn.State == ConnectionState.Open)
