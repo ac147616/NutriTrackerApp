@@ -2074,6 +2074,146 @@ public class StorageManager
             }
         }
     }
+    public void ViewFoodsByCategory()
+    {
+        ConsoleView view = new ConsoleView();
+        var foodMap = new Dictionary<string, List<Foods>>();
+
+        string query = @"
+        SELECT 
+            foodID, foodName, category, calories, carbohydrates, proteins, fats, servingSize 
+        FROM admins.tblFoods";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                Foods food = new Foods(
+                    reader.GetInt32(0),
+                    reader.GetString(1),
+                    reader.GetString(2),
+                    reader.GetDecimal(3),
+                    reader.GetDecimal(4),
+                    reader.GetDecimal(5),
+                    reader.GetDecimal(6),
+                    reader.GetDecimal(7)
+                );
+
+                string category = food.Category.ToUpper();
+
+                if (!foodMap.ContainsKey(category))
+                {
+                    foodMap[category] = new List<Foods>();
+                }
+                foodMap[category].Add(food);
+            }
+        }
+
+        var categoryList = foodMap.Keys.OrderBy(c => c).ToList();
+        int currentCategoryIndex = 0;
+
+        while (true)
+        {
+            string category = categoryList[currentCategoryIndex];
+            List<Foods> foodList = foodMap[category];
+
+            int pageSize = 20;
+            int currentPage = 0;
+            int totalPages = (int)Math.Ceiling((double)foodList.Count / pageSize);
+            int consoleWidth = Console.WindowWidth;
+
+            string[] headers = { "ID", "Name", "Category", "Cal", "Carbs", "Prot", "Fats", "Size" };
+            int[] widths = { 4, 20, 15, 5, 6, 6, 6, 6 };
+
+            while (true)
+            {
+                view.Clear($"Foods - Category: {category}");
+
+                string columnHeader = string.Format("{0,-4}    {1,-20}    {2,-15}    {3,-5}    {4,-6}    {5,-6}    {6,-6}    {7,-6}",
+                    headers[0], headers[1], headers[2], headers[3], headers[4], headers[5], headers[6], headers[7]);
+
+                int tableWidth = columnHeader.Length;
+                int leftPad = Math.Max(0, (consoleWidth - tableWidth) / 2);
+                string pad = new string(' ', leftPad);
+
+                Console.WriteLine(pad + new string('-', tableWidth));
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.Write(pad);
+                Console.WriteLine(columnHeader);
+                Console.ResetColor();
+                Console.WriteLine(pad + new string('-', tableWidth));
+
+                int startIndex = currentPage * pageSize;
+                int endIndex = Math.Min(startIndex + pageSize, foodList.Count);
+
+                if (foodList.Count == 0)
+                {
+                    Console.WriteLine(pad + "No foods in this category.");
+                }
+                else
+                {
+                    for (int i = startIndex; i < endIndex; i++)
+                    {
+                        var f = foodList[i];
+                        string line = string.Format("{0,-4}    {1,-20}    {2,-15}    {3,-5}    {4,-6}    {5,-6}    {6,-6}    {7,-6}",
+                            f.FoodID,
+                            Truncate(f.FoodName, 20),
+                            Truncate(f.Category, 15),
+                            Math.Round(f.Calories),
+                            Math.Round(f.Carbohydrates),
+                            Math.Round(f.Proteins),
+                            Math.Round(f.Fats),
+                            Math.Round(f.ServingSize)
+                        );
+                        Console.WriteLine(pad + line);
+                    }
+
+                    Console.WriteLine(pad + new string('-', tableWidth));
+                    Console.WriteLine(pad + $"Page {currentPage + 1} of {Math.Max(totalPages, 1)} - Category {currentCategoryIndex + 1} of {categoryList.Count}");
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                    Console.WriteLine(pad + "Use ← → for pages, ↑ for next category, ↓ for previous. Press any other key to exit.");
+                    Console.ResetColor();
+                }
+
+                var key = Console.ReadKey(true);
+                if (key.Key == ConsoleKey.LeftArrow)
+                {
+                    if (currentPage > 0)
+                    {
+                        currentPage--;
+                    }
+                }
+                else if (key.Key == ConsoleKey.RightArrow)
+                {
+                    if (currentPage < totalPages - 1)
+                    {
+                        currentPage++;
+                    }
+                }
+                else if (key.Key == ConsoleKey.UpArrow)
+                {
+                    if (currentCategoryIndex < categoryList.Count - 1)
+                    {
+                        currentCategoryIndex++;
+                    }
+                    break; // exit current category loop
+                }
+                else if (key.Key == ConsoleKey.DownArrow)
+                {
+                    if (currentCategoryIndex > 0)
+                    {
+                        currentCategoryIndex--;
+                    }
+                    break; // exit current category loop
+                }
+                else
+                {
+                    return; // exit method
+                }
+            }
+        }
+    }
     public void CloseConnection()
     {
         if (conn != null && conn.State == ConnectionState.Open)

@@ -1696,6 +1696,7 @@ namespace NutriTrackerApp
                 switch (SelectedIndex)
                 {
                     case 0:
+                        storageManager.ViewFoodsByCategory();
                         QueryOptions();
                         break;
                     case 1:
