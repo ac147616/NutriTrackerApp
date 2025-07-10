@@ -1818,6 +1818,70 @@ public class StorageManager
             }
         }
     }
+    public void AverageCaloriesPerMealTime()
+    {
+        ConsoleView view = new ConsoleView();
+        List<(string Meal, decimal AvgCalories)> resultList = new List<(string, decimal)>();
+
+        string query = @"
+    SELECT
+      L.mealTime AS [Meal],
+      CONVERT(DECIMAL(10,2), AVG(F.calories)) AS [Avg Calories (g)]
+    FROM
+      users.tblDailyLog L, admins.tblFoods F
+    WHERE
+      L.foodID = F.foodID
+    GROUP BY
+      L.mealTime
+    ORDER BY
+      L.mealTime;";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                string meal = reader.GetString(0);
+                decimal avgCalories = reader.IsDBNull(1) ? 0 : reader.GetDecimal(1);
+                resultList.Add((meal, avgCalories));
+            }
+        }
+
+        view.Clear("Average Calories Per Meal");
+
+        string[] headers = { "Meal", "Avg Calories (g)" };
+        int[] widths = { 20, 20 };
+        int totalWidth = widths.Sum() + (3 * (headers.Length - 1));
+        int leftPad = Math.Max(0, (Console.WindowWidth - totalWidth) / 2);
+        string pad = new string(' ', leftPad);
+
+        Console.WriteLine(pad + new string('-', totalWidth));
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        string headerLine = string.Format("{0,-20}   {1,-20}", headers[0], headers[1]);
+        Console.WriteLine(pad + headerLine);
+        Console.ResetColor();
+        Console.WriteLine(pad + new string('-', totalWidth));
+
+        if (resultList.Count == 0)
+        {
+            Console.WriteLine(pad + "No meal logs found.");
+        }
+        else
+        {
+            foreach (var row in resultList)
+            {
+                string line = string.Format("{0,-20}   {1,-20}", Truncate(row.Meal, 20), row.AvgCalories);
+                Console.WriteLine(pad + line);
+            }
+
+            Console.WriteLine(pad + new string('-', totalWidth));
+        }
+
+        Console.ForegroundColor = ConsoleColor.DarkRed;
+        Console.WriteLine(pad + "Press any key to return...");
+        Console.ResetColor();
+        Console.ReadKey(true);
+    }
     public void CloseConnection()
     {
         if (conn != null && conn.State == ConnectionState.Open)
