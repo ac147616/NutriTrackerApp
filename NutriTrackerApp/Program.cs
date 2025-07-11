@@ -1708,6 +1708,7 @@ namespace NutriTrackerApp
                         QueryOptions();
                         break;
                     case 3:
+                        storageManager.FoodByCalories();
                         QueryOptions();
                         break;
                     case 4:

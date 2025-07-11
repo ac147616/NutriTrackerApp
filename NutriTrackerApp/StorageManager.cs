@@ -2335,6 +2335,93 @@ public class StorageManager
             }
         }
     }
+    public void FoodByCalories()
+    {
+        ConsoleView view = new ConsoleView();
+        List<(string Name, decimal Calories)> foodList = new List<(string, decimal)>();
+
+        string query = @"SELECT foodName, calories FROM admins.tblFoods ORDER BY calories";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                string name = reader.GetString(0);
+                decimal calories = reader.GetDecimal(1);
+                foodList.Add((name, calories));
+            }
+        }
+
+        string[] headers = { "Name", "Calories (g)" };
+        int[] widths = { 30, 15 };
+        int pageSize = 20;
+        int currentPage = 0;
+        int totalPages = (int)Math.Ceiling((double)foodList.Count / pageSize);
+        int totalWidth = widths.Sum() + (3 * (headers.Length - 1));
+        int leftPad = Math.Max(0, (Console.WindowWidth - totalWidth) / 2);
+        string pad = new string(' ', leftPad);
+
+        while (true)
+        {
+            view.Clear("Foods Sorted by Calories");
+
+            Console.WriteLine(pad + new string('-', totalWidth));
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write(pad);
+            for (int i = 0; i < headers.Length; i++)
+            {
+                Console.Write(headers[i].PadRight(widths[i]) + "   ");
+            }
+            Console.ResetColor();
+            Console.WriteLine();
+            Console.WriteLine(pad + new string('-', totalWidth));
+
+            if (foodList.Count == 0)
+            {
+                Console.WriteLine(pad + "No foods found.");
+            }
+            else
+            {
+                int startIndex = currentPage * pageSize;
+                int endIndex = Math.Min(startIndex + pageSize, foodList.Count);
+
+                for (int i = startIndex; i < endIndex; i++)
+                {
+                    var f = foodList[i];
+                    string line = string.Format("{0,-30}   {1,-15}", Truncate(f.Name, 30), f.Calories);
+                    Console.WriteLine(pad + line);
+                }
+
+                Console.WriteLine(pad + new string('-', totalWidth));
+                Console.WriteLine(pad + $"Page {currentPage + 1} of {Math.Max(totalPages, 1)}. Use ← or → to scroll.");
+            }
+
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine(pad + "Press any other key to return...");
+            Console.ResetColor();
+
+            var key = Console.ReadKey(true);
+            if (key.Key == ConsoleKey.LeftArrow)
+            {
+                if (currentPage > 0)
+                {
+                    currentPage--;
+                }
+            }
+            else if (key.Key == ConsoleKey.RightArrow)
+            {
+                if (currentPage < totalPages - 1)
+                {
+                    currentPage++;
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
     public void CloseConnection()
     {
         if (conn != null && conn.State == ConnectionState.Open)
