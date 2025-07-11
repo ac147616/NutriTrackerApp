@@ -2422,6 +2422,79 @@ public class StorageManager
             }
         }
     }
+    public void Top10Foods()
+    {
+        ConsoleView view = new ConsoleView();
+        List<(string Name, decimal Calories, int TimesLogged)> foodList = new List<(string, decimal, int)>();
+
+        string query = @"
+    SELECT TOP 10
+        F.foodName AS [Name],
+        F.calories AS [Calories (g)],
+        COUNT(*) AS [No. Times Logged]
+    FROM
+        admins.tblFoods F, users.tblDailyLog L
+    WHERE
+        F.foodID = L.foodID
+    GROUP BY
+        F.foodName,
+        F.calories
+    ORDER BY
+        [No. Times Logged] DESC;";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                string name = reader.GetString(0);
+                decimal calories = reader.GetDecimal(1);
+                int timesLogged = reader.GetInt32(2);
+                foodList.Add((name, calories, timesLogged));
+            }
+        }
+
+        view.Clear("Top 10 Most Logged Foods");
+
+        string[] headers = { "Name", "Calories (g)", "No. Times Logged" };
+        int[] widths = { 30, 15, 20 };
+        int totalWidth = widths.Sum() + (3 * (headers.Length - 1));
+        int leftPad = Math.Max(0, (Console.WindowWidth - totalWidth) / 2);
+        string pad = new string(' ', leftPad);
+
+        Console.WriteLine(pad + new string('-', totalWidth));
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.Write(pad);
+        for (int i = 0; i < headers.Length; i++)
+        {
+            Console.Write(headers[i].PadRight(widths[i]) + "   ");
+        }
+        Console.ResetColor();
+        Console.WriteLine();
+        Console.WriteLine(pad + new string('-', totalWidth));
+
+        if (foodList.Count == 0)
+        {
+            Console.WriteLine(pad + "No records found.");
+        }
+        else
+        {
+            foreach (var row in foodList)
+            {
+                string line = string.Format("{0,-30}   {1,-15}   {2,-20}",
+                    Truncate(row.Name, 30),
+                    row.Calories,
+                    row.TimesLogged);
+                Console.WriteLine(pad + line);
+            }
+            Console.WriteLine(pad + new string('-', totalWidth));
+        }
+
+        Console.ForegroundColor = ConsoleColor.DarkRed;
+        Console.WriteLine(pad + "Press any key to return...");
+        Console.ResetColor();
+        Console.ReadKey(true);
+    }
     public void CloseConnection()
     {
         if (conn != null && conn.State == ConnectionState.Open)
