@@ -1700,6 +1700,7 @@ namespace NutriTrackerApp
                         QueryOptions();
                         break;
                     case 1:
+                        storageManager.ViewUserGoals(TheID);
                         QueryOptions();
                         break;
                     case 2:

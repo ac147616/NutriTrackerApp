@@ -2214,6 +2214,127 @@ public class StorageManager
             }
         }
     }
+    public void ViewUserGoals(int userID)
+    {
+        ConsoleView view = new ConsoleView();
+        List<(int ID, string Goal, string Started, string Ended)> goalsList = new List<(int, string, string, string)>();
+
+        string query = @"
+    SELECT G.goalID, G.goal, G.dateStarted, G.dateEnded
+    FROM users.tblGoals G
+    WHERE G.userID = @UserID";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@UserID", userID);
+
+            using (SqlDataReader reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    int id = reader.GetInt32(0);
+                    string goal = reader.GetString(1);
+
+                    DateTime startedDate = reader.GetDateTime(2);
+                    string started = startedDate.ToString("yyyy-MM-dd");
+
+                    string ended;
+                    if (reader.IsDBNull(3))
+                    {
+                        ended = "N/A";
+                    }
+                    else
+                    {
+                        DateTime endDate = reader.GetDateTime(3);
+
+                        if (endDate == new DateTime(1900, 1, 1) || endDate == DateTime.MinValue)
+                        {
+                            ended = "N/A";
+                        }
+                        else
+                        {
+                            ended = endDate.ToString("yyyy-MM-dd");
+                        }
+                    }
+                    goalsList.Add((id, goal, started, ended));
+                }
+            }
+        }
+
+        string[] headers = { "ID", "Goal", "Started On", "Ended On" };
+        int[] widths = { 5, 30, 15, 15 };
+        int totalWidth = widths.Sum() + (3 * (headers.Length - 1));
+        int consoleWidth = Console.WindowWidth;
+        int leftPad = Math.Max(0, (consoleWidth - totalWidth) / 2);
+        string pad = new string(' ', leftPad);
+
+        int pageSize = 20;
+        int currentPage = 0;
+        int totalPages = (int)Math.Ceiling((double)goalsList.Count / pageSize);
+
+        while (true)
+        {
+            view.Clear("User Goals");
+
+            Console.WriteLine(pad + new string('-', totalWidth));
+            Console.ForegroundColor = ConsoleColor.Cyan;
+
+            string headerLine = string.Format("{0,-5}   {1,-30}   {2,-15}   {3,-15}",
+                headers[0], headers[1], headers[2], headers[3]);
+            Console.WriteLine(pad + headerLine);
+
+            Console.ResetColor();
+            Console.WriteLine(pad + new string('-', totalWidth));
+
+            if (goalsList.Count == 0)
+            {
+                Console.WriteLine(pad + "No goals found for this user.");
+            }
+            else
+            {
+                int startIndex = currentPage * pageSize;
+                int endIndex = Math.Min(startIndex + pageSize, goalsList.Count);
+
+                for (int i = startIndex; i < endIndex; i++)
+                {
+                    var g = goalsList[i];
+                    string line = string.Format("{0,-5}   {1,-30}   {2,-15}   {3,-15}",
+                        g.ID,
+                        Truncate(g.Goal, 30),
+                        g.Started,
+                        g.Ended);
+                    Console.WriteLine(pad + line);
+                }
+
+                Console.WriteLine(pad + new string('-', totalWidth));
+                Console.WriteLine(pad + "Page " + (currentPage + 1) + " of " + Math.Max(totalPages, 1) + ". Use ← or → to scroll.");
+            }
+
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine(pad + "Press any other key to return...");
+            Console.ResetColor();
+
+            var key = Console.ReadKey(true);
+            if (key.Key == ConsoleKey.LeftArrow)
+            {
+                if (currentPage > 0)
+                {
+                    currentPage--;
+                }
+            }
+            else if (key.Key == ConsoleKey.RightArrow)
+            {
+                if (currentPage < totalPages - 1)
+                {
+                    currentPage++;
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
     public void CloseConnection()
     {
         if (conn != null && conn.State == ConnectionState.Open)
