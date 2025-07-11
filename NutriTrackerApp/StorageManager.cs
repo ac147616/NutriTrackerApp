@@ -2495,6 +2495,182 @@ public class StorageManager
         Console.ResetColor();
         Console.ReadKey(true);
     }
+    public void DietPlanTargets()
+    {
+        ConsoleView view = new ConsoleView();
+        List<string[]> results = new List<string[]>();
+
+        string query = @"
+    SELECT
+      P.dietPlanID AS [ID],
+      P.dietPlan AS [Diet Plan Name],
+      CONVERT(VARCHAR(10), CAST(AVG(F.calories) * 100.0 / P.caloriesTarget AS DECIMAL(5,2))) + '%' AS [Calorie Target],
+      CONVERT(VARCHAR(10), CAST(AVG(F.proteins) * 100.0 / P.proteinsTarget AS DECIMAL(5,2))) + '%' AS [Protein Target],
+      CONVERT(VARCHAR(10), CAST(AVG(F.carbohydrates) * 100.0 / P.carbohydratesTarget AS DECIMAL(5,2))) + '%' AS [Carbs Target],
+      CONVERT(VARCHAR(10), CAST(AVG(F.fats) * 100.0 / P.fatsTarget AS DECIMAL(5,2))) + '%' AS [Fat Target],
+      CONVERT(VARCHAR(10), CAST((
+        (AVG(F.calories) * 100.0 / P.caloriesTarget) +
+        (AVG(F.proteins) * 100.0 / P.proteinsTarget) +
+        (AVG(F.carbohydrates) * 100.0 / P.carbohydratesTarget) +
+        (AVG(F.fats) * 100.0 / P.fatsTarget)
+      ) / 4 AS DECIMAL(5,2))) + '%' AS [Overall Target Met]
+    FROM
+      users.tblUserDetails D, users.tblDailyLog L, admins.tblFoods F, admins.tblDietPlans P
+    WHERE
+      D.userID = L.userID AND F.foodID = L.foodID
+    GROUP BY
+      P.dietPlanID, P.dietPlan, P.caloriesTarget, P.carbohydratesTarget, P.proteinsTarget, P.fatsTarget
+    ORDER BY [Overall Target Met] DESC;";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                string[] row = new string[7];
+                for (int i = 0; i < row.Length; i++)
+                {
+                    row[i] = reader[i].ToString();
+                }
+                results.Add(row);
+            }
+        }
+
+        string[] headers = { "ID", "Name", "Cal %", "Protein %", "Carbs %", "Fat %", "Overall %" };
+        int[] widths = { 4, 20, 10, 12, 10, 10, 12 };
+        int totalWidth = widths.Sum() + (3 * (headers.Length - 1));
+        int consoleWidth = Console.WindowWidth;
+        int leftPad = Math.Max(0, (consoleWidth - totalWidth) / 2);
+        string pad = new string(' ', leftPad);
+
+        int pageSize = 20;
+        int currentPage = 0;
+        int totalPages = (int)Math.Ceiling((double)results.Count / pageSize);
+
+        while (true)
+        {
+            view.Clear("Diet Plan Target Summary");
+
+            Console.WriteLine(pad + new string('-', totalWidth));
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write(pad);
+
+            for (int i = 0; i < headers.Length; i++)
+            {
+                Console.Write(headers[i].PadRight(widths[i]) + "   ");
+            }
+
+            Console.ResetColor();
+            Console.WriteLine();
+            Console.WriteLine(pad + new string('-', totalWidth));
+
+            if (results.Count == 0)
+            {
+                Console.WriteLine(pad + "No records found.");
+            }
+            else
+            {
+                int startIndex = currentPage * pageSize;
+                int endIndex = Math.Min(startIndex + pageSize, results.Count);
+
+                for (int i = startIndex; i < endIndex; i++)
+                {
+                    string line = "";
+                    for (int j = 0; j < headers.Length; j++)
+                    {
+                        line += Truncate(results[i][j], widths[j]).PadRight(widths[j]) + "   ";
+                    }
+                    Console.WriteLine(pad + line);
+                }
+
+                Console.WriteLine(pad + new string('-', totalWidth));
+                Console.WriteLine(pad + $"Page {currentPage + 1} of {Math.Max(totalPages, 1)}. Use ← or → to scroll.");
+            }
+
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine(pad + "Press any other key to return...");
+            Console.ResetColor();
+
+            var key = Console.ReadKey(true);
+            if (key.Key == ConsoleKey.LeftArrow && currentPage > 0)
+            {
+                currentPage--;
+            }
+            else if (key.Key == ConsoleKey.RightArrow && currentPage < totalPages - 1)
+            {
+                currentPage++;
+            }
+            else if (key.Key != ConsoleKey.LeftArrow && key.Key != ConsoleKey.RightArrow)
+            {
+                break;
+            }
+        }
+    }
+    public void FoodsRelatedtoAllergies(int userID)
+    {
+        ConsoleView view = new ConsoleView();
+        List<(string Allergy, string Food)> resultList = new List<(string, string)>();
+
+        string query = @"
+    SELECT A.allergy, F.foodName
+    FROM users.tblAllergies A
+    LEFT JOIN admins.tblFoods F ON F.foodName LIKE CONCAT('%', A.allergy, '%')
+    WHERE A.userID = @userID;";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        {
+            cmd.Parameters.AddWithValue("@userID", userID);
+
+            using (SqlDataReader reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    string allergy = reader.IsDBNull(0) ? "N/A" : reader.GetString(0);
+                    string food = reader.IsDBNull(1) ? "No Match Found" : reader.GetString(1);
+                    resultList.Add((allergy, food));
+                }
+            }
+        }
+
+        string[] headers = { "Allergy", "Food Name Match" };
+        int[] widths = { 20, 30 };
+        int totalWidth = widths.Sum() + (3 * (headers.Length - 1));
+        int consoleWidth = Console.WindowWidth;
+        int leftPad = Math.Max(0, (consoleWidth - totalWidth) / 2);
+        string pad = new string(' ', leftPad);
+
+        view.Clear("Allergies and Related Foods");
+
+        Console.WriteLine(pad + new string('-', totalWidth));
+        Console.ForegroundColor = ConsoleColor.Cyan;
+        Console.Write(pad);
+        for (int i = 0; i < headers.Length; i++)
+        {
+            Console.Write(headers[i].PadRight(widths[i]) + "   ");
+        }
+        Console.ResetColor();
+        Console.WriteLine();
+        Console.WriteLine(pad + new string('-', totalWidth));
+
+        if (resultList.Count == 0)
+        {
+            Console.WriteLine(pad + "No allergy records found for this user.");
+        }
+        else
+        {
+            foreach (var row in resultList)
+            {
+                string line = string.Format("{0,-20}   {1,-30}", Truncate(row.Allergy, 20), Truncate(row.Food, 30));
+                Console.WriteLine(pad + line);
+            }
+            Console.WriteLine(pad + new string('-', totalWidth));
+        }
+
+        Console.ForegroundColor = ConsoleColor.DarkRed;
+        Console.WriteLine(pad + "Press any key to return...");
+        Console.ResetColor();
+        Console.ReadKey(true);
+    }
     public void CloseConnection()
     {
         if (conn != null && conn.State == ConnectionState.Open)

@@ -1688,7 +1688,7 @@ namespace NutriTrackerApp
             if (userType == "user")
             {
                 string prompt = "";
-                string[] options = { "Food by category", "View goals", "Detailed user info", "Food by calories", "Top 10 foods", "Diet plan targets", "User allergies", "Popular diet goal combos" };
+                string[] options = { "Food by category", "View goals", "Detailed user info", "Food by calories", "Top 10 foods", "Diet plan targets", "Food related to allergies", "Popular diet goal combos" };
                 Menu mainMenu = new Menu(prompt, options);
                 int SelectedIndex = mainMenu.Run("View Reports", userType, this);
                 view.Clear("View Reports");
@@ -1716,9 +1716,11 @@ namespace NutriTrackerApp
                         QueryOptions();
                         break;
                     case 5:
+                        storageManager.DietPlanTargets();
                         QueryOptions();
                         break;
                     case 6:
+                        storageManager.FoodsRelatedtoAllergies(TheID);
                         QueryOptions();
                         break;
                     case 7:
