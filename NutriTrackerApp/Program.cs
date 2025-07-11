@@ -1724,6 +1724,7 @@ namespace NutriTrackerApp
                         QueryOptions();
                         break;
                     case 7:
+                        storageManager.DietGoalCombos();
                         QueryOptions();
                         break;
                 }

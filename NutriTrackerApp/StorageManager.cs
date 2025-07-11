@@ -1,9 +1,6 @@
-﻿using Azure;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using NutriTrackerApp;
-using System;
 using System.Data;
-using System.Reflection;
 
 public class StorageManager
 {
@@ -150,7 +147,7 @@ public class StorageManager
             return Convert.ToInt32(cmd.ExecuteScalar());
         }
     }
-    public int InsertDailyLog(DailyLog log) 
+    public int InsertDailyLog(DailyLog log)
     {
         string query = @"
     INSERT INTO users.tblDailyLog 
@@ -783,7 +780,7 @@ public class StorageManager
 
             // Build header string dynamically based on widths
             string columnHeader = string.Format("{0,-4}    {1,-25}  {2,-7}    {3,-12}    {4,-12}    {5,-12}",
-    headers[0].Item1,  
+    headers[0].Item1,
     headers[1].Item1,
     headers[2].Item1,
     headers[3].Item1,
@@ -824,7 +821,7 @@ public class StorageManager
                         p.FatsTarget
                     );
 
-                   Console.WriteLine(pad + line);
+                    Console.WriteLine(pad + line);
                 }
 
                 Console.WriteLine(pad + new string('-', tableWidth));
@@ -834,7 +831,7 @@ public class StorageManager
             Console.ForegroundColor = ConsoleColor.DarkRed;
             Console.WriteLine(pad + "Press any other key to go back");
             Console.ResetColor();
-            
+
             var key = Console.ReadKey(true);
             if (key.Key == ConsoleKey.LeftArrow && totalPages > 1 && currentPage > 0)
             {
@@ -1667,7 +1664,7 @@ public class StorageManager
             Console.WriteLine();
             Console.WriteLine(new string(' ', leftPad) + new string('-', totalWidth));
 
-           
+
             if (rows.Count == 0)
             {
                 Console.WriteLine(new string(' ', leftPad) + "No user records found.");
@@ -2670,6 +2667,107 @@ public class StorageManager
         Console.WriteLine(pad + "Press any key to return...");
         Console.ResetColor();
         Console.ReadKey(true);
+    }
+    public void DietGoalCombos()
+    {
+        ConsoleView view = new ConsoleView();
+        List<(string Goal, string DietPlan, int UsageCount)> resultList = new List<(string, string, int)>();
+
+        string query = @"
+    SELECT TOP 30
+      G.goal AS [Goal],
+      P.dietPlan AS [Diet Plan],
+      COUNT(*) AS [No. Of Times Used]
+    FROM
+      admins.tblDietPlans P, users.tblGoals G
+    WHERE
+      G.dietPlanID = P.dietPlanID
+    GROUP BY
+      G.goal, 
+      P.dietPlan
+    ORDER BY
+      COUNT(*) DESC;";
+
+        using (SqlCommand cmd = new SqlCommand(query, conn))
+        using (SqlDataReader reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                string goal = reader.GetString(0);
+                string dietPlan = reader.GetString(1);
+                int count = reader.GetInt32(2);
+                resultList.Add((goal, dietPlan, count));
+            }
+        }
+
+        string[] headers = { "Goal", "Diet Plan", "Times Used" };
+        int[] widths = { 25, 25, 12 };
+        int totalWidth = widths.Sum() + (3 * (headers.Length - 1));
+        int consoleWidth = Console.WindowWidth;
+        int leftPad = Math.Max(0, (consoleWidth - totalWidth) / 2);
+        string pad = new string(' ', leftPad);
+
+        int pageSize = 20;
+        int currentPage = 0;
+        int totalPages = (int)Math.Ceiling((double)resultList.Count / pageSize);
+
+        while (true)
+        {
+            view.Clear("Popular goal and diet combos");
+
+            Console.WriteLine(pad + new string('-', totalWidth));
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write(pad);
+            for (int i = 0; i < headers.Length; i++)
+            {
+                Console.Write(headers[i].PadRight(widths[i]) + "   ");
+            }
+            Console.ResetColor();
+            Console.WriteLine();
+            Console.WriteLine(pad + new string('-', totalWidth));
+
+            if (resultList.Count == 0)
+            {
+                Console.WriteLine(pad + "No data found.");
+            }
+            else
+            {
+                int startIndex = currentPage * pageSize;
+                int endIndex = Math.Min(startIndex + pageSize, resultList.Count);
+
+                for (int i = startIndex; i < endIndex; i++)
+                {
+                    var row = resultList[i];
+                    string line = string.Format("{0,-25}   {1,-25}   {2,-12}",
+                        Truncate(row.Goal, 25),
+                        Truncate(row.DietPlan, 25),
+                        row.UsageCount);
+
+                    Console.WriteLine(pad + line);
+                }
+
+                Console.WriteLine(pad + new string('-', totalWidth));
+                Console.WriteLine(pad + $"Page {currentPage + 1} of {Math.Max(totalPages, 1)}. Use ← or → to scroll.");
+            }
+
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine(pad + "Press any other key to return...");
+            Console.ResetColor();
+
+            var key = Console.ReadKey(true);
+            if (key.Key == ConsoleKey.LeftArrow && currentPage > 0)
+            {
+                currentPage--;
+            }
+            else if (key.Key == ConsoleKey.RightArrow && currentPage < totalPages - 1)
+            {
+                currentPage++;
+            }
+            else if (key.Key != ConsoleKey.LeftArrow && key.Key != ConsoleKey.RightArrow)
+            {
+                break;
+            }
+        }
     }
     public void CloseConnection()
     {
