@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+//This is my class for the table users.DailyL
 namespace NutriTrackerApp
 {
     public class DailyLog

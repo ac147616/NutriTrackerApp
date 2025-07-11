@@ -1,19 +1,57 @@
 ﻿using NutriTrackerApp;
 using System;
-//Change all hello's to welcome maybe
-//Edit the password so you cannot see it
-//use set cursor position to let them choose what they want to enter
-//use up or down to navigate
+
 
 public class ConsoleView
 {
 	public void Help()
 	{
-		Clear("Help");
-		Console.WriteLine("\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\r\n");
-	}
+        Clear("Help");
 
-	public void Clear(string nameOfPage)
+        Console.WriteLine();
+        Console.WriteLine("Welcome to NutriTrackerApp! This help page will guide you on how to use the app effectively.");
+        Console.WriteLine();
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("▶ MAIN NAVIGATION");
+        Console.ResetColor();
+        Console.WriteLine(" - Use the up and down arrows to select options from the menu.");
+        Console.WriteLine(" - Follow on-screen prompts to view, insert, update, or delete records.");
+        Console.WriteLine();
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("▶ VIEWING TABLES");
+        Console.ResetColor();
+        Console.WriteLine(" - Use ← and → arrow keys to move between pages when viewing long tables.");
+        Console.WriteLine(" - If you are already on the first or last page, pressing arrows will keep you on the same page.");
+        Console.WriteLine(" - Press any other key to return to the previous menu.");
+        Console.WriteLine();
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("▶ DATA INPUT");
+        Console.ResetColor();
+        Console.WriteLine(" - When editing or adding records, follow the field prompts carefully.");
+        Console.WriteLine(" - Use date format yyyy-mm-dd (e.g. 2025-07-08) and do not include units such as Kg");
+        Console.WriteLine(" - To cancel, press do CTRL + B to go back, it will not be saved");
+        Console.WriteLine();
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("▶ USER VS ADMIN");
+        Console.ResetColor();
+        Console.WriteLine(" - There may be restrictions to the information made acessible for users");
+        Console.WriteLine();
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("▶ DISPLAY RECOMMENDATION");
+        Console.ResetColor();
+        Console.WriteLine(" - For best experience, run this app in FULL SCREEN.");
+        Console.WriteLine(" - Some formatting may not align properly in small console windows.");
+        Console.WriteLine();
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine("▶ TROUBLESHOOTING");
+        Console.ResetColor();
+        Console.WriteLine(" - If you get stuck or an option seems unclear, return to the main menu or exit and try again.");
+        Console.WriteLine(" - This app is designed with step-by-step guidance for each operation.");
+        Console.WriteLine();
+
+    }
+
+    public void Clear(string nameOfPage)
 	{
 		Console.Clear();
         Console.OutputEncoding = System.Text.Encoding.UTF8;
