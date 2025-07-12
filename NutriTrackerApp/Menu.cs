@@ -145,6 +145,7 @@ namespace NutriTrackerApp
                 case 0:
                     view.Clear("Exit");
                     Console.WriteLine("\n Thank you for using the NutriTracker, adios!\n");
+                    myProgram.CloseConnection();
                     System.Environment.Exit(0);
                     break;
                 case 1:

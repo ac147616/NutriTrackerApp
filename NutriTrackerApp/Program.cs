@@ -1,6 +1,7 @@
 ﻿using Microsoft.Identity.Client;
 using System;
 using System.ComponentModel.Design;
+using System.Data;
 using System.Net.Http;
 using static StorageManager;
 
@@ -22,9 +23,6 @@ namespace NutriTrackerApp
             view.Clear("Welcome!");
 
             RunUserTypeMenu(); //This menu shows the options for the type of user
-
-
-            storageManager.CloseConnection();
         }
         public static void RunUserTypeMenu()
         {
@@ -1795,6 +1793,14 @@ namespace NutriTrackerApp
                 Console.WriteLine(message);
                 Console.ResetColor();
                 Console.ReadKey(true);
+            }
+        }
+        public void CloseConnection()
+        {
+            if (storageManager.conn != null && storageManager.conn.State == ConnectionState.Open)
+            {
+                storageManager.conn.Close();
+                Console.WriteLine("Connection closed");
             }
         }
     }

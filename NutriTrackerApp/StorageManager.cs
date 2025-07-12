@@ -2769,12 +2769,4 @@ public class StorageManager
             }
         }
     }
-    public void CloseConnection()
-    {
-        if (conn != null && conn.State == ConnectionState.Open)
-        {
-            conn.Close();
-            Console.WriteLine("Connection closed");
-        }
-    }
 }
