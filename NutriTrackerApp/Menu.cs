@@ -151,14 +151,14 @@ namespace NutriTrackerApp
             view.Clear("Exit");
 
             //confirming
-            Menu mainMenu = new Menu("\nAre you sure you want to exit the application?\n", ["yes", "no"]);
+            Menu mainMenu = new Menu("Are you sure you want to exit the application?\n", ["yes", "no"]);
             int SelectedIndex = mainMenu.Run(" ", myProgram.userType, myProgram);
 
             switch (SelectedIndex)
             {
                 case 0: //chose yes
                     view.Clear("Exit");
-                    Console.WriteLine("\n Thank you for using the NutriTracker, adios!\n");
+                    Console.WriteLine(new string(' ', Math.Max(0, (Console.WindowWidth - "Thank you for using the NutriTracker, adios!".Length) / 2)) + "Thank you for using the NutriTracker, adios!");
                     myProgram.CloseConnection();
                     System.Environment.Exit(0);
                     break;

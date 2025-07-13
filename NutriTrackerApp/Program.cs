@@ -223,11 +223,11 @@ namespace NutriTrackerApp
                 if (collectedResponses[0] == "" || collectedResponses[1] == "" ||
                     collectedResponses[2] == "" || collectedResponses[3] == "" || collectedResponses[4] == "")
                 {
-                    ShowMessage("All fields are required. Press any key to fill again.", 9);
+                    ShowMessage("All fields are required. Press any key to fill again.", 6);
                 }
                 else if (collectedResponses[3] != collectedResponses[4])
                 {
-                    ShowMessage("Password and Confirm Password do not match. Press any key to fill again.", 9);
+                    ShowMessage("Password and Confirm Password do not match. Press any key to fill again.", 6);
                 }
                 else
                 {
@@ -241,12 +241,12 @@ namespace NutriTrackerApp
                         AdminDetails newAdmin = new AdminDetails(0, firstName, lastName, email, password);
                         int adminID = storageManager.InsertAdmin(newAdmin);
 
-                        ShowMessage($"New admin created with ID: {adminID}, press any key to continue", 9);
+                        ShowMessage($"New admin created with ID: {adminID}, press any key to continue", 6);
                         break;
                     }
                     catch (Exception ex)
                     {
-                        ShowMessage("An error occurred while creating admin. Press any key to try again.", 9);
+                        ShowMessage("An error occurred while creating admin. Press any key to try again.", 6);
                     }
                 }
             }
@@ -462,7 +462,7 @@ namespace NutriTrackerApp
 
                 List<string> collectedResponses = InputManager.GetInput(new string[]
                 {
-            "Food ID",
+            "Log ID",
             "Meal Time (e.g. Breakfast, Lunch)"
                 }, this);
 
@@ -486,7 +486,7 @@ namespace NutriTrackerApp
                     }
                     catch
                     {
-                        ShowMessage("Invalid input. Food ID must be a number. Press any key to fill again.", 2);
+                        ShowMessage("Invalid input. Log ID must be a number. Only breakfast, lunch , and dinner allowed as meal times. Food ID must also exist. Press any key to fill again.", 2);
                     }
                 }
             }

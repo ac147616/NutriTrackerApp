@@ -4,7 +4,7 @@ using System.Data;
 
 public class StorageManager
 {
-    public SqlConnection conn;
+    public SqlConnection conn; //declaring the connection for the SQL Server databse 
     public StorageManager(string connectionString)
     {
         try
@@ -26,10 +26,13 @@ public class StorageManager
             Console.WriteLine(ex.Message);
         }
     }
+    //inserts a new user into the tblUserDetails table and returns the newly generated user ID.
     public int InsertUser(UserDetails user1)
     {
+        //defines an SQL query with parameter placeholders and returns the ID of the inserted row.
         string query = "INSERT INTO users.tblUserDetails (firstName, lastName, emailID, passwordKey, age, gender, userWeight, userHeight, signUpDate) VALUES (@FirstName, @LastName, @EmailID, @PasswordKey, @Age, @Gender, @UserWeight, @UserHeight, @SignUpDate); SELECT SCOPE_IDENTITY();";
 
+        //links each property from the UserDetails object to the related SQL parameter.
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
             cmd.Parameters.AddWithValue("@FirstName", user1.FirstName);
@@ -42,9 +45,11 @@ public class StorageManager
             cmd.Parameters.AddWithValue("@UserHeight", user1.UserHeight);
             cmd.Parameters.AddWithValue("@SignUpDate", user1.SignUpDate);
 
+            //executes the insert command and returns the newly created ID as an integer.
             return Convert.ToInt32(cmd.ExecuteScalar());
         }
     }
+    //same logic as above
     public int InsertAdmin(AdminDetails admin)
     {
         string query = "INSERT INTO admins.tblAdminDetails (firstName, lastName, emailID, passwordKey) " +
@@ -60,6 +65,7 @@ public class StorageManager
             return Convert.ToInt32(cmd.ExecuteScalar());
         }
     }
+    //same logic as above
     public bool InsertAllergy(int userID, string allergy)
     {
         string query = "INSERT INTO users.tblAllergies (userID, allergy) VALUES (@UserID, @Allergy)";
@@ -81,6 +87,7 @@ public class StorageManager
             }
         }
     }
+    //same logic as above
     public int InsertFood(Foods food)
     {
         string query = @"
@@ -103,6 +110,7 @@ public class StorageManager
             return Convert.ToInt32(cmd.ExecuteScalar());
         }
     }
+    //same logic as above
     public int InsertDietPlan(DietPlans plan)
     {
         string query = @"
@@ -123,6 +131,7 @@ public class StorageManager
             return Convert.ToInt32(cmd.ExecuteScalar());
         }
     }
+    //Same logic as above
     public int InsertGoal(Goals goal)
     {
         string query = @"
@@ -147,6 +156,7 @@ public class StorageManager
             return Convert.ToInt32(cmd.ExecuteScalar());
         }
     }
+    //Same logic as above
     public int InsertDailyLog(DailyLog log)
     {
         string query = @"
@@ -166,8 +176,11 @@ public class StorageManager
             return Convert.ToInt32(cmd.ExecuteScalar());
         }
     }
+    
+    //this method updates an existing user's details in the 'users.tblUserDetails' table.
     public void UpdateUser(UserDetails user1)
     {
+        //this is a slq query statement with paramters. This updates all user fields where the userID matches the one of the current user.
         string query = @"UPDATE users.tblUserDetails 
                     SET firstName = @FirstName, 
                         lastName = @LastName, 
@@ -179,6 +192,7 @@ public class StorageManager
                         userHeight = @UserHeight 
                     WHERE userID = @UserID";
 
+        //add values to the SQL parameters from the passed UserDetails object. This also binds the actual user input to the query to prevent SQL injection.
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
             cmd.Parameters.AddWithValue("@FirstName", user1.FirstName);
@@ -194,6 +208,7 @@ public class StorageManager
             cmd.ExecuteNonQuery();
         }
     }
+    //same logic as above
     public void UpdateAdmin(AdminDetails admin)
     {
         string query = @"UPDATE admins.tblAdminDetails 
@@ -214,6 +229,7 @@ public class StorageManager
             cmd.ExecuteNonQuery();
         }
     }
+    //same logic as above
     public bool UpdateFood(Foods food)
     {
         string query = @"UPDATE admins.tblFoods 
@@ -241,6 +257,7 @@ public class StorageManager
             return rowsAffected > 0;
         }
     }
+    //same logic as above
     public void UpdateDietPlan(DietPlans plan)
     {
         string query = @"UPDATE admins.tblDietPlans
@@ -263,6 +280,7 @@ public class StorageManager
             cmd.ExecuteNonQuery();
         }
     }
+    //same logic as above
     public void UpdateGoal(Goals goal)
     {
         string query = @"UPDATE users.tblGoals 
@@ -291,6 +309,7 @@ public class StorageManager
             cmd.ExecuteNonQuery();
         }
     }
+    //same logic as above
     public void UpdateDailyLog(DailyLog log)
     {
         string query = @"UPDATE users.tblDailyLog 
@@ -331,14 +350,14 @@ public class StorageManager
                 while (reader.Read())
                 {
                     string[] row = new string[8];
-                    row[0] = reader.GetString(0); // First Name
-                    row[1] = reader.GetString(1); // Last Name
-                    row[2] = reader.GetString(2); // Email
-                    row[3] = reader.GetInt32(3).ToString(); // Age
-                    row[4] = reader.GetString(4); // Gender
-                    row[5] = Math.Round(reader.GetDecimal(5)).ToString(); // Weight
-                    row[6] = Math.Round(reader.GetDecimal(6)).ToString(); // Height
-                    row[7] = reader.GetDateTime(7).ToString("yyyy-MM-dd"); // Date
+                    row[0] = reader.GetString(0);
+                    row[1] = reader.GetString(1);
+                    row[2] = reader.GetString(2);
+                    row[3] = reader.GetInt32(3).ToString();
+                    row[4] = reader.GetString(4);
+                    row[5] = Math.Round(reader.GetDecimal(5)).ToString();
+                    row[6] = Math.Round(reader.GetDecimal(6)).ToString();
+                    row[7] = reader.GetDateTime(7).ToString("yyyy-MM-dd");
                     userList.Add(row);
                 }
             }
@@ -368,9 +387,9 @@ public class StorageManager
 
         while (true)
         {
-            view.Clear("View User Details"); // Optional title parameter omitted since no heading is needed
+            view.Clear("View User Details");
 
-            // Prepare header
+            
             string columnHeader = string.Join(" | ", headers.Select(h => cut(h.Item1, h.Item2)));
             int tableWidth = columnHeader.Length;
             int leftPad = Math.Max(0, (consoleWidth - tableWidth) / 2);
@@ -383,7 +402,7 @@ public class StorageManager
             Console.ResetColor();
             Console.WriteLine(pad + new string('-', tableWidth));
 
-            // Calculate paging
+            
             int totalPages = (int)Math.Ceiling((double)userList.Count / pageSize);
             int startIndex = currentPage * pageSize;
             int endIndex = Math.Min(startIndex + pageSize, userList.Count);
@@ -407,7 +426,7 @@ public class StorageManager
 
             Console.WriteLine(pad + new string('-', tableWidth));
 
-            // For admin: show page info + scroll logic
+            
             if (userType == "admin")
             {
                 Console.WriteLine(pad + $"Page {currentPage + 1} of {Math.Max(totalPages, 1)}. Use ← or → to scroll.");
@@ -618,9 +637,8 @@ public class StorageManager
             }
             else if (key.Key != ConsoleKey.LeftArrow && key.Key != ConsoleKey.RightArrow)
             {
-                break; // Any other key breaks regardless of page count
+                break;
             }
-            // If it's an arrow but page cannot move, do nothing (stay on same page)
 
         }
     }
@@ -778,7 +796,7 @@ public class StorageManager
         {
             view.Clear("View All Diet Plans");
 
-            // Build header string dynamically based on widths
+            
             string columnHeader = string.Format("{0,-4}    {1,-25}  {2,-7}    {3,-12}    {4,-12}    {5,-12}",
     headers[0].Item1,
     headers[1].Item1,
@@ -1122,15 +1140,15 @@ public class StorageManager
                 {
                     return new UserDetails(
                         id,
-                        reader.GetString(1), // FirstName
-                        reader.GetString(2), // LastName
-                        reader.GetString(3), // Email
-                        reader.GetString(4), // Password
-                        reader.GetInt32(5),  // Age
-                        reader.GetString(6), // Gender
-                        Convert.ToDouble(reader.GetDecimal(7)), // Weight
-                        Convert.ToDouble(reader.GetDecimal(8)), // Height
-                        reader.GetDateTime(9).ToString("yyyy-MM-dd") // SignUpDate
+                        reader.GetString(1),
+                        reader.GetString(2),
+                        reader.GetString(3),
+                        reader.GetString(4),
+                        reader.GetInt32(5),
+                        reader.GetString(6),
+                        Convert.ToDouble(reader.GetDecimal(7)),
+                        Convert.ToDouble(reader.GetDecimal(8)),
+                        reader.GetDateTime(9).ToString("yyyy-MM-dd")
                     );
                 }
             }
@@ -1151,10 +1169,10 @@ public class StorageManager
                 {
                     return new AdminDetails(
                         id,
-                        reader.GetString(1), // FirstName
-                        reader.GetString(2), // LastName
-                        reader.GetString(3), // EmailID
-                        reader.GetString(4)  // PasswordKey
+                        reader.GetString(1),
+                        reader.GetString(2), 
+                        reader.GetString(3),
+                        reader.GetString(4) 
                     );
                 }
             }
@@ -1175,13 +1193,13 @@ public class StorageManager
                 {
                     return new Foods(
                         id,
-                        reader.GetString(1),  // FoodName
-                        reader.GetString(2),  // Category
-                        reader.GetDecimal(3), // Calories
-                        reader.GetDecimal(4), // Carbohydrates
-                        reader.GetDecimal(5), // Proteins
-                        reader.GetDecimal(6), // Fats
-                        reader.GetDecimal(7)  // ServingSize
+                        reader.GetString(1),
+                        reader.GetString(2), 
+                        reader.GetDecimal(3),
+                        reader.GetDecimal(4), 
+                        reader.GetDecimal(5), 
+                        reader.GetDecimal(6),
+                        reader.GetDecimal(7) 
                     );
                 }
             }
@@ -1202,17 +1220,17 @@ public class StorageManager
                 {
                     return new DietPlans(
                         id,
-                        reader.GetString(1),         // dietPlan
-                        reader.GetInt32(2),          // caloriesTarget
-                        reader.GetInt32(3),          // proteinsTarget
-                        reader.GetInt32(4),          // carbohydratesTarget
-                        reader.GetInt32(5)           // fatsTarget
+                        reader.GetString(1), 
+                        reader.GetInt32(2),   
+                        reader.GetInt32(3),        
+                        reader.GetInt32(4),  
+                        reader.GetInt32(5)
                     );
                 }
             }
         }
 
-        return null; // Not found
+        return null;
     }
     public Goals GetGoalByID(int goalID, int userID)
     {
@@ -1228,12 +1246,12 @@ public class StorageManager
                 if (reader.Read())
                 {
                     return new Goals(
-                        reader.GetInt32(0), // goalID
-                        reader.GetInt32(1), // userID
-                        reader.GetInt32(2), // dietPlanID
-                        reader.GetString(3), // goal
-                        reader.GetDateTime(4).ToString("yyyy-MM-dd"), // dateStarted
-                        reader.IsDBNull(5) ? "" : reader.GetDateTime(5).ToString("yyyy-MM-dd") // dateEnded
+                        reader.GetInt32(0), 
+                        reader.GetInt32(1),
+                        reader.GetInt32(2),
+                        reader.GetString(3),
+                        reader.GetDateTime(4).ToString("yyyy-MM-dd"),
+                        reader.IsDBNull(5) ? "" : reader.GetDateTime(5).ToString("yyyy-MM-dd") 
                     );
                 }
             }
@@ -1276,7 +1294,7 @@ public class StorageManager
 
             if (cmd.ExecuteScalar() != null)
             {
-                return Convert.ToInt32(cmd.ExecuteScalar()); //return only one column
+                return Convert.ToInt32(cmd.ExecuteScalar());
             }
             else
             {
@@ -1293,7 +1311,7 @@ public class StorageManager
 
             if (cmd.ExecuteScalar() != null)
             {
-                return Convert.ToInt32(cmd.ExecuteScalar()); //return only one column
+                return Convert.ToInt32(cmd.ExecuteScalar());
             }
             else
             {
@@ -1746,7 +1764,6 @@ public class StorageManager
             }
         }
 
-        // Pagination settings
         int pageSize = 20;
         int currentPage = 0;
         int totalPages = (int)Math.Ceiling((double)resultList.Count / pageSize);
@@ -1762,7 +1779,6 @@ public class StorageManager
         {
             view.Clear("Goal Duration Summary");
 
-            // Print header
             Console.WriteLine(pad + new string('-', totalWidth));
             Console.ForegroundColor = ConsoleColor.Cyan;
 
@@ -1772,7 +1788,6 @@ public class StorageManager
             Console.ResetColor();
             Console.WriteLine(pad + new string('-', totalWidth));
 
-            // No data case
             if (resultList.Count == 0)
             {
                 Console.WriteLine(pad + "No completed goals to calculate duration.");
@@ -2194,7 +2209,7 @@ public class StorageManager
                     {
                         currentCategoryIndex++;
                     }
-                    break; // exit current category loop
+                    break;
                 }
                 else if (key.Key == ConsoleKey.DownArrow)
                 {
@@ -2202,11 +2217,11 @@ public class StorageManager
                     {
                         currentCategoryIndex--;
                     }
-                    break; // exit current category loop
+                    break; 
                 }
                 else
                 {
-                    return; // exit method
+                    return;
                 }
             }
         }
