@@ -186,7 +186,7 @@ namespace NutriTrackerApp
                     catch (Exception ex)
                     {
 
-                        ShowMessage("Ivalid format (age, weight, height must be integer and gender can only be male, female), press any key to fill again", 9);
+                        ShowMessage("Invalid format (age, weight, height must be integer and gender can only be male, female), press any key to fill again", 9);
                     }
                 }
             }
@@ -1083,7 +1083,7 @@ namespace NutriTrackerApp
 
                     Console.WriteLine("Press any key to go back...");
                     Console.ReadKey(true);
-                    FoodOptions(); // your food menu or return point
+                    FoodOptions();
                     break;
 
                 case 1:
@@ -1202,7 +1202,7 @@ namespace NutriTrackerApp
             if (userType == "user")
             {
                 string prompt = "";
-                string[] options = { "View you details", "Update your details", "Delete account" };
+                string[] options = { "View your details", "Update your details", "Delete account" };
                 Menu mainMenu = new Menu(prompt, options);
                 int SelectedIndex = mainMenu.Run("Settings", userType, this);
                 view.Clear("Settings");
@@ -1617,7 +1617,7 @@ namespace NutriTrackerApp
         public void DailyLogOptions()
         {
             string prompt = "";
-            string[] options = { "View all goals", "Insert new goal", "Update existing goal", "Delete a goal" };
+            string[] options = { "View all daily logs", "Insert new daily log", "Update existing daily log", "Delete a daily log" };
             Menu mainMenu = new Menu(prompt, options);
             int SelectedIndex = mainMenu.Run("", userType, this);
             view.Clear("");

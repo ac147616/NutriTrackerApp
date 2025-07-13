@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace NutriTrackerApp
 {
+    //This is my class for the table admins.tblFoods
    public class Foods
     {
         public int FoodID { get; set; }

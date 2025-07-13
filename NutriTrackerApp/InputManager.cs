@@ -15,35 +15,37 @@ namespace NutriTrackerApp //This class manages how to make the input look like a
             for (int i = 0; i < labels.Length; i++)
                 collectedResponses.Add("");
 
-            // Stores the Y-position (row) of each field
+            // this stores the y positon of each label of a field
             int[] yRowPosition = new int[labels.Length];
+            int spaceFromLeft = 40; //this is the distance from the left that i want for all the labels
+            int spaceFromTop = 14; //this is where i want the first field to start from.
 
-            int spaceFromLeft = 40;  // X-position of field labels
-            int spaceFromTop = 14;    // Y-position of the first field
-
+            //looping through each label and printing each one at its own position
             for (int i = 0; i < labels.Length; i++)
             {
                 int top = spaceFromTop + (i * 2);  // space out fields vertically
-                yRowPosition[i] = top;
+                yRowPosition[i] = top; //storing last y position
 
                 Console.SetCursorPosition(spaceFromLeft, top);
                 Console.Write($"{labels[i]}: ");
             }
 
-            int currentField = 0; //This is the field the user will be editing
+            int currentField = 0; //this is the field the user is currently editing
 
+            //keeping all input until the form is submitted
             while (true)
             {
                 int inputLeftPadding = spaceFromLeft + labels[currentField].Length + 2;
                 int inputTopPadding = yRowPosition[currentField];
 
-                //Clear any previous charcaters on this field
+                //clear any previous charcaters on this field
                 Console.SetCursorPosition(inputLeftPadding, inputTopPadding);
                 Console.Write(new string(' ', Console.WindowWidth - inputLeftPadding - 1));
 
-                // Write the current value again after clearing the field
+                //write the value again after clearing
                 Console.SetCursorPosition(inputLeftPadding, inputTopPadding);
 
+                //just hashing the field input if its a password
                 if (labels[currentField].ToLower().Contains("password") || (labels[currentField].ToLower().Contains("confirm password")))
                 {
                     Console.Write(new string('*', collectedResponses[currentField].Length));
@@ -53,9 +55,11 @@ namespace NutriTrackerApp //This class manages how to make the input look like a
                     Console.Write(collectedResponses[currentField]);
                 }
 
-                Console.SetCursorPosition(inputLeftPadding + collectedResponses[currentField].Length, inputTopPadding); //Move cursor to end of the line
+                Console.SetCursorPosition(inputLeftPadding + collectedResponses[currentField].Length, inputTopPadding); //move cursor to end of the line
 
-                ConsoleKeyInfo key = Console.ReadKey(true);  // Get what kind of key they pressed
+                ConsoleKeyInfo key = Console.ReadKey(true);  //get what kind of key they pressed
+
+                //check if its any of the shortcuts that I have made available
                 if ((key.Modifiers & ConsoleModifiers.Control) != 0)
                 {
                     if (key.Key == ConsoleKey.B)
@@ -74,34 +78,36 @@ namespace NutriTrackerApp //This class manages how to make the input look like a
                     }
                 }
 
-                // Navigate down or move to next field
+                //navigate down or move to next field
                 if (key.Key == ConsoleKey.Enter || key.Key == ConsoleKey.DownArrow)
                 {
                     currentField = (currentField + 1) % labels.Length;
                 }
-                // Navigate up
+                //navigate up
                 else if (key.Key == ConsoleKey.UpArrow)
                 {
                     currentField = (currentField - 1 + labels.Length) % labels.Length;
                 }
-                // Delete last character
+                //delete last character
                 else if (key.Key == ConsoleKey.Backspace && collectedResponses[currentField].Length > 0)
                 {
                     collectedResponses[currentField] = collectedResponses[currentField][..^1]; // slice to remove last char
                 }
-                // Accept regular typing characters
+                //accepting regular typing characters
                 else if (!char.IsControl(key.KeyChar))
                 {
                     collectedResponses[currentField] += key.KeyChar;
                 }
 
-                // Submit form if Ctrl+Enter is pressed
+                //finally, submit the form if ctrl enter is pressed
                 if (key.Key == ConsoleKey.Enter && (key.Modifiers & ConsoleModifiers.Control) != 0)
                     break;
             }
 
-            return collectedResponses;  // Return the input collected from user
+            return collectedResponses; //return the input collected from user to program.cs
         }
+
+        //method called when ctrl b is pressed
         public static void Back(Program myProgram)
         {
             if (myProgram.userType == "admin")
@@ -117,6 +123,8 @@ namespace NutriTrackerApp //This class manages how to make the input look like a
                 myProgram.RunUserTypeMenu2();
             }
         }
+
+        //method called if ctrl h is pressed
         public static void GetHelp(Program myProgram)
         {
             ConsoleView view = new ConsoleView();
@@ -124,6 +132,8 @@ namespace NutriTrackerApp //This class manages how to make the input look like a
             Console.ReadKey(true);
             Back(myProgram);
         }
+
+        //method called if ctrl e is pressed
         public static void Exit(Program myProgram)
         {
             ConsoleView view = new ConsoleView();
