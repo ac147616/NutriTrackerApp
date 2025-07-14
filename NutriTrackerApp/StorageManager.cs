@@ -49,47 +49,56 @@ public class StorageManager
             return Convert.ToInt32(cmd.ExecuteScalar());
         }
     }
-    //same logic as above
+  //this method inserts a new admin tecord in the DB and returns the ID of the new record created.
     public int InsertAdmin(AdminDetails admin)
     {
+        //the sql query to insert admin details in table...SCOPE_IDENTITY() gets the ID of the inserted row.
         string query = "INSERT INTO admins.tblAdminDetails (firstName, lastName, emailID, passwordKey) " +
                        "VALUES (@FirstName, @LastName, @EmailID, @PasswordKey); SELECT SCOPE_IDENTITY();";
 
+        //creates new sql command using the query above.
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
+            //linking values from AdminDetails object by creating parameters for the SQL command.
             cmd.Parameters.AddWithValue("@FirstName", admin.FirstName);
             cmd.Parameters.AddWithValue("@LastName", admin.LastName);
             cmd.Parameters.AddWithValue("@EmailID", admin.EmailID);
             cmd.Parameters.AddWithValue("@PasswordKey", admin.Passwordkey);
 
+            //ExecuteScalar() returns the first column of the result and then its converted to a no.
             return Convert.ToInt32(cmd.ExecuteScalar());
         }
     }
-    //same logic as above
+    //this method attempts to insert a new allergy record in the DB and returns whether it was successful in boolean form.
     public bool InsertAllergy(int userID, string allergy)
     {
+        //the sql query to insert allergy in table
         string query = "INSERT INTO users.tblAllergies (userID, allergy) VALUES (@UserID, @Allergy)";
 
+        //creates new sql command using the query above.
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
+            //linking values from Allerhies object by creating parameters for the SQL command.
             cmd.Parameters.AddWithValue("@UserID", userID);
             cmd.Parameters.AddWithValue("@Allergy", allergy);
 
             try
-            {
+            {   //ExecuteNonQuery returns the number of rows affected.
                 int rowsAffected = cmd.ExecuteNonQuery();
                 return rowsAffected > 0; // returns true if insert was successful
             }
             catch (SqlException ex)
             {
+                //if there was an error related to SQL, an error message is printed to the conosle, also explaining what the error was.
                 Console.WriteLine("Error inserting allergy: " + ex.Message);
                 return false;
             }
         }
     }
-    //same logic as above
+    //this method inserts a new food record in the DB and returns the ID of the new record created.
     public int InsertFood(Foods food)
     {
+        //the sql query to insert food in table...SCOPE_IDENTITY() gets the ID of the inserted row.
         string query = @"
         INSERT INTO admins.tblFoods 
         (foodName, category, calories, carbohydrates, proteins, fats, servingSize) 
@@ -97,8 +106,10 @@ public class StorageManager
         (@FoodName, @Category, @Calories, @Carbohydrates, @Proteins, @Fats, @ServingSize);
         SELECT SCOPE_IDENTITY();";
 
+        //creates new sql command using the query above.
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
+            //linking values from foods object by creating parameters for the SQL command.
             cmd.Parameters.AddWithValue("@FoodName", food.FoodName);
             cmd.Parameters.AddWithValue("@Category", food.Category);
             cmd.Parameters.AddWithValue("@Calories", food.Calories);
@@ -107,12 +118,14 @@ public class StorageManager
             cmd.Parameters.AddWithValue("@Fats", food.Fats);
             cmd.Parameters.AddWithValue("@ServingSize", food.ServingSize);
 
+            //ExecuteScalar() returns the first column of the result and then its converted to a no.
             return Convert.ToInt32(cmd.ExecuteScalar());
         }
     }
-    //same logic as above
+    //this method inserts a new diet plan record in the DB and returns the ID of the new record created.
     public int InsertDietPlan(DietPlans plan)
     {
+        //the sql query to insert diet plan in table...SCOPE_IDENTITY() gets the ID of the inserted row.
         string query = @"
         INSERT INTO admins.tblDietPlans 
         (dietPlan, caloriesTarget, proteinsTarget, carbohydratesTarget, fatsTarget) 
@@ -120,20 +133,24 @@ public class StorageManager
         (@DietPlan, @CaloriesTarget, @ProteinsTarget, @CarbohydratesTarget, @FatsTarget);
         SELECT SCOPE_IDENTITY();";
 
+        //creates new sql command using the query above.
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
+            //linking values from DietPlan object by creating parameters for the SQL command.
             cmd.Parameters.AddWithValue("@DietPlan", plan.DietPlan);
             cmd.Parameters.AddWithValue("@CaloriesTarget", plan.CaloriesTarget);
             cmd.Parameters.AddWithValue("@ProteinsTarget", plan.ProteinsTarget);
             cmd.Parameters.AddWithValue("@CarbohydratesTarget", plan.CarbohydratesTarget);
             cmd.Parameters.AddWithValue("@FatsTarget", plan.FatsTarget);
 
+            //ExecuteScalar() returns the first column of the result and then its converted to a no.
             return Convert.ToInt32(cmd.ExecuteScalar());
         }
     }
-    //Same logic as above
+    //this method inserts a new goal record in the DB and returns the ID of the new record created.
     public int InsertGoal(Goals goal)
     {
+        //the sql query to insert goal in table...SCOPE_IDENTITY() gets the ID of the inserted row.
         string query = @"
         INSERT INTO users.tblGoals 
         (userID, dietPlanID, goal, dateStarted, dateEnded) 
@@ -141,8 +158,10 @@ public class StorageManager
         (@UserID, @DietPlanID, @Goal, @DateStarted, @DateEnded);
         SELECT SCOPE_IDENTITY();";
 
+        //creates new sql command using the query above.
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
+            //linking values from Goal object by creating parameters for the SQL command.
             cmd.Parameters.AddWithValue("@UserID", goal.UserID);
             cmd.Parameters.AddWithValue("@DietPlanID", goal.DietPlanID);
             cmd.Parameters.AddWithValue("@Goal", goal.Goal);
@@ -153,12 +172,14 @@ public class StorageManager
             else
                 cmd.Parameters.AddWithValue("@DateEnded", goal.DateEnded);
 
+            //ExecuteScalar() returns the first column of the result and then its converted to a no.
             return Convert.ToInt32(cmd.ExecuteScalar());
         }
     }
-    //Same logic as above
+    //this method inserts a new daily log record in the DB and returns the ID of the new record created.
     public int InsertDailyLog(DailyLog log)
     {
+        //the sql query to insert daily log in table...SCOPE_IDENTITY() gets the ID of the inserted row.
         string query = @"
     INSERT INTO users.tblDailyLog 
     (userID, foodID, mealTime, dateLogged) 
@@ -166,13 +187,16 @@ public class StorageManager
     (@UserID, @FoodID, @MealTime, @DateLogged);
     SELECT SCOPE_IDENTITY();";
 
+        //creates new sql command using the query above.
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
+            //linking values from DailyLog object by creating parameters for the SQL command.
             cmd.Parameters.AddWithValue("@UserID", log.UserID);
             cmd.Parameters.AddWithValue("@FoodID", log.FoodID);
             cmd.Parameters.AddWithValue("@MealTime", log.MealTime);
             cmd.Parameters.AddWithValue("@DateLogged", log.DateLogged);
 
+            //ExecuteScalar() returns the first column of the result and then its converted to a no.
             return Convert.ToInt32(cmd.ExecuteScalar());
         }
     }
@@ -205,12 +229,14 @@ public class StorageManager
             cmd.Parameters.AddWithValue("@UserHeight", user1.UserHeight);
             cmd.Parameters.AddWithValue("@UserID", user1.UserID);
 
+            //this is used to execute commands that do not return rows of data, instead stores the number of rows affected.
             cmd.ExecuteNonQuery();
         }
     }
-    //same logic as above
+    //this method updates an existing admin's details in the 'admins.tblAdminDetails' table.
     public void UpdateAdmin(AdminDetails admin)
     {
+        //this is a slq query statement with paramters. This updates all admin fields where the admin matches the one of the chose admin.
         string query = @"UPDATE admins.tblAdminDetails 
                      SET firstName = @FirstName, 
                          lastName = @LastName, 
@@ -218,6 +244,7 @@ public class StorageManager
                          passwordKey = @PasswordKey 
                      WHERE adminID = @AdminID";
 
+        //add values to the SQL parameters from the passed AdminDetails object. This also binds the actual input to the query to prevent SQL injection.
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
             cmd.Parameters.AddWithValue("@FirstName", admin.FirstName);
@@ -226,12 +253,14 @@ public class StorageManager
             cmd.Parameters.AddWithValue("@PasswordKey", admin.Passwordkey);
             cmd.Parameters.AddWithValue("@AdminID", admin.AdminID);
 
+            //this is used to execute commands that do not return rows of data, instead stores the number of rows affected.
             cmd.ExecuteNonQuery();
         }
     }
-    //same logic as above
+    //this method updates an existing food's details in the 'admins.tblFoods' table.
     public bool UpdateFood(Foods food)
     {
+        //this is a slq query statement with paramters. This updates all food fields where the foodID matches the one of the selected food.
         string query = @"UPDATE admins.tblFoods 
                      SET foodName = @FoodName, 
                          category = @Category, 
@@ -242,6 +271,7 @@ public class StorageManager
                          servingSize = @ServingSize 
                      WHERE foodID = @FoodID";
 
+        //add values to the SQL parameters from the passed Food object. This also binds the actual input to the query to prevent SQL injection.
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
             cmd.Parameters.AddWithValue("@FoodName", food.FoodName);
@@ -253,13 +283,15 @@ public class StorageManager
             cmd.Parameters.AddWithValue("@ServingSize", food.ServingSize);
             cmd.Parameters.AddWithValue("@FoodID", food.FoodID);
 
+            //this is used to execute commands that do not return rows of data, instead stores the number of rows affected.
             int rowsAffected = cmd.ExecuteNonQuery();
             return rowsAffected > 0;
         }
     }
-    //same logic as above
+    //this method updates an existing adiet plan's details in the 'admins.tblDietPlan' table.
     public void UpdateDietPlan(DietPlans plan)
     {
+        //this is a slq query statement with paramters. This updates all diet plan fields where the dietPlanID matches the one of the sekected diet plan.
         string query = @"UPDATE admins.tblDietPlans
                      SET dietPlan = @DietPlan,
                          caloriesTarget = @CaloriesTarget,
@@ -268,6 +300,7 @@ public class StorageManager
                          fatsTarget = @FatsTarget
                      WHERE dietPlanID = @DietPlanID";
 
+        //add values to the SQL parameters from the passed DietPlans object. This also binds the actual input to the query to prevent SQL injection.
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
             cmd.Parameters.AddWithValue("@DietPlan", plan.DietPlan);
@@ -277,18 +310,21 @@ public class StorageManager
             cmd.Parameters.AddWithValue("@FatsTarget", plan.FatsTarget);
             cmd.Parameters.AddWithValue("@DietPlanID", plan.DietPlanID);
 
+            //this is used to execute commands that do not return rows of data, instead stores the number of rows affected.
             cmd.ExecuteNonQuery();
         }
     }
-    //same logic as above
+    //this method updates an existing goal's details in the 'users.tblGoal' table.
     public void UpdateGoal(Goals goal)
     {
+        //this is a slq query statement with paramters. This updates all goal fields where the goalID matches the one of the sekected goal.
         string query = @"UPDATE users.tblGoals 
                      SET dietPlanID = @DietPlanID, 
                          goal = @Goal,
                          dateEnded = @DateEnded
                      WHERE goalID = @GoalID AND userID = @UserID";
 
+        //add values to the SQL parameters from the passed Goal object. This also binds the actual input to the query to prevent SQL injection.
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
             cmd.Parameters.AddWithValue("@DietPlanID", goal.DietPlanID);
@@ -306,18 +342,21 @@ public class StorageManager
                 cmd.Parameters.AddWithValue("@DateEnded", goal.DateEnded);
             }
 
+            //this is used to execute commands that do not return rows of data, instead stores the number of rows affected.
             cmd.ExecuteNonQuery();
         }
     }
-    //same logic as above
+    //this method updates an existing dail log's details in the 'users.tblDailyLog' table.
     public void UpdateDailyLog(DailyLog log)
     {
+        //this is a slq query statement with paramters. This updates all daily log fields where the dailyLog matches the one of the selected daily log.
         string query = @"UPDATE users.tblDailyLog 
                      SET foodID = @FoodID, 
                          mealTime = @MealTime, 
                          dateLogged = @DateLogged 
                      WHERE logID = @LogID AND userID = @UserID";
 
+        //add values to the SQL parameters from the passed DailyLog object. This also binds the actual input to the query to prevent SQL injection.
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
             cmd.Parameters.AddWithValue("@FoodID", log.FoodID);
@@ -326,6 +365,7 @@ public class StorageManager
             cmd.Parameters.AddWithValue("@LogID", log.LogID);
             cmd.Parameters.AddWithValue("@UserID", log.UserID);
 
+            //this is used to execute commands that do not return rows of data, instead stores the number of rows affected.
             cmd.ExecuteNonQuery();
         }
     }
@@ -334,12 +374,14 @@ public class StorageManager
         ConsoleView view = new ConsoleView();
         List<string[]> userList = new List<string[]>();
 
+        //creates query based on user type, admin can view all while a user can only view theirs
         string query = (userType == "admin")
             ? "SELECT firstName, lastName, emailID, age, gender, userWeight, userHeight, signUpDate FROM users.tblUserDetails"
             : "SELECT firstName, lastName, emailID, age, gender, userWeight, userHeight, signUpDate FROM users.tblUserDetails WHERE userID = @UserID";
 
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
+            // If the viewer is not admin and a valid user ID is provided, link the parameter to the query.
             if (userType != "admin" && TheID.HasValue)
             {
                 cmd.Parameters.AddWithValue("@UserID", TheID.Value);
@@ -349,7 +391,9 @@ public class StorageManager
             {
                 while (reader.Read())
                 {
+                    //create a row to store one user's details.
                     string[] row = new string[8];
+                    //format each field properly
                     row[0] = reader.GetString(0);
                     row[1] = reader.GetString(1);
                     row[2] = reader.GetString(2);
@@ -358,17 +402,19 @@ public class StorageManager
                     row[5] = Math.Round(reader.GetDecimal(5)).ToString();
                     row[6] = Math.Round(reader.GetDecimal(6)).ToString();
                     row[7] = reader.GetDateTime(7).ToString("yyyy-MM-dd");
+                    //add this row to list of users.
                     userList.Add(row);
                 }
             }
         }
-
+        //if no record are found display this message and exit method.
         if (userList.Count == 0)
         {
             Console.WriteLine("No records found.");
             return;
         }
 
+        //make header and their max width for alignement
         var headers = new[]
         {
         ("First Name", 11),
@@ -380,21 +426,23 @@ public class StorageManager
         ("Height", 6),
         ("Date", 10)
     };
-
+        //setting up a page view
         int pageSize = 20;
         int currentPage = 0;
         int consoleWidth = Console.WindowWidth;
 
+        //pages controlled through loop
         while (true)
         {
             view.Clear("View User Details");
 
-            
+            //build headers and center the column headers accordingly to their wdith settings.
             string columnHeader = string.Join(" | ", headers.Select(h => cut(h.Item1, h.Item2)));
             int tableWidth = columnHeader.Length;
             int leftPad = Math.Max(0, (consoleWidth - tableWidth) / 2);
             string pad = new string(' ', leftPad);
 
+            //print the border and the column headers (header in cyan for aesthetics)
             Console.WriteLine(pad + new string('-', tableWidth));
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Write(pad);
@@ -402,11 +450,12 @@ public class StorageManager
             Console.ResetColor();
             Console.WriteLine(pad + new string('-', tableWidth));
 
-            
+            //calculateing here what sub-section (aka which ones) of the user list to display on THIS page.
             int totalPages = (int)Math.Ceiling((double)userList.Count / pageSize);
             int startIndex = currentPage * pageSize;
             int endIndex = Math.Min(startIndex + pageSize, userList.Count);
 
+            //print rows and format each field so it fits in the columns
             for (int i = startIndex; i < endIndex; i++)
             {
                 string line = string.Join(" | ", new[]
@@ -426,14 +475,15 @@ public class StorageManager
 
             Console.WriteLine(pad + new string('-', tableWidth));
 
-            
+            //the pages will only be needed if the user is admin because users will only see one record.
             if (userType == "admin")
             {
                 Console.WriteLine(pad + $"Page {currentPage + 1} of {Math.Max(totalPages, 1)}. Use ← or → to scroll.");
                 Console.ForegroundColor = ConsoleColor.DarkRed;
                 Console.WriteLine(pad + "Press any other key to go back");
                 Console.ResetColor();
-
+                
+                //page navigation (left and right arrows)
                 var key = Console.ReadKey(true);
                 if (key.Key == ConsoleKey.LeftArrow && totalPages > 1 && currentPage > 0)
                 {
@@ -463,12 +513,16 @@ public class StorageManager
         ConsoleView view = new ConsoleView();
         List<AdminDetails> adminList = new List<AdminDetails>();
 
+        //create the query to select all admin details from the table
         string query = "SELECT adminID, firstName, lastName, emailID, passwordkey FROM admins.tblAdminDetails";
+
+        //use the query and read the result from the database
         using (SqlCommand cmd = new SqlCommand(query, conn))
         using (SqlDataReader reader = cmd.ExecuteReader())
         {
             while (reader.Read())
             {
+                //create an AdminDetails object and fill with values from the database
                 AdminDetails admin = new AdminDetails(
                     reader.GetInt32(0),
                     reader.GetString(1),
@@ -476,24 +530,27 @@ public class StorageManager
                     reader.GetString(3),
                     reader.GetString(4)
                 );
+                //add this admin object to the list
                 adminList.Add(admin);
             }
         }
-
+        //setting up a page view
         int pageSize = 20;
         int currentPage = 0;
         int consoleWidth = Console.WindowWidth;
 
+        //pages controlled through loop
         while (true)
         {
             view.Clear("View All Admins");
             Console.WriteLine();
-
+            //build headers and center the column headers accordingly to their wdith settings.
             string columnHeader = string.Format("{0,-6}    {1,-15}    {2,-15}    {3,-25}", "ID", "First Name", "Last Name", "Email");
             int tableWidth = columnHeader.Length;
             int leftPad = Math.Max(0, (consoleWidth - tableWidth) / 2);
             string pad = new string(' ', leftPad);
 
+            //print the border and the column headers (header in cyan for aesthetics)
             Console.WriteLine(pad + new string('-', tableWidth));
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Write(pad); // apply color to padding too
@@ -501,6 +558,7 @@ public class StorageManager
             Console.ResetColor();
             Console.WriteLine(pad + new string('-', tableWidth));
 
+            //calculateing here what sub-section (aka which ones) of the admin list to display on THIS page.
             int totalPages = (int)Math.Ceiling((double)adminList.Count / pageSize);
             int startIndex = currentPage * pageSize;
             int endIndex = Math.Min(startIndex + pageSize, adminList.Count);
@@ -511,6 +569,7 @@ public class StorageManager
             }
             else
             {
+                //print rows and format each field so it fits in the columns
                 for (int i = startIndex; i < endIndex; i++)
                 {
                     AdminDetails admin = adminList[i];
@@ -531,6 +590,7 @@ public class StorageManager
             Console.WriteLine(pad + "Press any other key to go back");
             Console.ResetColor();
 
+            //page navigation (left and right arrows)
             var key = Console.ReadKey(true);
 
             if (key.Key == ConsoleKey.LeftArrow && totalPages > 1 && currentPage > 0)
@@ -545,7 +605,7 @@ public class StorageManager
             {
                 break;
             }
-            // If left/right pressed but not valid → stay on same page
+            // If left/right pressed but not valid stay on same page
         }
     }
     public void ViewAllAllergies(int userID)
@@ -553,32 +613,35 @@ public class StorageManager
         ConsoleView view = new ConsoleView();
         List<(string Allergy, int AllergyID)> allergyList = new List<(string, int)>();
 
+        //create the query to select allergy details from the table for the given user ID
         string query = "SELECT allergy, allergyID FROM users.tblAllergies WHERE userID = @UserID";
 
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
             cmd.Parameters.AddWithValue("@UserID", userID);
-
+            //use the query and read the result from the database
             using (SqlDataReader reader = cmd.ExecuteReader())
             {
                 while (reader.Read())
                 {
+                    //extract allergy and allergyID from result and add to the list
                     string allergy = reader.GetString(0);
                     int allergyID = reader.GetInt32(1);
                     allergyList.Add((allergy, allergyID));
                 }
             }
         }
-
+        //setting up a page view
         int pageSize = 20;
         int currentPage = 0;
         int consoleWidth = Console.WindowWidth;
 
+        //pages controlled through loop
         while (true)
         {
             view.Clear("View All Alergies");
 
-            // Center the heading
+            //build and center the heading based on user ID
             string heading = $"Allergies for User ID: {userID}";
             int headingPad = Math.Max(0, (consoleWidth - heading.Length) / 2);
             Console.ForegroundColor = ConsoleColor.Green;
@@ -586,19 +649,20 @@ public class StorageManager
             Console.ResetColor();
             Console.WriteLine();
 
-            // Header
-            string columnHeader = string.Format("{0,-5}    {1,-30}", "ID", "Allergy"); // 4 spaces
+            //build headers and center the column headers accordingly to their width settings.
+            string columnHeader = string.Format("{0,-5}    {1,-30}", "ID", "Allergy");
             int tableWidth = columnHeader.Length;
             int leftPad = Math.Max(0, (consoleWidth - tableWidth) / 2);
 
+            //print the border and the column headers (header in cyan for aesthetics)
             Console.WriteLine(new string(' ', leftPad) + new string('-', tableWidth));
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write(new string(' ', leftPad)); // Set color before writing padding
+            Console.Write(new string(' ', leftPad));
             Console.WriteLine(columnHeader);
             Console.ResetColor();
             Console.WriteLine(new string(' ', leftPad) + new string('-', tableWidth));
 
-            // Paging
+            //calculateing here what sub-section (aka which ones) of the allergy list to display on THIS page.
             int totalPages = (int)Math.Ceiling((double)allergyList.Count / pageSize);
             int startIndex = currentPage * pageSize;
             int endIndex = Math.Min(startIndex + pageSize, allergyList.Count);
@@ -609,6 +673,7 @@ public class StorageManager
             }
             else
             {
+                //print rows and format each field so it fits in the columns
                 for (int i = startIndex; i < endIndex; i++)
                 {
                     var allergy = allergyList[i];
@@ -625,6 +690,7 @@ public class StorageManager
             Console.WriteLine(new string(' ', leftPad) + "Press any other key to go back");
             Console.ResetColor();
 
+            //page navigation (left and right arrows)
             var key = Console.ReadKey(true);
 
             if (key.Key == ConsoleKey.LeftArrow && totalPages > 1 && currentPage > 0)
@@ -647,13 +713,16 @@ public class StorageManager
         ConsoleView view = new ConsoleView();
         List<Foods> foodList = new List<Foods>();
 
+        //create the query to select food details from the table
         string query = "SELECT foodID, foodName, category, calories, carbohydrates, proteins, fats, servingSize FROM admins.tblFoods";
 
+        //use the query and read the result from the database
         using (SqlCommand cmd = new SqlCommand(query, conn))
         using (SqlDataReader reader = cmd.ExecuteReader())
         {
             while (reader.Read())
             {
+                //create a Foods object and fill with values from the database
                 Foods food = new Foods(
                     reader.GetInt32(0),
                     reader.GetString(1),
@@ -664,14 +733,16 @@ public class StorageManager
                     reader.GetDecimal(6),
                     reader.GetDecimal(7)
                 );
+                //add this food object to the list
                 foodList.Add(food);
             }
         }
-
+        //setting up a page view
         int pageSize = 20;
         int currentPage = 0;
         int consoleWidth = Console.WindowWidth;
 
+        //make header and their max width for alignement
         var headers = new[]
         {
         ("ID", 4),
@@ -683,12 +754,12 @@ public class StorageManager
         ("Fats (g)", 6),
         ("Size (g)", 6)
     };
-
+        //pages controlled through loop
         while (true)
         {
             view.Clear("View All Foods");
 
-            // Header formatting
+            //build headers and center the column headers accordingly to their wdith settings.
             string columnHeader = string.Format("{0,-4}    {1,-20}    {2,-15}    {3,-5}    {4,-6}    {5,-6}    {6,-6}    {7,-6}",
                 headers[0].Item1, headers[1].Item1, headers[2].Item1, headers[3].Item1,
                 headers[4].Item1, headers[5].Item1, headers[6].Item1, headers[7].Item1);
@@ -697,6 +768,7 @@ public class StorageManager
             int leftPad = Math.Max(0, (consoleWidth - tableWidth) / 2);
             string pad = new string(' ', leftPad);
 
+            //print the border and the column headers (header in cyan for aesthetics)
             Console.WriteLine(pad + new string('-', tableWidth));
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.Write(pad);
@@ -704,7 +776,7 @@ public class StorageManager
             Console.ResetColor();
             Console.WriteLine(pad + new string('-', tableWidth));
 
-            // Paging logic
+            //calculateing here what sub-section (aka which ones) of the food list to display on THIS page.
             int totalPages = (int)Math.Ceiling((double)foodList.Count / pageSize);
             int startIndex = currentPage * pageSize;
             int endIndex = Math.Min(startIndex + pageSize, foodList.Count);
@@ -715,6 +787,7 @@ public class StorageManager
             }
             else
             {
+                //print rows and format each field so it fits in the columns
                 for (int i = startIndex; i < endIndex; i++)
                 {
                     var f = foodList[i];
@@ -739,6 +812,7 @@ public class StorageManager
             Console.WriteLine(pad + "Press any other key to go back");
             Console.ResetColor();
 
+            //page navigation (left and right arrows)
             var key = Console.ReadKey(true);
             if (key.Key == ConsoleKey.LeftArrow && totalPages > 1 && currentPage > 0)
             {
@@ -759,13 +833,16 @@ public class StorageManager
         ConsoleView view = new ConsoleView();
         List<DietPlans> planList = new List<DietPlans>();
 
+        //create the query to select diet plan details from the table
         string query = "SELECT dietPlanID, dietPlan, caloriesTarget, proteinsTarget, carbohydratesTarget, fatsTarget FROM admins.tblDietPlans";
 
+        //use the query and read the result from the database
         using (SqlCommand cmd = new SqlCommand(query, conn))
         using (SqlDataReader reader = cmd.ExecuteReader())
         {
             while (reader.Read())
             {
+                //create a DietPlans object and fill with values from the database
                 DietPlans plan = new DietPlans(
                     reader.GetInt32(0),
                     reader.GetString(1),
@@ -774,14 +851,16 @@ public class StorageManager
                     reader.GetInt32(4),
                     reader.GetInt32(5)
                 );
+                //add this diet plan object to the list
                 planList.Add(plan);
             }
         }
-
+        //setting up a page view
         int pageSize = 20;
         int currentPage = 0;
         int consoleWidth = Console.WindowWidth;
 
+        //make header and their max width for alignement
         var headers = new[]
         {
         ("ID", 4),
@@ -792,11 +871,12 @@ public class StorageManager
         ("Fats Target (g)", 16)
     };
 
+        //pages controlled through loop
         while (true)
         {
             view.Clear("View All Diet Plans");
 
-            
+            //build headers and center the column headers accordingly to their wdith settings.
             string columnHeader = string.Format("{0,-4}    {1,-25}  {2,-7}    {3,-12}    {4,-12}    {5,-12}",
     headers[0].Item1,
     headers[1].Item1,
@@ -805,7 +885,7 @@ public class StorageManager
     headers[4].Item1,
     headers[5].Item1
 );
-
+            //print the border and the column headers (header in cyan for aesthetics)
             int tableWidth = columnHeader.Length;
             int leftPad = Math.Max(0, (consoleWidth - tableWidth) / 2);
             string pad = new string(' ', leftPad);
@@ -817,6 +897,7 @@ public class StorageManager
             Console.ResetColor();
             Console.WriteLine(pad + new string('-', tableWidth));
 
+            //calculateing here what sub-section (aka which ones) of the diet plan list to display on THIS page.
             int totalPages = (int)Math.Ceiling((double)planList.Count / pageSize);
             int startIndex = currentPage * pageSize;
             int endIndex = Math.Min(startIndex + pageSize, planList.Count);
@@ -827,6 +908,8 @@ public class StorageManager
             }
             else
             {
+                //print rows and format each field so it fits in the columns
+
                 for (int i = startIndex; i < endIndex; i++)
                 {
                     var p = planList[i];
@@ -850,6 +933,7 @@ public class StorageManager
             Console.WriteLine(pad + "Press any other key to go back");
             Console.ResetColor();
 
+            //page navigation (left and right arrows)
             var key = Console.ReadKey(true);
             if (key.Key == ConsoleKey.LeftArrow && totalPages > 1 && currentPage > 0)
             {
@@ -870,8 +954,10 @@ public class StorageManager
         ConsoleView view = new ConsoleView();
         List<Goals> goalsList = new List<Goals>();
 
+        //create the query to select goal details from the table for the given user ID
         string query = "SELECT goalID, userID, dietPlanID, goal, dateStarted, dateEnded FROM users.tblGoals WHERE userID = @UserID";
 
+        //use the query and read the result from the database
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
             cmd.Parameters.AddWithValue("@UserID", userID);
@@ -880,6 +966,7 @@ public class StorageManager
             {
                 while (reader.Read())
                 {
+                    //create a Goals object and fill with values from the database
                     Goals g = new Goals(
                         reader.GetInt32(0),
                         reader.GetInt32(1),
@@ -888,13 +975,14 @@ public class StorageManager
                         reader.GetDateTime(4).ToString("yyyy-MM-dd"),
                         reader.IsDBNull(5) ? null : reader.GetDateTime(5).ToString("yyyy-MM-dd")
                     );
+                    //add this goal object to the list
                     goalsList.Add(g);
                 }
             }
         }
 
         view.Clear("View Goals");
-
+        //make header and their max width for alignement
         var headers = new[]
         {
         ("ID", 4),
@@ -903,7 +991,7 @@ public class StorageManager
         ("Start Date", 12),
         ("End Date", 12)
     };
-
+        //build headers and center the column headers accordingly to their width settings.
         string columnHeader = string.Format("{0,-4}    {1,-25}    {2,-7}    {3,-12}    {4,-12}",
             headers[0].Item1, headers[1].Item1, headers[2].Item1, headers[3].Item1, headers[4].Item1);
 
@@ -911,7 +999,8 @@ public class StorageManager
         int consoleWidth = Console.WindowWidth;
         int leftPad = Math.Max(0, (consoleWidth - tableWidth) / 2);
         string pad = new string(' ', leftPad);
-
+        
+        //print the border and the column headers (header in cyan for aesthetics)
         Console.WriteLine(pad + new string('-', tableWidth));
         Console.ForegroundColor = ConsoleColor.Cyan;
         Console.Write(pad);
@@ -927,6 +1016,7 @@ public class StorageManager
         {
             foreach (var g in goalsList)
             {
+                //print rows and format each field so it fits in the columns
                 string line = string.Format("{0,-4}    {1,-25}    {2,-7}    {3,-12}    {4,-12}",
                     g.GoalID,
                     Truncate(g.Goal, 25),
@@ -948,8 +1038,10 @@ public class StorageManager
         ConsoleView view = new ConsoleView();
         List<DailyLog> logList = new List<DailyLog>();
 
+        //create the query to select daily log details from the table for the given user ID
         string query = "SELECT logID, userID, foodID, mealTime, dateLogged FROM users.tblDailyLog WHERE userID = @UserID";
 
+        //use the query and read the result from the database
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
             cmd.Parameters.AddWithValue("@UserID", userID);
@@ -958,6 +1050,7 @@ public class StorageManager
             {
                 while (reader.Read())
                 {
+                    //create a DailyLog object and fill with values from the database
                     DailyLog log = new DailyLog(
                         reader.GetInt32(0),
                         reader.GetInt32(1),
@@ -965,6 +1058,7 @@ public class StorageManager
                         reader.GetString(3),
                         reader.GetDateTime(4).ToString("yyyy-MM-dd")
                     );
+                    //add this log object to the list
                     logList.Add(log);
                 }
             }
@@ -972,6 +1066,7 @@ public class StorageManager
 
         view.Clear("View Daily Logs");
 
+        //make header and their max width for alignement
         var headers = new[]
         {
         ("ID", 4),
@@ -979,7 +1074,7 @@ public class StorageManager
         ("Meal", 10),
         ("Date", 12)
     };
-
+        //build headers and center the column headers accordingly to their width settings
         string columnHeader = string.Format("{0,-4}     {1,-7}    {2,-10}    {3,-12}",
             headers[0].Item1, headers[1].Item1, headers[2].Item1, headers[3].Item1);
 
@@ -988,6 +1083,7 @@ public class StorageManager
         int leftPad = Math.Max(0, (consoleWidth - tableWidth) / 2);
         string pad = new string(' ', leftPad);
 
+        //print the border and the column headers (header in cyan for aesthetics)
         Console.WriteLine(pad + new string('-', tableWidth));
         Console.ForegroundColor = ConsoleColor.Cyan;
         Console.Write(pad);
@@ -1001,6 +1097,7 @@ public class StorageManager
         }
         else
         {
+            //print rows and format each field so it fits in the columns
             foreach (var log in logList)
             {
                 string line = string.Format("{0,-4}    {1,-7}    {2,-10}    {3,-12}",
@@ -1018,126 +1115,152 @@ public class StorageManager
         Console.ResetColor();
         Console.ReadKey(true);
     }
+    //truncates a string to a maximum length and add a single ellipsis if it overflows
     private string Truncate(string text, int maxLength)
     {
         if (text.Length <= maxLength)
             return text;
+        //cuts off the sting and adds the ellipsis at the end.
         return text.Substring(0, maxLength - 1) + "…";
     }
+    //this one is similar but used for a different reason. It is used to adjust a string to fit exactly into the widht of a column WITH padding.
     private string cut(string value, int width)
     {
+        //short string = left pad with spaces
         if (value.Length < width)
         {
             string extraNeeded = new string(' ', width - value.Length);
             value = extraNeeded + value;
             return value;
         }
+        // if string is longer than it should be, cut it and add ...
         if (value.Length > width)
         {
             return value.Substring(0, Math.Max(0, width - 3)) + "...";
         }
+        //i fits perfect, right pad it to align with the formatting
         return value.PadRight(width);
     }
     public bool DeleteUserByID(int userID)
     {
+        //create the SQL query to delete a user record by userID
         string query = "DELETE FROM users.tblUserDetails WHERE userID = @UserID";
 
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
+            //add parameter to safely inject userID into the query
             cmd.Parameters.AddWithValue("@UserID", userID);
-
+            //execute the delete command and store how many rows were affected
             int rowsAffected = cmd.ExecuteNonQuery();
-            return rowsAffected > 0;
+            return rowsAffected > 0; //true if row was deleted
         }
     }
     public bool DeleteAdminByID(int adminID)
     {
+        //create the SQL query to delete an admin record by adminID
         string query = "DELETE FROM admins.tblAdminDetails WHERE adminID = @AdminID";
 
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
+            //add parameter to safely inject adminID into the query
             cmd.Parameters.AddWithValue("@AdminID", adminID);
-
+            //execute the delete command and store how many rows were affected
             int rowsAffected = cmd.ExecuteNonQuery();
-            return rowsAffected > 0;
+            return rowsAffected > 0; //true if row was deleted
         }
     }
     public bool DeleteAllergyByID(int allergyID, int userID)
     {
+        ////create the SQL query to delete an allergy record using both allergyID and userID
         string query = @"DELETE FROM users.tblAllergies 
                      WHERE allergyID = @AllergyID AND userID = @UserID";
 
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
+            //add parameters to safely inject allergyID and userID into the query
             cmd.Parameters.AddWithValue("@AllergyID", allergyID);
             cmd.Parameters.AddWithValue("@UserID", userID);
-
+            //execute the delete command and store how many rows were affected
             int rowsAffected = cmd.ExecuteNonQuery();
-            return rowsAffected > 0;
+            return rowsAffected > 0;//true if row was deleted
         }
     }
     public bool DeleteFoodByID(int foodID)
     {
+        //create the SQL query to delete a food record by foodID
         string query = "DELETE FROM admins.tblFoods WHERE foodID = @FoodID";
 
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
+            //add parameter to safely inject foodID into the query
             cmd.Parameters.AddWithValue("@FoodID", foodID);
+            //execute the delete command and store how many rows were affected
             int rowsAffected = cmd.ExecuteNonQuery();
-            return rowsAffected > 0;
+            return rowsAffected > 0; //true if row was deleted
         }
     }
     public bool DeleteDietPlanByID(int dietPlanID)
     {
+        //create the SQL query to delete a diet plan record by dietPlanID
         string query = "DELETE FROM admins.tblDietPlans WHERE dietPlanID = @DietPlanID";
 
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
+            //add parameter to safely inject dietPlanID into the query
             cmd.Parameters.AddWithValue("@DietPlanID", dietPlanID);
+            //execute the delete command and store how many rows were affected
             int rowsAffected = cmd.ExecuteNonQuery();
-            return rowsAffected > 0;
+            return rowsAffected > 0;//true if row was deleted
         }
     }
     public bool DeleteGoalByID(int goalID, int userID)
     {
+        //create the SQL query to delete a goal using both goalID and userID
         string query = @"DELETE FROM users.tblGoals 
                      WHERE goalID = @GoalID AND userID = @UserID";
 
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
+            //add parameters to safely inject goalID and userID into the query
             cmd.Parameters.AddWithValue("@GoalID", goalID);
             cmd.Parameters.AddWithValue("@UserID", userID);
-
+            //execute the delete command and store how many rows were affected
             int rowsAffected = cmd.ExecuteNonQuery();
-            return rowsAffected > 0;
+            return rowsAffected > 0; //true if the row was deleted
         }
     }
     public bool DeleteDailyLogByID(int logID, int userID)
     {
+        //create the SQL query to delete a daily log using both logID and userID
         string query = @"DELETE FROM users.tblDailyLog 
                      WHERE logID = @LogID AND userID = @UserID";
 
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
+            //add parameters to safely inject logID and userID into the query
             cmd.Parameters.AddWithValue("@LogID", logID);
             cmd.Parameters.AddWithValue("@UserID", userID);
-
+            //execute the delete command and store how many rows were affected
             int rowsAffected = cmd.ExecuteNonQuery();
-            return rowsAffected > 0;
+            return rowsAffected > 0; //true if row was deleted
         }
     }
     public UserDetails GetUserByID(int id)
     {
+        //create the SQL query to retrieve a user record by userID
         string query = "SELECT * FROM users.tblUserDetails WHERE userID = @UserID";
 
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
+            //add parameter to safely inject userID into the query
             cmd.Parameters.AddWithValue("@UserID", id);
 
             using (SqlDataReader reader = cmd.ExecuteReader())
             {
+                //check if any row was returned
                 if (reader.Read())
                 {
+                    //construct and return a UserDetails object with data from the row
                     return new UserDetails(
                         id,
                         reader.GetString(1),
@@ -1153,20 +1276,25 @@ public class StorageManager
                 }
             }
         }
+        //return null if no user record was found
         return null;
     }
     public AdminDetails GetAdminByID(int id)
     {
+        //create the SQL query to retrieve an admin record by adminID
         string query = "SELECT * FROM admins.tblAdminDetails WHERE adminID = @AdminID";
 
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
+            //add parameter to safely inject adminID into the query
             cmd.Parameters.AddWithValue("@AdminID", id);
 
             using (SqlDataReader reader = cmd.ExecuteReader())
             {
+                //check if any row was returned
                 if (reader.Read())
                 {
+                    //construct and return an AdminDetails object with data from the row
                     return new AdminDetails(
                         id,
                         reader.GetString(1),
@@ -1177,20 +1305,25 @@ public class StorageManager
                 }
             }
         }
+        //return null if no admin record was found
         return null;
     }
     public Foods GetFoodByID(int id)
     {
+        //create the SQL query to retrieve a food record by foodID
         string query = "SELECT * FROM admins.tblFoods WHERE foodID = @FoodID";
 
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
+            //add parameter to safely inject foodID into the query
             cmd.Parameters.AddWithValue("@FoodID", id);
 
             using (SqlDataReader reader = cmd.ExecuteReader())
             {
+                //check if any row was returned
                 if (reader.Read())
                 {
+                    //construct and return a Foods object with data from the row
                     return new Foods(
                         id,
                         reader.GetString(1),
@@ -1204,20 +1337,25 @@ public class StorageManager
                 }
             }
         }
+        //return null if no food record was found
         return null;
     }
     public DietPlans GetDietPlanByID(int id)
     {
+        //create the SQL query to retrieve a diet plan record by dietPlanID
         string query = "SELECT * FROM admins.tblDietPlans WHERE dietPlanID = @DietPlanID";
 
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
+            //add parameter to safely inject dietPlanID into the query
             cmd.Parameters.AddWithValue("@DietPlanID", id);
 
             using (SqlDataReader reader = cmd.ExecuteReader())
             {
+                //check if any row was returned
                 if (reader.Read())
                 {
+                    //construct and return a DietPlans object with data from the row
                     return new DietPlans(
                         id,
                         reader.GetString(1), 
@@ -1229,22 +1367,26 @@ public class StorageManager
                 }
             }
         }
-
+        //return null if no diet plan record was found
         return null;
     }
     public Goals GetGoalByID(int goalID, int userID)
     {
+        //create the SQL query to retrieve a goal record by goalID and userID
         string query = "SELECT * FROM users.tblGoals WHERE goalID = @GoalID AND userID = @UserID";
 
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
+            //add parameters to safely inject goalID and userID into the query
             cmd.Parameters.AddWithValue("@GoalID", goalID);
             cmd.Parameters.AddWithValue("@UserID", userID);
 
             using (SqlDataReader reader = cmd.ExecuteReader())
             {
+                //check if any row was returned
                 if (reader.Read())
                 {
+                    //construct and return a Goals object with data from the row
                     return new Goals(
                         reader.GetInt32(0), 
                         reader.GetInt32(1),
@@ -1256,22 +1398,26 @@ public class StorageManager
                 }
             }
         }
-
+        //return null if no goal record was found
         return null;
     }
     public DailyLog GetDailyLogByID(int logID, int userID)
     {
+        //create the SQL query to retrieve a daily log record by logID and userID
         string query = "SELECT * FROM users.tblDailyLog WHERE logID = @LogID AND userID = @UserID";
 
         using (SqlCommand cmd = new SqlCommand(query, conn))
         {
+            //add parameters to safely inject logID and userID into the query
             cmd.Parameters.AddWithValue("@LogID", logID);
             cmd.Parameters.AddWithValue("@UserID", userID);
 
             using (SqlDataReader reader = cmd.ExecuteReader())
             {
+                //check if any row was returned
                 if (reader.Read())
                 {
+                    //construct and return a DailyLog object with data from the row
                     return new DailyLog(
                         reader.GetInt32(0),
                         reader.GetInt32(1),
@@ -1282,16 +1428,19 @@ public class StorageManager
                 }
             }
         }
-
+        //return null if no daily log record was found
         return null;
     }
     public int GetUserID(int userID, string passwordkey)
     {
+        //create the SQL query to check if a user exists with the given userID and passwordkey
         using (SqlCommand cmd = new SqlCommand("SELECT userID FROM users.tblUserDetails WHERE userID = @userID AND passwordkey = @passwordkey", conn))
         {
+            //add parameters to safely inject userID and passwordkey into the query
             cmd.Parameters.AddWithValue("@userID", userID);
             cmd.Parameters.AddWithValue("@passwordkey", passwordkey);
 
+            //execute the query and check if a result was returned
             if (cmd.ExecuteScalar() != null)
             {
                 return Convert.ToInt32(cmd.ExecuteScalar());
@@ -1304,11 +1453,14 @@ public class StorageManager
     }
     public int GetAdminID(int adminID, string passwordkey)
     {
+        //create the SQL query to check if an admin exists with the given adminID and passwordkey
         using (SqlCommand cmd = new SqlCommand("SELECT adminID FROM admins.tblAdminDetails WHERE adminID = @adminID AND passwordkey = @passwordkey", conn))
         {
+            //add parameters to safely inject adminID and passwordkey into the query
             cmd.Parameters.AddWithValue("@adminID", adminID);
             cmd.Parameters.AddWithValue("@passwordkey", passwordkey);
 
+            //executeing the queryy and taking actions according to the result
             if (cmd.ExecuteScalar() != null)
             {
                 return Convert.ToInt32(cmd.ExecuteScalar());
@@ -1319,6 +1471,8 @@ public class StorageManager
             }
         }
     }
+    
+    //These following queries as all pretty simples using the same leements as above with naviagtion using arrows, using sql queries which are used to extract data from the DB and then displaying it with nice formatting.
     public void CalculateBMI()
     {
         ConsoleView view = new ConsoleView();

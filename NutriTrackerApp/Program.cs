@@ -2,7 +2,9 @@
 using System;
 using System.ComponentModel.Design;
 using System.Data;
+using System.Diagnostics;
 using System.Net.Http;
+using System.Reflection.Metadata;
 using static StorageManager;
 
 namespace NutriTrackerApp
@@ -13,6 +15,8 @@ namespace NutriTrackerApp
         private static ConsoleView view;
         public string userType = " ";
         public int TheID = 0;
+
+        //application entry point – establishes database connection, initializes UI, and launches the user type selection menu
         static void Main(string[] args)
         {
             string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=nutriTracker2;Integrated Security=True;Connect Timeout=30;Encrypt=False;Trust Server Certificate=False;Application Intent=ReadWrite;Multi Subnet Failover=False";
@@ -24,6 +28,7 @@ namespace NutriTrackerApp
 
             RunUserTypeMenu(); //This menu shows the options for the type of user
         }
+        //displays the main menu for selecting user type (New User, Existing User, or Admin) and goes back to eeither login or registration process
         public static void RunUserTypeMenu()
         {
             view.Clear("Welcome!");
@@ -47,6 +52,7 @@ namespace NutriTrackerApp
             }
 
         }
+        //duplicate method of the one above...reason is explained in documentation of errors.
         public void RunUserTypeMenu2()
         {
             view.Clear("Welcome!");
@@ -70,6 +76,7 @@ namespace NutriTrackerApp
             }
 
         }
+        //displays the user home page menu with options for managing settings, allergies, food, diet plans, goals, logs, and reports, and geos back to the feature.
         public void UserHomePage()
         {
             string prompt = "";
@@ -104,6 +111,7 @@ namespace NutriTrackerApp
             }
 
         }
+        //displays the admin home page menu with options to manage users, admins, foods, diet plans, and generate reports, then goes back to the selected option.
         public void AdminHomePage()
         {
             string prompt = "";
@@ -131,6 +139,7 @@ namespace NutriTrackerApp
                     break;
             }
         }
+        //handles the sign-up process for a new user including input collection, validation, user creation, and foes back to home page.
         public void InsertNewUser()
         {
             while (true)
@@ -199,6 +208,7 @@ namespace NutriTrackerApp
                 UserHomePage();
             }
         }
+        //handles the creation of a new admin account by collecting and validating input, inserting the record, and displaying the result
         public void InsertNewAdmin()
         {
             while (true)
@@ -219,7 +229,6 @@ namespace NutriTrackerApp
             "Confirm Password"
                 }, this);
 
-                // Basic validation
                 if (collectedResponses[0] == "" || collectedResponses[1] == "" ||
                     collectedResponses[2] == "" || collectedResponses[3] == "" || collectedResponses[4] == "")
                 {
@@ -253,6 +262,7 @@ namespace NutriTrackerApp
 
             AdminOptions();
         }
+        //handles the process of adding a new allergy for the current user by collecting input, validating it, and inserting the record into the database
         public void InsertNewAllergy()
         {
             while (true)
@@ -299,6 +309,7 @@ namespace NutriTrackerApp
 
             AllergiesOptions();
         }
+        //handles the process of adding a new food item by collecting user input, validating it, converting nutrition fields to decimal, and inserting the data into the database. Displays success or error messages based on input and the outcome.
         public void InsertNewFood()
         {
             while (true)
@@ -354,6 +365,7 @@ namespace NutriTrackerApp
 
             FoodOptions();
         }
+        //adds a new diet plan by collecting target values for calories, proteins, carbs, and fats. Validates inputs, creates a new DietPlans object, inserts it into the database, and shows feedback.
         public void InsertNewDietPlan()
         {
             while (true)
@@ -404,6 +416,7 @@ namespace NutriTrackerApp
 
             DietPlansOptions();
         }
+        //collects a new goal from the user, links it to a diet plan and current user, and saves it in the database.
         public void InsertNewGoal()
         {
             while (true)
@@ -449,6 +462,7 @@ namespace NutriTrackerApp
 
             GoalsOptions();
         }
+        //adds a new daily log entry for the current user by collecting food ID and meal time, and saving it with the current date.
         public void InsertNewDailyLog()
         {
             while (true)
@@ -493,6 +507,7 @@ namespace NutriTrackerApp
 
             DailyLogOptions();
         }
+        //handles login for existing users by validating user ID and password, then navigates to the user home page if successful
         public void ExistingUserLogIn()
         {
             while (true)
@@ -514,7 +529,6 @@ namespace NutriTrackerApp
                 {
                     int userID = Convert.ToInt32(collectedResponses[0]);
                     string passwordkey = collectedResponses[1];
-                    userType = "user";
                     int result = storageManager.GetUserID(userID, passwordkey);
                     if (result == 0)
                     {
@@ -522,6 +536,7 @@ namespace NutriTrackerApp
                     }
                     else
                     {
+                        userType = "user";
                         TheID = result;
                         break;
                     }
@@ -537,6 +552,7 @@ namespace NutriTrackerApp
             UserHomePage();
            
         }
+        //uuthenticates an admin by verifying the entered ID and password. If successful, sets admin session and goes to admin home page.
         public void AdminLogIn()
         {
             while (true)
@@ -558,7 +574,6 @@ namespace NutriTrackerApp
                 {
                     int adminID = Convert.ToInt32(collectedResponses[0]);
                     string passwordkey = collectedResponses[1];
-                    userType = "admin";
                     int result = storageManager.GetAdminID(adminID, passwordkey);
                     if (result == 0)
                     {
@@ -566,6 +581,7 @@ namespace NutriTrackerApp
                     }
                     else
                     {
+                        userType = "admin";
                         TheID = result;
                         break;
                     }
@@ -580,6 +596,7 @@ namespace NutriTrackerApp
 
             AdminHomePage();
         }
+        //updates the details of an existing user based on form-style input. Validates inputs, handles errors, and saves changes to the database.
         public void UpdateUser(int TheID)
         {
             ConsoleView view = new ConsoleView();
@@ -647,6 +664,7 @@ namespace NutriTrackerApp
 
             UserOptions();
         }
+        //allows an existing admin to update their personal details (name, email, password). Validates inputs and updates the record in the database.
         public void UpdateAdmin(int TheID)
         {
             AdminDetails admin = storageManager.GetAdminByID(TheID);
@@ -706,6 +724,7 @@ namespace NutriTrackerApp
 
             AdminOptions();
         }
+        //updates an existing food item in the database with new user-provided details (name, category, nutrition values). Validates all fields before saving.
         public void UpdateFood(int foodID)
         {
             ConsoleView view = new ConsoleView();
@@ -768,6 +787,7 @@ namespace NutriTrackerApp
 
             FoodOptions();
         }
+        //updates an existing diet plan in the database with new target values (name, calories, proteins, carbs, fats) provided by the user after input validation.
         public void UpdateDietPlan(int dietPlanID)
         {
             ConsoleView view = new ConsoleView();
@@ -825,6 +845,7 @@ namespace NutriTrackerApp
 
             DietPlansOptions();
         }
+        //udates an existing daily food log entry for the logged-in user by modifying the associated food ID, meal time, and date logged.
         public void UpdateDailyLog(int logID)
         {
             ConsoleView view = new ConsoleView();
@@ -880,10 +901,11 @@ namespace NutriTrackerApp
 
             DailyLogOptions();
         }
+        //updates an existing goal for the logged-in user, allowing changes to diet plan ID, goal description, and optional end date.
         public void UpdateGoal(int TheID)
         {
             ConsoleView view = new ConsoleView();
-            Goals goal = storageManager.GetGoalByID(TheID, this.TheID); // restrict by user ID
+            Goals goal = storageManager.GetGoalByID(TheID, this.TheID);
 
             while (true)
             {
@@ -946,6 +968,7 @@ namespace NutriTrackerApp
 
             GoalsOptions();
         }
+        //prompts the user (or admin) to confirm deletion of a user account by ID. If confirmed and deletion is successful, the application exits (for users) or returns to the menu (for admins). If deletion fails, displays an error message and returns to the UserOptions menu.
         public void DeleteUser(int userID)
         {
             Menu confirmDelete;
@@ -986,6 +1009,7 @@ namespace NutriTrackerApp
                     break;
             }
         }
+        //deletes an admin account after confirmation. If the current logged-in admin deletes their own account, the application exits; otherwise, it returns to the admin options menu.
         public void DeleteAdmin(int adminID)
         {
             view.Clear("Delete Admin");
@@ -1022,6 +1046,7 @@ namespace NutriTrackerApp
                     break;
             }
         }
+        //confirms and deletes a specific allergy for the logged-in user, showing a success or failure message, then returns to the allergy options menu.
         public void DeleteAllergy(int allergyID)
         {
             Menu confirmDelete = new Menu("Are you sure you want to delete this allergy?", new string[] { "Yes", "No" });
@@ -1031,7 +1056,7 @@ namespace NutriTrackerApp
 
             switch (selectedIndex)
             {
-                case 0: // Yes selected
+                case 0:
                     bool success = storageManager.DeleteAllergyByID(allergyID, TheID);
                     view.Clear("Delete Allergy");
 
@@ -1054,11 +1079,12 @@ namespace NutriTrackerApp
                     AllergiesOptions();
                     break;
 
-                case 1: // No selected
+                case 1:
                     AllergiesOptions();
                     break;
             }
         }
+        //prompts for confirmation and deletes a food item from the database, displaying success or error messages, then returns to the food options menu.
         public void DeleteFood(int foodID)
         {
             view.Clear("Delete Food");
@@ -1091,6 +1117,7 @@ namespace NutriTrackerApp
                     break;
             }
         }
+        //prompts the user for confirmation, attempts to delete the selected diet plan, and displays the result before returning to the diet plans menu.
         public void DeleteDietPlan(int dietPlanID)
         {
             view.Clear("Delete Diet Plan");
@@ -1123,6 +1150,7 @@ namespace NutriTrackerApp
                     break;
             }
         }
+        //prompts the user to confirm deletion, attempts to delete the specified goal if authorized, then displays the result and goes back to the goals menu.
         public void DeleteGoal(int goalID)
         {
             Menu confirmDelete = new Menu("Are you sure you want to delete this goal?", new string[] { "Yes", "No" });
@@ -1132,7 +1160,7 @@ namespace NutriTrackerApp
 
             switch (selectedIndex)
             {
-                case 0: // Yes selected
+                case 0:
                     bool success = storageManager.DeleteGoalByID(goalID, TheID);
                     view.Clear("Delete Goal");
 
@@ -1152,14 +1180,15 @@ namespace NutriTrackerApp
                     Console.WriteLine("\nPress any key to go back...");
                     Console.ResetColor();
                     Console.ReadKey(true);
-                    GoalsOptions(); // replace with your actual menu for goals
+                    GoalsOptions(); 
                     break;
 
-                case 1: // No selected
+                case 1:
                     GoalsOptions();
                     break;
             }
         }
+        //confirms deletion of the selected daily log, deletes it if the user is authorized, and then displays the result before returning to the daily log menu.
         public void DeleteDailyLog(int logID)
         {
             Menu confirmDelete = new Menu("Are you sure you want to delete this food log?", new string[] { "Yes", "No" });
@@ -1169,7 +1198,7 @@ namespace NutriTrackerApp
 
             switch (selectedIndex)
             {
-                case 0: // Yes selected
+                case 0:
                     bool success = storageManager.DeleteDailyLogByID(logID, TheID);
                     view.Clear("Delete Daily Log");
 
@@ -1192,11 +1221,12 @@ namespace NutriTrackerApp
                     DailyLogOptions();
                     break;
 
-                case 1: // No selected
+                case 1:
                     DailyLogOptions();
                     break;
             }
         }
+        //displays user or admin options related to user accounts, such as viewing, updating, inserting, or deleting user information, based on the current user type.
         public void UserOptions()
         {
             if (userType == "user")
@@ -1288,6 +1318,7 @@ namespace NutriTrackerApp
                 }
             }
         }
+        //presents admin-specific options to view, add, update, or delete admin accounts. Based on the user's menu selection, the appropriate action is triggered. Includes input validation and form-style input for update and delete operations. Loops allow retry on invalid inputs, and each action goes back to AdminOptions.
         public void AdminOptions()
         {
             string prompt = "";
@@ -1354,6 +1385,7 @@ namespace NutriTrackerApp
                     }
             }
         }
+        //displays the allergy management menu for the current user, allowing them to view, add, or delete allergies. Based on the selected menu option, it routes to the appropriate handler. For deletion, it prompts for Allergy ID with input validation, and repeats on invalid input.
         public void AllergiesOptions()
         {
             string prompt = "";
@@ -1397,6 +1429,7 @@ namespace NutriTrackerApp
                     }                    
             }
         }
+        //displays the food management interface based on user role. Regular users can only view all foods. Admins can view, insert, update, or delete food items. For update and delete actions, it prompts the admin to enter a valid Food ID and handles incorrect input by showing error messages and retrying the input process in a loop.
         public void FoodOptions()
         {
             if (userType == "user")
@@ -1472,6 +1505,7 @@ namespace NutriTrackerApp
                 }
             }
         }
+        //presents diet plan management options based on user role. Regular users can only view all diet plans and are redirected to the homepage afterward. Admins can view, insert, update, or delete diet plans. For update and delete actions, the method collects a Diet Plan ID from the admin, validates it, and proceeds accordingly. Invalid inputs are caught and handled with appropriate error messages in a retry loop.
         public void DietPlansOptions()
         {
             if (userType == "user")
@@ -1547,6 +1581,7 @@ namespace NutriTrackerApp
                 }
             }
         }
+        //displays the goal management menu for users, allowing them to view, add, update, or delete goals with input validation and navigation support.
         public void GoalsOptions()
         {
             string prompt = "";
@@ -1614,6 +1649,7 @@ namespace NutriTrackerApp
                     }
             }
         }
+        //displays the daily log management menu for users, allowing them to view, insert, update, or delete their food intake logs with proper input validation and control navigation.
         public void DailyLogOptions()
         {
             string prompt = "";
@@ -1681,6 +1717,7 @@ namespace NutriTrackerApp
                     }
             }
         }
+        //displays user-specific or admin-specific analytical report options and goes back to the data queries in StorageManager, allowing for users to see some insights :).
         public void QueryOptions()
         {
             if (userType == "user")
@@ -1772,6 +1809,7 @@ namespace NutriTrackerApp
                 }
             }
         }
+        //shows messages in forms with special formatting relative to the number of fields in that form.
         public void ShowMessage(string message, int labelsLength)
         {
             if (message.Length < 100)
@@ -1795,6 +1833,7 @@ namespace NutriTrackerApp
                 Console.ReadKey(true);
             }
         }
+        //called to close the connecttion to the database once the user decides to exit. It is called once they use the exit method.
         public void CloseConnection()
         {
             if (storageManager.conn != null && storageManager.conn.State == ConnectionState.Open)
